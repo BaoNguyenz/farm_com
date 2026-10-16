@@ -74,6 +74,9 @@ e:\z_farm_com\
 │   └── static\
 │       └── index.html            # Dashboard trực quan hóa Digital Twin & Hội đồng Agent
 │
+├── pyproject.toml            # Cấu hình dự án & dependencies chuẩn uv
+├── uv.lock                   # Lockfile xác định phiên bản chính xác
+├── main.py                   # Điểm khởi chạy nhanh ứng dụng
 ├── .env.example
 ├── .gitignore
 ├── requirements.txt
@@ -82,17 +85,18 @@ e:\z_farm_com\
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Thử
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Thử Với `uv`
 
-### 1. Cài đặt thư viện:
+### 1. Đồng bộ môi trường ảo (tạo `.venv` và cài dependencies siêu tốc):
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-### 2. Chạy Server:
+### 2. Khởi chạy Server:
 ```bash
-python -m uvicorn backend.main:app --reload --port 8000
+uv run python main.py
 ```
+*(hoặc dùng lệnh: `uv run uvicorn backend.main:app --reload --port 8000`)*
 
 ### 3. Mở Giao Diện Web:
 Truy cập trình duyệt tại: **`http://localhost:8000`**
@@ -100,3 +104,4 @@ Truy cập trình duyệt tại: **`http://localhost:8000`**
 * **Xem Live Digital Twin:** Ma trận 4x4 luống cây (Dâu tây, Cà phê Arabica, Ớt chuông, Cẩm tú cầu) với chỉ số NDVI/NDWI và độ ẩm tầng rễ.
 * **Họp Hội Đồng Agent:** Nhấn nút **"Họp Hội Đồng Agent"** để theo dõi các Agent phản biện và ra quyết định tự động.
 * **Mô phỏng thời gian:** Nhấn **"Step +1 Hour"** để kiểm tra quá trình bay hơi tự nhiên của đất.
+
