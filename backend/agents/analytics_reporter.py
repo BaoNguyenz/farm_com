@@ -97,3 +97,4 @@ class FarmIntelligenceReporter:
             report_id=report_id,
             generated_at=now_str,
             total_plots=len(health_metrics),
+            mean_farm_ndvi=mean_ndvi,
