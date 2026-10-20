@@ -116,3 +116,4 @@ class ExtendedSpectralEngine:
         return (bands.green - bands.nir) / denom
 
     def compute_msi(self, bands: SpectralBands) -> float:
+        """Moisture Stress Index (Rock et al., 1986)."""
