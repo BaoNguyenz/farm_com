@@ -11,3 +11,4 @@ import json
 
 
 @dataclass
+class AgronomyHealthMetric:
