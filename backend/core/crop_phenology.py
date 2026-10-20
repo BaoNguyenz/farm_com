@@ -179,3 +179,4 @@ class PhenologyEngine:
         depth_span = p.max_root_depth_meters - p.initial_root_depth_meters
         root_depth = p.initial_root_depth_meters + depth_span * max(0.0, sigmoidal_factor)
         return round(min(p.max_root_depth_meters, root_depth), 3)
+
