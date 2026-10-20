@@ -55,3 +55,4 @@ class FarmIntelligenceReporter:
         self.farm_name = farm_name
 
     def build_executive_report(
+        self,
