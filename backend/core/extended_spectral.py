@@ -113,3 +113,5 @@ class ExtendedSpectralEngine:
         denom = bands.green + bands.nir
         if abs(denom) < self.min_reflectance:
             return 0.0
+        return (bands.green - bands.nir) / denom
+
