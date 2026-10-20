@@ -130,3 +130,4 @@ class WeatherAnalyticsEngine:
         return None
 
     @staticmethod
+    def assess_spray_drift_hazard(
