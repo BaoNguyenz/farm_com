@@ -5,3 +5,4 @@ chlorophyll monitoring, canopy water stress, and biophysical modeling.
 """
 
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
