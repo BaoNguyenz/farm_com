@@ -33,3 +33,4 @@ class CanopyClassification:
     recommendation: str
 
 
+class ExtendedSpectralEngine:
