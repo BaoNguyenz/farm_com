@@ -77,3 +77,4 @@ class WeatherAnalyticsEngine:
         term = -math.tan(lat_rad) * math.tan(solar_declination)
         clamped_term = max(-1.0, min(1.0, term))
         sunset_hour_angle = math.acos(clamped_term)
+
