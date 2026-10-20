@@ -50,3 +50,4 @@ class WeatherAnalyticsEngine:
         es = WeatherAnalyticsEngine.calculate_saturation_vapor_pressure(temp_c)
         ea = WeatherAnalyticsEngine.calculate_actual_vapor_pressure(temp_c, rh_pct)
         return max(0.0, es - ea)
+
