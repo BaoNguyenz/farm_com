@@ -63,3 +63,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         cutoff_temperature=35.0,
         optimal_temperature=28.0,
         gdd_emergence=90.0,
+        gdd_vegetative=500.0,
