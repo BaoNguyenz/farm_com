@@ -89,3 +89,4 @@ class FarmIntelligenceReporter:
         if len(chlorosis_plots) > 0:
             bulletins.append(
                 f"Agronomy Alert: {len(chlorosis_plots)} plot(s) display nitrogen chlorosis signatures ({', '.join(chlorosis_plots)})."
+            )
