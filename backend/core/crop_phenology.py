@@ -101,3 +101,4 @@ class PhenologyEngine:
             self.params = CROP_DATABASE[key]
 
         self.accumulated_gdd: float = 0.0
+        self.days_since_planting: int = 0
