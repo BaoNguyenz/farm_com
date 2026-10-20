@@ -37,3 +37,4 @@ class FarmDailyExecutiveReport:
     """Comprehensive daily agricultural intelligence dossier."""
     report_id: str
     generated_at: str
+    total_plots: int
