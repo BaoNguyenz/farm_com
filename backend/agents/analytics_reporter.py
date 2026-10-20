@@ -164,3 +164,5 @@ class FarmIntelligenceReporter:
         """Exports the report as a structured JSON string."""
         data = {
             "report_id": report.report_id,
+            "generated_at": report.generated_at,
+            "total_plots": report.total_plots,
