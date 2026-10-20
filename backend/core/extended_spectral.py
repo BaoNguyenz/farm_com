@@ -242,3 +242,4 @@ def analyze_grid_canopy(
             swir_1=cell.get("swir_1", 0.18),
             swir_2=cell.get("swir_2", 0.09),
         )
+        idx_dict = engine.calculate_all_indices(bands)
