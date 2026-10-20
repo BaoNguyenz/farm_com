@@ -43,3 +43,4 @@ class ExtendedSpectralEngine:
     def compute_ndvi(self, bands: SpectralBands) -> float:
         """Normalized Difference Vegetation Index (Rouse et al., 1974)."""
         denom = bands.nir + bands.red
+        if abs(denom) < self.min_reflectance:
