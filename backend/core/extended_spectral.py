@@ -143,3 +143,4 @@ class ExtendedSpectralEngine:
     def compute_nddi(self, bands: SpectralBands) -> float:
         """Normalized Difference Drought Index (Gu et al., 2007)."""
         ndvi = self.compute_ndvi(bands)
+        ndwi = self.compute_ndwi_gao(bands)
