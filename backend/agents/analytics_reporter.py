@@ -121,3 +121,4 @@ class FarmIntelligenceReporter:
             "| Metric Indicator | Recorded Value | Unit | Evaluation |",
             "| :--- | :--- | :--- | :--- |",
             f"| **Mean Canopy NDVI** | `{report.mean_farm_ndvi:.3f}` | Scale [-1, 1] | {'Optimal' if report.mean_farm_ndvi >= 0.55 else 'Attention Required'} |",
+            f"| **Active Monitored Plots** | `{report.total_plots}` | Plots | Matrix 4x4 Grid |",
