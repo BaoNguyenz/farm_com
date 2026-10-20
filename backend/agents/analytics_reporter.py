@@ -163,3 +163,4 @@ class FarmIntelligenceReporter:
     def export_json(self, report: FarmDailyExecutiveReport) -> str:
         """Exports the report as a structured JSON string."""
         data = {
+            "report_id": report.report_id,
