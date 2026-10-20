@@ -96,3 +96,4 @@ class WeatherAnalyticsEngine:
         delta_t = max(0.0, t_max - t_min)
         rs = kr * math.sqrt(delta_t) * ra_mj
         return round(rs, 2)
+
