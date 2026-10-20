@@ -120,3 +120,4 @@ class PhenologyEngine:
         """Advances the simulation by one calendar day with given temperatures."""
         gdd = self.compute_daily_gdd(t_max, t_min)
         self.accumulated_gdd += gdd
+        self.days_since_planting += 1
