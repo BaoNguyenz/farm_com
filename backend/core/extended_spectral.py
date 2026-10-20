@@ -248,3 +248,4 @@ def analyze_grid_canopy(
         accum_ndwi += idx_dict["ndwi_canopy"]
         accum_ndre += idx_dict["ndre"]
 
+    n = max(1, len(grid_cells))
