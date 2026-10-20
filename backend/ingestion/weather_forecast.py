@@ -26,3 +26,4 @@ class MicroclimateRiskAlert:
     """Actionable weather risk alert for farm operators."""
     severity: str
     category: str
+    headline: str
