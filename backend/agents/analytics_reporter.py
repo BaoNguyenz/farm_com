@@ -12,3 +12,4 @@ import json
 
 @dataclass
 class AgronomyHealthMetric:
+    """Individual plot agronomy index metric."""
