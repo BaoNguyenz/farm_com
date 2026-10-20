@@ -126,3 +126,4 @@ class PhenologyEngine:
     def get_current_stage(self) -> PhenologicalStage:
         """Determines current phenological stage based on accumulated GDD."""
         gdd = self.accumulated_gdd
+        p = self.params
