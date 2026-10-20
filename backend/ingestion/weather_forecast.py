@@ -153,3 +153,4 @@ class WeatherAnalyticsEngine:
         elif wind_kmh <= 20.0:
             status = "MARGINAL_HIGH_DRIFT_RISK"
             safe = False
+            msg = "Use drift-reducing coarse nozzles and reduce boom height."
