@@ -45,3 +45,4 @@ class WeatherAnalyticsEngine:
         return es * (max(0.0, min(100.0, rh_pct)) / 100.0)
 
     @staticmethod
+    def calculate_vpd(temp_c: float, rh_pct: float) -> float:
