@@ -232,3 +232,4 @@ def analyze_grid_canopy(
     for cell in grid_cells:
         bands = SpectralBands(
             blue=cell.get("blue", 0.05),
+            green=cell.get("green", 0.08),
