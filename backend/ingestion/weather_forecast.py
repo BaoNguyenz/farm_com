@@ -66,3 +66,4 @@ class WeatherAnalyticsEngine:
             return "STOMATAL_CLOSURE_DROUGHT_STRESS"
 
     @staticmethod
+    def estimate_extraterrestrial_radiation(
