@@ -245,3 +245,4 @@ def analyze_grid_canopy(
         idx_dict = engine.calculate_all_indices(bands)
         results.append(idx_dict)
         accum_ndvi += idx_dict["ndvi"]
+        accum_ndwi += idx_dict["ndwi_canopy"]
