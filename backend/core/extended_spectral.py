@@ -250,3 +250,4 @@ def analyze_grid_canopy(
 
     n = max(1, len(grid_cells))
     summary = {
+        "mean_ndvi": round(accum_ndvi / n, 4),
