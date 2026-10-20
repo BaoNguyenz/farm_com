@@ -169,3 +169,4 @@ class FarmIntelligenceReporter:
             "mean_farm_ndvi": report.mean_farm_ndvi,
             "total_water_dispatched_liters": report.total_water_dispatched_liters,
             "total_energy_kwh": report.total_energy_kwh,
+            "estimated_daily_operating_cost_vnd": report.estimated_daily_operating_cost_vnd,
