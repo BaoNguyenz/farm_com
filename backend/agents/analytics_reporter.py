@@ -26,3 +26,4 @@ class AgronomyHealthMetric:
 class IrrigationAuditEntry:
     """Water application telemetry and efficiency record."""
     plot_id: str
+    water_applied_liters: float
