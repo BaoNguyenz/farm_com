@@ -42,3 +42,5 @@ class FarmDailyExecutiveReport:
     total_water_dispatched_liters: float
     total_energy_kwh: float
     estimated_daily_operating_cost_vnd: float
+    plots_under_water_stress: List[str]
+    plots_with_nutrient_chlorosis: List[str]
