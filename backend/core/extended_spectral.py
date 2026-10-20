@@ -112,3 +112,4 @@ class ExtendedSpectralEngine:
         """Normalized Difference Water Index for surface water delineation."""
         denom = bands.green + bands.nir
         if abs(denom) < self.min_reflectance:
+            return 0.0
