@@ -195,3 +195,4 @@ class WeatherAnalyticsEngine:
             "t_min_c": round(t_min, 2),
             "t_mean_c": round(t_mean, 2),
             "rh_mean_pct": round(rh_mean, 1),
+            "wind_speed_2m_ms": round(wind_mean, 2),
