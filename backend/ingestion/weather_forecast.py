@@ -173,3 +173,4 @@ class WeatherAnalyticsEngine:
         """Aggregates 24-hour weather data into daily agro-climate metrics."""
         if not hourly_records:
             return {}
+
