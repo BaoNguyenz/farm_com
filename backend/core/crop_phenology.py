@@ -86,3 +86,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         kc_end=0.85,
         max_root_depth_meters=1.50,
         initial_root_depth_meters=0.30,
+    ),
