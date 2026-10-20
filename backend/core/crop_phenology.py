@@ -159,3 +159,4 @@ class PhenologyEngine:
         elif fraction < 0.45:
             # Crop development stage: linear ramp up to kc_mid
             t = (fraction - 0.15) / (0.45 - 0.15)
+            return round(p.kc_initial + t * (p.kc_mid - p.kc_initial), 3)
