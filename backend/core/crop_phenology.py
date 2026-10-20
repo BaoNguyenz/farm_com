@@ -172,3 +172,4 @@ class PhenologyEngine:
         """Sigmoidal dynamic root expansion model (Borg and Grimes, 1986)."""
         p = self.params
         gdd = self.accumulated_gdd
+        total = p.gdd_maturity
