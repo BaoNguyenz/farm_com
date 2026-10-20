@@ -137,3 +137,4 @@ class WeatherAnalyticsEngine:
         # Convert m/s to km/h
         wind_kmh = wind_speed_ms * 3.6
 
+        if wind_kmh < 3.0:
