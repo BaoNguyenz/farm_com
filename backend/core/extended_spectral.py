@@ -148,3 +148,5 @@ class ExtendedSpectralEngine:
         if abs(denom) < self.min_reflectance:
             return 0.0
         return (ndvi - ndwi) / denom
+
+    def calculate_all_indices(self, bands: SpectralBands) -> Dict[str, float]:
