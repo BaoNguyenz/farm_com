@@ -24,3 +24,4 @@ class SpectralBands:
     swir_2: float      # B12 (2190 nm)
 
 
+@dataclass
