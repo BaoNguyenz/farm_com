@@ -108,3 +108,4 @@ class WeatherAnalyticsEngine:
         if temp_c <= 0.0:
             if wind_speed_ms < 1.5:
                 return MicroclimateRiskAlert(
+                    severity="CRITICAL",
