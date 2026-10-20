@@ -52,3 +52,4 @@ class WeatherAnalyticsEngine:
         return max(0.0, es - ea)
 
     @staticmethod
+    def classify_vpd_range(vpd_kpa: float) -> str:
