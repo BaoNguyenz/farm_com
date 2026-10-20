@@ -149,3 +149,4 @@ class FarmIntelligenceReporter:
         if not report.commander_resolutions:
             lines.append("1. *No automated override actions dispatched by Commander Agent.*")
         else:
+            for idx, res in enumerate(report.commander_resolutions, start=1):
