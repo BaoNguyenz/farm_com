@@ -211,3 +211,4 @@ class ExtendedSpectralEngine:
         elif vigor == "CRITICAL_POOR":
             rec = "Inspect plot for potential root rot or emergent pest infestation."
         else:
+            rec = "Normal growth conditions. Maintain baseline regime."
