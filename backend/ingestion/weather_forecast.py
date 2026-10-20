@@ -42,3 +42,5 @@ class WeatherAnalyticsEngine:
     def calculate_actual_vapor_pressure(temp_c: float, rh_pct: float) -> float:
         """Actual vapor pressure ea in kPa from relative humidity."""
         es = WeatherAnalyticsEngine.calculate_saturation_vapor_pressure(temp_c)
+        return es * (max(0.0, min(100.0, rh_pct)) / 100.0)
+
