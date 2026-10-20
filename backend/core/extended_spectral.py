@@ -94,3 +94,4 @@ class ExtendedSpectralEngine:
         return gain * ((bands.nir - bands.red) / denom)
 
     def compute_evi2(self, bands: SpectralBands) -> float:
+        """Two-band Enhanced Vegetation Index without blue band dependency."""
