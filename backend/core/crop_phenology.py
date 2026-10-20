@@ -106,3 +106,4 @@ class PhenologyEngine:
     def compute_daily_gdd(self, t_max: float, t_min: float) -> float:
         """Standard agronomic GDD equation with upper cutoff and lower base limits."""
         t_base = self.params.base_temperature
+        t_cut = self.params.cutoff_temperature
