@@ -228,3 +228,4 @@ def analyze_grid_canopy(
     engine = ExtendedSpectralEngine()
     results = []
     accum_ndvi, accum_ndwi, accum_ndre = 0.0, 0.0, 0.0
+
