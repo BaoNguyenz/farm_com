@@ -205,3 +205,4 @@ class PhenologyEngine:
         return {
             "crop_name": self.params.crop_name,
             "days_since_planting": self.days_since_planting,
+            "accumulated_gdd": round(self.accumulated_gdd, 1),
