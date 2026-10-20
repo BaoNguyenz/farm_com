@@ -97,3 +97,4 @@ class PhenologyEngine:
         key = crop_name.lower().strip()
         if key not in CROP_DATABASE:
             self.params = CROP_DATABASE["maize"]
+        else:
