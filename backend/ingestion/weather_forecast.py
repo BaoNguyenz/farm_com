@@ -87,3 +87,4 @@ class WeatherAnalyticsEngine:
         )
         return max(0.0, ra)
 
+    @staticmethod
