@@ -102,3 +102,4 @@ class ExtendedSpectralEngine:
         return gain * ((bands.nir - bands.red) / denom)
 
     def compute_ndwi_gao(self, bands: SpectralBands) -> float:
+        """Normalized Difference Water Index for canopy liquid water (Gao, 1996)."""
