@@ -210,3 +210,4 @@ class ExtendedSpectralEngine:
             rec = "Schedule targeted foliar nitrogen or micronutrient spray."
         elif vigor == "CRITICAL_POOR":
             rec = "Inspect plot for potential root rot or emergent pest infestation."
+        else:
