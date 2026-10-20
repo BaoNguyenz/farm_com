@@ -132,3 +132,4 @@ class WeatherAnalyticsEngine:
     @staticmethod
     def assess_spray_drift_hazard(
         wind_speed_ms: float, temp_c: float, rh_pct: float
+    ) -> Dict[str, object]:
