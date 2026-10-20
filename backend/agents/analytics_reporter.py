@@ -82,3 +82,4 @@ class FarmIntelligenceReporter:
         total_cost = sum(entry.cost_vnd for entry in irrigation_entries)
 
         bulletins = []
+        if len(stressed_plots) > 0:
