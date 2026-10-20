@@ -165,3 +165,4 @@ class WeatherAnalyticsEngine:
             "classification": status,
             "recommendation": msg,
         }
+
