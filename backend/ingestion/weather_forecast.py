@@ -171,3 +171,4 @@ class WeatherAnalyticsEngine:
         hourly_records: List[HourlyWeatherData], latitude: float, day_of_year: int
     ) -> Dict[str, float]:
         """Aggregates 24-hour weather data into daily agro-climate metrics."""
+        if not hourly_records:
