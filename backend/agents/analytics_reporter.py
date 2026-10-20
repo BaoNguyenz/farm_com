@@ -98,3 +98,4 @@ class FarmIntelligenceReporter:
             generated_at=now_str,
             total_plots=len(health_metrics),
             mean_farm_ndvi=mean_ndvi,
+            total_water_dispatched_liters=round(total_water, 2),
