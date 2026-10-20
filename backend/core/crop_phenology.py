@@ -44,3 +44,4 @@ class CropParameters:
 CROP_DATABASE: Dict[str, CropParameters] = {
     "maize": CropParameters(
         crop_name="Maize / Corn",
+        base_temperature=10.0,
