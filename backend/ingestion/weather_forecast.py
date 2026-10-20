@@ -133,3 +133,4 @@ class WeatherAnalyticsEngine:
     def assess_spray_drift_hazard(
         wind_speed_ms: float, temp_c: float, rh_pct: float
     ) -> Dict[str, object]:
+        """Evaluates agrochemical spray drift window based on atmospheric stability."""
