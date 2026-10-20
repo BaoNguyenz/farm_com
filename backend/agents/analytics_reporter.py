@@ -21,3 +21,4 @@ class AgronomyHealthMetric:
     chlorophyll_level: str
     water_stress_status: str
 
+
