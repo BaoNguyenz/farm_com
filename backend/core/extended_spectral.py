@@ -173,3 +173,4 @@ class ExtendedSpectralEngine:
         """Classifies crop vigor, moisture stress, and chlorophyll adequacy."""
         ndvi = indices.get("ndvi", 0.0)
         ndwi = indices.get("ndwi_canopy", 0.0)
+        ndre = indices.get("ndre", 0.0)
