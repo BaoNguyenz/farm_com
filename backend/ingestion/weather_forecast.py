@@ -115,3 +115,4 @@ class WeatherAnalyticsEngine:
                 )
             else:
                 return MicroclimateRiskAlert(
+                    severity="HIGH",
