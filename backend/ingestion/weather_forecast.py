@@ -55,3 +55,4 @@ class WeatherAnalyticsEngine:
     def classify_vpd_range(vpd_kpa: float) -> str:
         """Classifies VPD for greenhouse and open-field stomatal conductance."""
         if vpd_kpa < 0.4:
+            return "TOO_HUMID_FUNGAL_RISK"
