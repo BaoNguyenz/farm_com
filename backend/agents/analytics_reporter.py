@@ -159,3 +159,4 @@ class FarmIntelligenceReporter:
         ])
 
         return "\n".join(lines)
+
