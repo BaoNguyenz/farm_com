@@ -190,3 +190,4 @@ class ExtendedSpectralEngine:
             moisture = "OPTIMAL_TURGID"
         elif ndwi > 0.10:
             moisture = "MILD_DEFICIT"
+        elif ndwi > -0.10:
