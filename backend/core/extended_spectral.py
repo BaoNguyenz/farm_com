@@ -202,3 +202,5 @@ class ExtendedSpectralEngine:
             chlorophyll = "NORMAL_HEALTHY"
         else:
             chlorophyll = "CHLOROSIS_DEFICIENT"
+
+        # Synthesis recommendation
