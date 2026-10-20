@@ -122,3 +122,4 @@ class ExtendedSpectralEngine:
         return bands.swir_1 / bands.nir
 
     def compute_cigreen(self, bands: SpectralBands) -> float:
+        """Chlorophyll Index Green (Gitelson et al., 2005)."""
