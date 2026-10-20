@@ -16,3 +16,4 @@ class SpectralBands:
     green: float       # B3 (560 nm)
     red: float         # B4 (665 nm)
     red_edge_1: float  # B5 (705 nm)
+    red_edge_2: float  # B6 (740 nm)
