@@ -63,3 +63,4 @@ class WeatherAnalyticsEngine:
         elif vpd_kpa <= 1.6:
             return "TRANSIT_WATER_CONSERVING"
         else:
+            return "STOMATAL_CLOSURE_DROUGHT_STRESS"
