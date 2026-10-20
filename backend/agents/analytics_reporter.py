@@ -117,3 +117,4 @@ class FarmIntelligenceReporter:
             "---",
             "",
             "## 📊 KPI Summary Overview",
+            "",
