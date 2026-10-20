@@ -91,3 +91,4 @@ class WeatherAnalyticsEngine:
     def estimate_solar_radiation_hargreaves(
         t_max: float, t_min: float, ra_mj: float, coastal: bool = False
     ) -> float:
+        """Hargreaves-Samani method for solar radiation Rs when pyranometer is missing."""
