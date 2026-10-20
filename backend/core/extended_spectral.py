@@ -129,3 +129,4 @@ class ExtendedSpectralEngine:
 
     def compute_cirededge(self, bands: SpectralBands) -> float:
         """Chlorophyll Index Red Edge (Gitelson et al., 2005)."""
+        if abs(bands.red_edge_1) < self.min_reflectance:
