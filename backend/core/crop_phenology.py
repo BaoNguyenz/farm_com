@@ -204,3 +204,4 @@ class PhenologyEngine:
         """Exports a snapshot of current phenological and growth indicators."""
         return {
             "crop_name": self.params.crop_name,
+            "days_since_planting": self.days_since_planting,
