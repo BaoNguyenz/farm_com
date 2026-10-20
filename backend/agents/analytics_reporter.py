@@ -24,3 +24,4 @@ class AgronomyHealthMetric:
 
 @dataclass
 class IrrigationAuditEntry:
+    """Water application telemetry and efficiency record."""
