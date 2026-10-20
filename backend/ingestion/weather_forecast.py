@@ -13,3 +13,4 @@ import math
 class HourlyWeatherData:
     """Hourly atmospheric observation or model forecast."""
     timestamp: str
+    temperature_c: float
