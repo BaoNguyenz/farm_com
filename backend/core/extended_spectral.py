@@ -126,3 +126,4 @@ class ExtendedSpectralEngine:
         if abs(bands.green) < self.min_reflectance:
             return 0.0
         return (bands.nir / bands.green) - 1.0
+
