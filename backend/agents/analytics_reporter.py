@@ -134,3 +134,4 @@ class FarmIntelligenceReporter:
 
         if not report.advisory_bulletins:
             lines.append("> ✅ All telemetry parameters within optimal agronomic thresholds.")
+        else:
