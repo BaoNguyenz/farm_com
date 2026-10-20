@@ -175,3 +175,4 @@ class PhenologyEngine:
         total = p.gdd_maturity
 
         fraction = min(1.0, max(0.0, gdd / total))
+        sigmoidal_factor = 0.5 + 0.5 * math.sin(3.03 * fraction - 1.47)
