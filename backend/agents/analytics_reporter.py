@@ -104,3 +104,4 @@ class FarmIntelligenceReporter:
             plots_under_water_stress=stressed_plots,
             plots_with_nutrient_chlorosis=chlorosis_plots,
             commander_resolutions=resolutions,
+            advisory_bulletins=bulletins,
