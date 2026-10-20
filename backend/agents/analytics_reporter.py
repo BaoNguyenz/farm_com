@@ -107,3 +107,4 @@ class FarmIntelligenceReporter:
             advisory_bulletins=bulletins,
         )
 
+    def render_markdown_dossier(self, report: FarmDailyExecutiveReport) -> str:
