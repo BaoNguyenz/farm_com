@@ -62,3 +62,4 @@ class WeatherAnalyticsEngine:
             return "HEALTHY_VEGETATIVE_SWEETSPOT"
         elif vpd_kpa <= 1.6:
             return "TRANSIT_WATER_CONSERVING"
+        else:
