@@ -136,3 +136,4 @@ class WeatherAnalyticsEngine:
         """Evaluates agrochemical spray drift window based on atmospheric stability."""
         # Convert m/s to km/h
         wind_kmh = wind_speed_ms * 3.6
+
