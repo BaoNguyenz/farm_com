@@ -27,3 +27,4 @@ class MicroclimateRiskAlert:
     severity: str
     category: str
     headline: str
+    advisory_action: str
