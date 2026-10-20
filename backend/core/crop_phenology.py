@@ -181,3 +181,4 @@ class PhenologyEngine:
         return round(min(p.max_root_depth_meters, root_depth), 3)
 
     def calculate_yield_response_factor(self, water_stress_ratio: float) -> float:
+        """Doorenbos and Kassam (1979) empirical yield reduction model (Ky)."""
