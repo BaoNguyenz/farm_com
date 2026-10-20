@@ -95,3 +95,4 @@ class PhenologyEngine:
 
     def __init__(self, crop_name: str = "maize"):
         key = crop_name.lower().strip()
+        if key not in CROP_DATABASE:
