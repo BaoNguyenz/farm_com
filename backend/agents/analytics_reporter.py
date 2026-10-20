@@ -39,3 +39,4 @@ class FarmDailyExecutiveReport:
     generated_at: str
     total_plots: int
     mean_farm_ndvi: float
+    total_water_dispatched_liters: float
