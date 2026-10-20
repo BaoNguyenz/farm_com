@@ -111,3 +111,4 @@ class PhenologyEngine:
         # Apply boundary constraints
         t_max_adj = min(max(t_max, t_base), t_cut)
         t_min_adj = max(t_min, t_base)
+
