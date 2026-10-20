@@ -180,3 +180,4 @@ class WeatherAnalyticsEngine:
         rains = [r.precipitation_mm for r in hourly_records]
 
         t_max = max(temps)
+        t_min = min(temps)
