@@ -19,3 +19,4 @@ class PhenologicalStage(Enum):
     BOOTING_FLOWERING = "Booting / Anthesis Flowering (Stage 50-69)"
     GRAIN_FILL_FRUITING = "Grain Filling / Fruit Expansion (Stage 70-79)"
     RIPENING_MATURITY = "Ripening / Physiological Maturity (Stage 80-89)"
+    SENESCENCE_HARVEST = "Senescence / Ready for Harvest (Stage 90-99)"
