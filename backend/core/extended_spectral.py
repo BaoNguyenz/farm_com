@@ -154,3 +154,4 @@ class ExtendedSpectralEngine:
         return {
             "ndvi": round(self.compute_ndvi(bands), 4),
             "gndvi": round(self.compute_gndvi(bands), 4),
+            "ndre": round(self.compute_ndre(bands), 4),
