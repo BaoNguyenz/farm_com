@@ -62,3 +62,5 @@ class FarmIntelligenceReporter:
     ) -> FarmDailyExecutiveReport:
         """Assembles telemetry records into a structured executive report."""
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        report_id = f"REP-{datetime.now().strftime('%Y%m%d%H%M')}"
+
