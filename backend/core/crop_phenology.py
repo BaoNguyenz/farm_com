@@ -176,3 +176,4 @@ class PhenologyEngine:
 
         fraction = min(1.0, max(0.0, gdd / total))
         sigmoidal_factor = 0.5 + 0.5 * math.sin(3.03 * fraction - 1.47)
+        depth_span = p.max_root_depth_meters - p.initial_root_depth_meters
