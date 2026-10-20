@@ -113,3 +113,5 @@ class WeatherAnalyticsEngine:
                     headline="Radiation Frost in Effect (Zero Wind Inversion)",
                     advisory_action="Activate overhead sprinkler frost protection or wind machines."
                 )
+            else:
+                return MicroclimateRiskAlert(
