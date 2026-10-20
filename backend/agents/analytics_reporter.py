@@ -46,3 +46,4 @@ class FarmDailyExecutiveReport:
     plots_with_nutrient_chlorosis: List[str]
     commander_resolutions: List[str]
     advisory_bulletins: List[str] = field(default_factory=list)
+
