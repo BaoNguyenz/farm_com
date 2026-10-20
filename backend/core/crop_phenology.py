@@ -201,3 +201,5 @@ class PhenologyEngine:
         return round(min(100.0, yield_loss_percent), 2)
 
     def get_diagnostic_state(self) -> Dict[str, object]:
+        """Exports a snapshot of current phenological and growth indicators."""
+        return {
