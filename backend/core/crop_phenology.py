@@ -121,3 +121,4 @@ class PhenologyEngine:
         gdd = self.compute_daily_gdd(t_max, t_min)
         self.accumulated_gdd += gdd
         self.days_since_planting += 1
+        return gdd
