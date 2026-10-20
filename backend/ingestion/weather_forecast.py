@@ -117,3 +117,4 @@ class WeatherAnalyticsEngine:
                 return MicroclimateRiskAlert(
                     severity="HIGH",
                     category="FREEZE",
+                    headline="Advective Freeze Event with Active Wind Chill",
