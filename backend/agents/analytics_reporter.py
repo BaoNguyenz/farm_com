@@ -108,3 +108,4 @@ class FarmIntelligenceReporter:
         )
 
     def render_markdown_dossier(self, report: FarmDailyExecutiveReport) -> str:
+        """Formats the executive report into GitHub-flavored Markdown."""
