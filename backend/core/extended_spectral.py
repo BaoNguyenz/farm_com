@@ -219,3 +219,4 @@ class ExtendedSpectralEngine:
             chlorophyll_status=chlorophyll,
             recommendation=rec
         )
+
