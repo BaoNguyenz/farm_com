@@ -51,3 +51,4 @@ class WeatherAnalyticsEngine:
         ea = WeatherAnalyticsEngine.calculate_actual_vapor_pressure(temp_c, rh_pct)
         return max(0.0, es - ea)
 
+    @staticmethod
