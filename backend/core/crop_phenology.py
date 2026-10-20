@@ -195,3 +195,4 @@ class PhenologyEngine:
             PhenologicalStage.RIPENING_MATURITY: 0.5,
             PhenologicalStage.SENESCENCE_HARVEST: 0.1,
         }
+        ky = ky_table.get(stage, 1.0)
