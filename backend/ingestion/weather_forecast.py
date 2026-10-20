@@ -65,3 +65,4 @@ class WeatherAnalyticsEngine:
         else:
             return "STOMATAL_CLOSURE_DROUGHT_STRESS"
 
+    @staticmethod
