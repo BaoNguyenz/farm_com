@@ -194,3 +194,4 @@ class ExtendedSpectralEngine:
             moisture = "MODERATE_WATER_STRESS"
         else:
             moisture = "SEVERE_DESICCATION"
+
