@@ -116,3 +116,4 @@ class PhenologyEngine:
         daily_gdd = max(0.0, t_mean - t_base)
         return round(daily_gdd, 2)
 
+    def advance_day(self, t_max: float, t_min: float) -> float:
