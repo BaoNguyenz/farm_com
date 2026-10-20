@@ -183,3 +183,4 @@ class PhenologyEngine:
     def calculate_yield_response_factor(self, water_stress_ratio: float) -> float:
         """Doorenbos and Kassam (1979) empirical yield reduction model (Ky)."""
         stage = self.get_current_stage()
+
