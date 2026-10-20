@@ -194,3 +194,4 @@ class PhenologyEngine:
             PhenologicalStage.GRAIN_FILL_FRUITING: 1.3,
             PhenologicalStage.RIPENING_MATURITY: 0.5,
             PhenologicalStage.SENESCENCE_HARVEST: 0.1,
+        }
