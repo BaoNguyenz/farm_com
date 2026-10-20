@@ -20,3 +20,4 @@ class HourlyWeatherData:
     precipitation_mm: float
     surface_pressure_hpa: float = 1013.25
 
+
