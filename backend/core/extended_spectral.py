@@ -11,3 +11,4 @@ import math
 
 @dataclass
 class SpectralBands:
+    """Multispectral reflectances corresponding to Sentinel-2 MSI bands."""
