@@ -128,3 +128,4 @@ class FarmIntelligenceReporter:
             "",
             "---",
             "",
+            "## 🚨 Risk & Anomaly Advisory Bulletins",
