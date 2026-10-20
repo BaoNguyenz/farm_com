@@ -151,3 +151,4 @@ class ExtendedSpectralEngine:
 
     def calculate_all_indices(self, bands: SpectralBands) -> Dict[str, float]:
         """Calculates a comprehensive dictionary of all spectral indices."""
+        return {
