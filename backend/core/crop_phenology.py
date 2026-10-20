@@ -82,3 +82,5 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         gdd_flowering=1200.0,
         gdd_maturity=2200.0,
         kc_initial=0.90,
+        kc_mid=0.95,
+        kc_end=0.85,
