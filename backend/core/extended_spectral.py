@@ -214,3 +214,4 @@ class ExtendedSpectralEngine:
             rec = "Normal growth conditions. Maintain baseline regime."
 
         return CanopyClassification(
+            vigor_status=vigor,
