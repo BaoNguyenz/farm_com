@@ -200,3 +200,4 @@ class ExtendedSpectralEngine:
             chlorophyll = "HIGH_NITROGEN_SATURATED"
         elif ndre > 0.28:
             chlorophyll = "NORMAL_HEALTHY"
+        else:
