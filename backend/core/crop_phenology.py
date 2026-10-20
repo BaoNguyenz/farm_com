@@ -161,3 +161,4 @@ class PhenologyEngine:
             t = (fraction - 0.15) / (0.45 - 0.15)
             return round(p.kc_initial + t * (p.kc_mid - p.kc_initial), 3)
         elif fraction < 0.80:
+            # Mid-season plateau: peak kc_mid
