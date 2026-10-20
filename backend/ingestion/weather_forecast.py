@@ -178,3 +178,4 @@ class WeatherAnalyticsEngine:
         rhs = [r.relative_humidity_pct for r in hourly_records]
         winds = [r.wind_speed_ms for r in hourly_records]
         rains = [r.precipitation_mm for r in hourly_records]
+
