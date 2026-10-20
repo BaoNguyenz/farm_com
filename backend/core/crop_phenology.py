@@ -45,3 +45,5 @@ CROP_DATABASE: Dict[str, CropParameters] = {
     "maize": CropParameters(
         crop_name="Maize / Corn",
         base_temperature=10.0,
+        cutoff_temperature=30.0,
+        optimal_temperature=25.0,
