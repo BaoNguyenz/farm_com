@@ -205,3 +205,4 @@ class ExtendedSpectralEngine:
 
         # Synthesis recommendation
         if moisture in ("MODERATE_WATER_STRESS", "SEVERE_DESICCATION"):
+            rec = "Trigger priority irrigation cycle. Water deficit detected."
