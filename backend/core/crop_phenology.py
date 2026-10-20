@@ -112,3 +112,4 @@ class PhenologyEngine:
         t_max_adj = min(max(t_max, t_base), t_cut)
         t_min_adj = max(t_min, t_base)
 
+        t_mean = (t_max_adj + t_min_adj) / 2.0
