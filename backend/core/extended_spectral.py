@@ -14,3 +14,4 @@ class SpectralBands:
     """Multispectral reflectances corresponding to Sentinel-2 MSI bands."""
     blue: float        # B2 (490 nm)
     green: float       # B3 (560 nm)
+    red: float         # B4 (665 nm)
