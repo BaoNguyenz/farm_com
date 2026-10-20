@@ -43,3 +43,7 @@ out/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Streak farm local dirs
+streak-repo/
+test_streak*/
