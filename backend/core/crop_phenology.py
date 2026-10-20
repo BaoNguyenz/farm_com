@@ -154,3 +154,4 @@ class PhenologyEngine:
         fraction = min(1.0, max(0.0, gdd / total))
 
         if fraction < 0.15:
+            # Initial stage: flat kc_initial
