@@ -13,3 +13,4 @@ import math
 class SpectralBands:
     """Multispectral reflectances corresponding to Sentinel-2 MSI bands."""
     blue: float        # B2 (490 nm)
+    green: float       # B3 (560 nm)
