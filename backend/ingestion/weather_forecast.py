@@ -60,3 +60,4 @@ class WeatherAnalyticsEngine:
             return "LOW_OPTIMAL_PROPAGATION"
         elif vpd_kpa <= 1.2:
             return "HEALTHY_VEGETATIVE_SWEETSPOT"
+        elif vpd_kpa <= 1.6:
