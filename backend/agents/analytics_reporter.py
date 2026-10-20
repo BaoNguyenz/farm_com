@@ -81,3 +81,4 @@ class FarmIntelligenceReporter:
         total_energy = sum(entry.energy_consumed_kwh for entry in irrigation_entries)
         total_cost = sum(entry.cost_vnd for entry in irrigation_entries)
 
+        bulletins = []
