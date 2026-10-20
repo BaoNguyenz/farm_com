@@ -69,3 +69,4 @@ class ExtendedSpectralEngine:
         return (bands.nir - bands.red_edge_2) / denom
 
     def compute_savi(self, bands: SpectralBands) -> float:
+        """Soil Adjusted Vegetation Index with calibration factor L (Huete, 1988)."""
