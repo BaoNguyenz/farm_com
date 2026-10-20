@@ -146,3 +146,4 @@ class FarmIntelligenceReporter:
             "",
         ])
 
+        if not report.commander_resolutions:
