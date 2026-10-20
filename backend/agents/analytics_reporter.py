@@ -118,3 +118,4 @@ class FarmIntelligenceReporter:
             "",
             "## 📊 KPI Summary Overview",
             "",
+            "| Metric Indicator | Recorded Value | Unit | Evaluation |",
