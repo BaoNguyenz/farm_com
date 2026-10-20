@@ -36,3 +36,4 @@ class WeatherAnalyticsEngine:
     @staticmethod
     def calculate_saturation_vapor_pressure(temp_c: float) -> float:
         """Tetens formula for saturation vapor pressure es(T) in kPa."""
+        return 0.61078 * math.exp((17.27 * temp_c) / (temp_c + 237.3))
