@@ -140,3 +140,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.red_edge_2 - bands.red_edge_1) / denom
 
+    def compute_nddi(self, bands: SpectralBands) -> float:
