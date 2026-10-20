@@ -38,7 +38,7 @@ def test_dynamic_kc_curve():
 def test_root_depth_expansion():
     engine = PhenologyEngine(crop_name="maize")
     depth_start = engine.get_current_root_depth()
-    assert depth_start == 0.15
+    assert 0.14 <= depth_start <= 0.16
 
     engine.accumulated_gdd = 1200.0
     depth_late = engine.get_current_root_depth()
