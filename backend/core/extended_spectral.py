@@ -127,3 +127,5 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir / bands.green) - 1.0
 
+    def compute_cirededge(self, bands: SpectralBands) -> float:
+        """Chlorophyll Index Red Edge (Gitelson et al., 2005)."""
