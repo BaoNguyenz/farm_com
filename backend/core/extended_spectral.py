@@ -68,3 +68,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir - bands.red_edge_2) / denom
 
+    def compute_savi(self, bands: SpectralBands) -> float:
