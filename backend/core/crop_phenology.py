@@ -109,3 +109,4 @@ class PhenologyEngine:
         t_cut = self.params.cutoff_temperature
 
         # Apply boundary constraints
+        t_max_adj = min(max(t_max, t_base), t_cut)
