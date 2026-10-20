@@ -108,3 +108,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir - bands.swir_1) / denom
 
+    def compute_ndwi_mcfeeters(self, bands: SpectralBands) -> float:
