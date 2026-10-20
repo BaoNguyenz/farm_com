@@ -180,3 +180,4 @@ class ExtendedSpectralEngine:
             vigor = "DENSE_EXCELLENT"
         elif ndvi > 0.50:
             vigor = "MODERATE_GOOD"
+        elif ndvi > 0.30:
