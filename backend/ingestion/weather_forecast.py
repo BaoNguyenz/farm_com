@@ -34,3 +34,4 @@ class WeatherAnalyticsEngine:
     """Performs atmospheric calculations for precision agricultural operations."""
 
     @staticmethod
+    def calculate_saturation_vapor_pressure(temp_c: float) -> float:
