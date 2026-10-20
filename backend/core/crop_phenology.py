@@ -199,3 +199,4 @@ class PhenologyEngine:
         relative_evapotranspiration_deficit = max(0.0, 1.0 - water_stress_ratio)
         yield_loss_percent = ky * relative_evapotranspiration_deficit * 100.0
         return round(min(100.0, yield_loss_percent), 2)
+
