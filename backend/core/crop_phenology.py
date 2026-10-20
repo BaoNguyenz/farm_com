@@ -40,3 +40,4 @@ class CropParameters:
     initial_root_depth_meters: float
 
 
+# Benchmark parameters for primary commercial crops
