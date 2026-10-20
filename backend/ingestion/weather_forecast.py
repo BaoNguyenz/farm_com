@@ -191,3 +191,4 @@ class WeatherAnalyticsEngine:
         rs_est = WeatherAnalyticsEngine.estimate_solar_radiation_hargreaves(t_max, t_min, ra_daily)
 
         return {
+            "t_max_c": round(t_max, 2),
