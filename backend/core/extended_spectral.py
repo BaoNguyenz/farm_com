@@ -133,3 +133,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir / bands.red_edge_1) - 1.0
 
+    def compute_mtci(self, bands: SpectralBands) -> float:
