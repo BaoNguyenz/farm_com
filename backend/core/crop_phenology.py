@@ -133,3 +133,4 @@ class PhenologyEngine:
         elif gdd < p.gdd_emergence * 1.8:
             return PhenologicalStage.EMERGENCE
         elif gdd < p.gdd_vegetative:
+            return PhenologicalStage.TILLERING_VEGETATIVE
