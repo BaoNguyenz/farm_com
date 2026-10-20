@@ -128,3 +128,4 @@ class WeatherAnalyticsEngine:
                 advisory_action="Monitor soil thermometers and prep frost countermeasures."
             )
         return None
+
