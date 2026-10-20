@@ -23,3 +23,4 @@ class AgronomyHealthMetric:
 
 
 @dataclass
+class IrrigationAuditEntry:
