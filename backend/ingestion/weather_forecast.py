@@ -149,3 +149,4 @@ class WeatherAnalyticsEngine:
             else:
                 status = "IDEAL_SPRAY_WINDOW"
                 safe = True
+                msg = "Favorable wind speed and adequate humidity for uniform droplet deposition."
