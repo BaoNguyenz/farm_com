@@ -74,3 +74,4 @@ class WeatherAnalyticsEngine:
         dr = 1.0 + 0.033 * math.cos((2.0 * math.pi / 365.0) * day_of_year)
         solar_declination = 0.409 * math.sin(((2.0 * math.pi / 365.0) * day_of_year) - 1.39)
 
+        term = -math.tan(lat_rad) * math.tan(solar_declination)
