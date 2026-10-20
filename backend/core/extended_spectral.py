@@ -251,3 +251,5 @@ def analyze_grid_canopy(
     n = max(1, len(grid_cells))
     summary = {
         "mean_ndvi": round(accum_ndvi / n, 4),
+        "mean_ndwi": round(accum_ndwi / n, 4),
+        "mean_ndre": round(accum_ndre / n, 4),
