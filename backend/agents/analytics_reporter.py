@@ -13,3 +13,5 @@ import json
 @dataclass
 class AgronomyHealthMetric:
     """Individual plot agronomy index metric."""
+    plot_id: str
+    crop_type: str
