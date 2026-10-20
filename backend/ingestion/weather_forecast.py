@@ -85,3 +85,4 @@ class WeatherAnalyticsEngine:
             sunset_hour_angle * math.sin(lat_rad) * math.sin(solar_declination)
             + math.cos(lat_rad) * math.cos(solar_declination) * math.sin(sunset_hour_angle)
         )
+        return max(0.0, ra)
