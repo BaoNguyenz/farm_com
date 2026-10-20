@@ -38,3 +38,4 @@ class FarmDailyExecutiveReport:
     report_id: str
     generated_at: str
     total_plots: int
+    mean_farm_ndvi: float
