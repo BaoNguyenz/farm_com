@@ -94,3 +94,4 @@ class FarmIntelligenceReporter:
             bulletins.append("Resource Advisory: Daily irrigation volume exceeded 10,000 L threshold.")
 
         return FarmDailyExecutiveReport(
+            report_id=report_id,
