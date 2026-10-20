@@ -186,3 +186,4 @@ class ExtendedSpectralEngine:
             vigor = "CRITICAL_POOR"
 
         # Moisture stress assessment
+        if ndwi > 0.30:
