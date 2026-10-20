@@ -12,3 +12,4 @@ import math
 @dataclass
 class HourlyWeatherData:
     """Hourly atmospheric observation or model forecast."""
+    timestamp: str
