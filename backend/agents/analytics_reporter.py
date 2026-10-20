@@ -71,3 +71,4 @@ class FarmIntelligenceReporter:
         for m in health_metrics:
             total_ndvi += m.ndvi_score
             if "STRESS" in m.water_stress_status.upper():
+                stressed_plots.append(m.plot_id)
