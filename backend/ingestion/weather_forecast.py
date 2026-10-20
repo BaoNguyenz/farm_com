@@ -181,3 +181,4 @@ class WeatherAnalyticsEngine:
 
         t_max = max(temps)
         t_min = min(temps)
+        t_mean = sum(temps) / len(temps)
