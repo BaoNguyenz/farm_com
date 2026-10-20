@@ -164,3 +164,4 @@ class WeatherAnalyticsEngine:
             "spray_permitted": safe,
             "classification": status,
             "recommendation": msg,
+        }
