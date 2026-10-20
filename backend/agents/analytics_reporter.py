@@ -35,3 +35,4 @@ class IrrigationAuditEntry:
 @dataclass
 class FarmDailyExecutiveReport:
     """Comprehensive daily agricultural intelligence dossier."""
+    report_id: str
