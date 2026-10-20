@@ -33,3 +33,4 @@ class MicroclimateRiskAlert:
 class WeatherAnalyticsEngine:
     """Performs atmospheric calculations for precision agricultural operations."""
 
+    @staticmethod
