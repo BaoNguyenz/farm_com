@@ -31,3 +31,4 @@ class CanopyClassification:
     water_stress_status: str
     chlorophyll_status: str
     recommendation: str
+
