@@ -137,3 +137,4 @@ class PhenologyEngine:
         elif gdd < p.gdd_vegetative * 1.4:
             return PhenologicalStage.STEM_ELONGATION
         elif gdd < p.gdd_flowering:
+            return PhenologicalStage.BOOTING_FLOWERING
