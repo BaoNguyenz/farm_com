@@ -178,3 +178,4 @@ class ExtendedSpectralEngine:
         # Canopy vigor assessment
         if ndvi > 0.70:
             vigor = "DENSE_EXCELLENT"
+        elif ndvi > 0.50:
