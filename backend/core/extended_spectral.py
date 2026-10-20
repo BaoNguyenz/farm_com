@@ -153,3 +153,4 @@ class ExtendedSpectralEngine:
         """Calculates a comprehensive dictionary of all spectral indices."""
         return {
             "ndvi": round(self.compute_ndvi(bands), 4),
+            "gndvi": round(self.compute_gndvi(bands), 4),
