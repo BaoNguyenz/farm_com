@@ -61,3 +61,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         crop_name="Paddy Rice",
         base_temperature=10.0,
         cutoff_temperature=35.0,
+        optimal_temperature=28.0,
