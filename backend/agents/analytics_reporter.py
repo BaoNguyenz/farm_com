@@ -100,3 +100,4 @@ class FarmIntelligenceReporter:
             mean_farm_ndvi=mean_ndvi,
             total_water_dispatched_liters=round(total_water, 2),
             total_energy_kwh=round(total_energy, 2),
+            estimated_daily_operating_cost_vnd=round(total_cost, 0),
