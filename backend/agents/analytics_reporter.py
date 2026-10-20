@@ -160,3 +160,4 @@ class FarmIntelligenceReporter:
 
         return "\n".join(lines)
 
+    def export_json(self, report: FarmDailyExecutiveReport) -> str:
