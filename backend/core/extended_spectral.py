@@ -218,3 +218,4 @@ class ExtendedSpectralEngine:
             water_stress_status=moisture,
             chlorophyll_status=chlorophyll,
             recommendation=rec
+        )
