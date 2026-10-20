@@ -196,3 +196,4 @@ class PhenologyEngine:
             PhenologicalStage.SENESCENCE_HARVEST: 0.1,
         }
         ky = ky_table.get(stage, 1.0)
+        relative_evapotranspiration_deficit = max(0.0, 1.0 - water_stress_ratio)
