@@ -36,3 +36,5 @@ class CanopyClassification:
 class ExtendedSpectralEngine:
     """Computes specialized spectral indexes for remote sensing agronomy."""
 
+    def __init__(self, soil_factor_l: float = 0.5):
+        self.soil_factor_l = soil_factor_l
