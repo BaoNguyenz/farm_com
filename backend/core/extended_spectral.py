@@ -168,3 +168,5 @@ class ExtendedSpectralEngine:
             "mtci": round(self.compute_mtci(bands), 4),
             "nddi": round(self.compute_nddi(bands), 4),
         }
+
+    def classify_crop_health(self, indices: Dict[str, float]) -> CanopyClassification:
