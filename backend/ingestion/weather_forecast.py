@@ -152,3 +152,4 @@ class WeatherAnalyticsEngine:
                 msg = "Favorable wind speed and adequate humidity for uniform droplet deposition."
         elif wind_kmh <= 20.0:
             status = "MARGINAL_HIGH_DRIFT_RISK"
+            safe = False
