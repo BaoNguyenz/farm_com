@@ -33,3 +33,4 @@ class CropParameters:
     gdd_vegetative: float       # Accumulated GDD for vegetative stage
     gdd_flowering: float        # Accumulated GDD for flowering stage
     gdd_maturity: float         # Accumulated GDD for full maturity
+    kc_initial: float           # FAO-56 Kc ini (initial stage)
