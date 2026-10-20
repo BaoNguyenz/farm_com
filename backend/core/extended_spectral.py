@@ -145,3 +145,4 @@ class ExtendedSpectralEngine:
         ndvi = self.compute_ndvi(bands)
         ndwi = self.compute_ndwi_gao(bands)
         denom = ndvi + ndwi
+        if abs(denom) < self.min_reflectance:
