@@ -64,3 +64,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         optimal_temperature=28.0,
         gdd_emergence=90.0,
         gdd_vegetative=500.0,
+        gdd_flowering=950.0,
