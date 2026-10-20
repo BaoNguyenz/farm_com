@@ -208,3 +208,4 @@ class ExtendedSpectralEngine:
             rec = "Trigger priority irrigation cycle. Water deficit detected."
         elif chlorophyll == "CHLOROSIS_DEFICIENT":
             rec = "Schedule targeted foliar nitrogen or micronutrient spray."
+        elif vigor == "CRITICAL_POOR":
