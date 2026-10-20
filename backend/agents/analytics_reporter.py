@@ -54,3 +54,4 @@ class FarmIntelligenceReporter:
     def __init__(self, farm_name: str = "Farm_com Autonomous Ag Swarm"):
         self.farm_name = farm_name
 
+    def build_executive_report(
