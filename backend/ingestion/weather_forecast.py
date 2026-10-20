@@ -110,3 +110,4 @@ class WeatherAnalyticsEngine:
                 return MicroclimateRiskAlert(
                     severity="CRITICAL",
                     category="FROST",
+                    headline="Radiation Frost in Effect (Zero Wind Inversion)",
