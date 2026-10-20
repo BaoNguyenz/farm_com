@@ -140,3 +140,4 @@ class FarmIntelligenceReporter:
 
         lines.extend([
             "",
+            "---",
