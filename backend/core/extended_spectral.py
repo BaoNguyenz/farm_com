@@ -56,3 +56,4 @@ class ExtendedSpectralEngine:
 
     def compute_ndre(self, bands: SpectralBands) -> float:
         """Normalized Difference Red Edge Index for mid-to-late season canopy."""
+        denom = bands.nir + bands.red_edge_1
