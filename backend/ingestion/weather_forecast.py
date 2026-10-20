@@ -104,3 +104,4 @@ class WeatherAnalyticsEngine:
         """Detects advective or radiation frost risks for vulnerable blossoms."""
         if temp_c > 3.0:
             return None
+
