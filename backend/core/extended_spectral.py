@@ -221,3 +221,4 @@ class ExtendedSpectralEngine:
         )
 
 
+def analyze_grid_canopy(
