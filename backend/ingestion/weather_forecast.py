@@ -162,3 +162,4 @@ class WeatherAnalyticsEngine:
         return {
             "wind_speed_kmh": round(wind_kmh, 1),
             "spray_permitted": safe,
+            "classification": status,
