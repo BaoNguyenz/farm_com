@@ -167,3 +167,4 @@ class WeatherAnalyticsEngine:
         }
 
     @staticmethod
+    def aggregate_daily_metrics(
