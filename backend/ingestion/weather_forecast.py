@@ -98,3 +98,4 @@ class WeatherAnalyticsEngine:
         return round(rs, 2)
 
     @staticmethod
+    def assess_frost_hazard(
