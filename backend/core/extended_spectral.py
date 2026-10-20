@@ -76,3 +76,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return ((bands.nir - bands.red) / denom) * (1.0 + l)
 
+    def compute_msavi2(self, bands: SpectralBands) -> float:
