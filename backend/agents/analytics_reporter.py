@@ -111,3 +111,4 @@ class FarmIntelligenceReporter:
         """Formats the executive report into GitHub-flavored Markdown."""
         lines = [
             f"# 🌾 {self.farm_name}",
+            f"**Executive Intelligence Dossier** | `ID: {report.report_id}`",
