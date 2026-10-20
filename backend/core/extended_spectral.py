@@ -185,3 +185,4 @@ class ExtendedSpectralEngine:
         else:
             vigor = "CRITICAL_POOR"
 
+        # Moisture stress assessment
