@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     grid_size_x: int = Field(default=4, alias="GRID_SIZE_X")
     grid_size_y: int = Field(default=4, alias="GRID_SIZE_Y")
     
+    # Agronomic and spectral alert thresholds
+    alert_ndvi_critical: float = Field(default=0.35, alias="ALERT_NDVI_CRITICAL")
+    alert_ndwi_water_stress: float = Field(default=0.05, alias="ALERT_NDWI_WATER_STRESS")
+    fao56_default_elevation_m: float = Field(default=1500.0, alias="FAO56_DEFAULT_ELEVATION_M")
+    default_crop_species: str = Field(default="maize", alias="DEFAULT_CROP_SPECIES")
+    
     # API credentials
     copernicus_client_id: str | None = Field(default=None, alias="COPERNICUS_CLIENT_ID")
     copernicus_client_secret: str | None = Field(default=None, alias="COPERNICUS_CLIENT_SECRET")
