@@ -56,3 +56,5 @@ class FarmIntelligenceReporter:
 
     def build_executive_report(
         self,
+        health_metrics: List[AgronomyHealthMetric],
+        irrigation_entries: List[IrrigationAuditEntry],
