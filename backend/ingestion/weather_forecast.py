@@ -70,3 +70,4 @@ class WeatherAnalyticsEngine:
         latitude_deg: float, day_of_year: int
     ) -> float:
         """Calculates extraterrestrial daily solar radiation Ra (MJ/m2/day)."""
+        lat_rad = (math.pi / 180.0) * latitude_deg
