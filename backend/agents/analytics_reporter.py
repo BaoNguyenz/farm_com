@@ -153,3 +153,4 @@ class FarmIntelligenceReporter:
                 lines.append(f"{idx}. {res}")
 
         lines.extend([
+            "",
