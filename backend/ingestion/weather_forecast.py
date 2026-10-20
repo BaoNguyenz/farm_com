@@ -30,3 +30,4 @@ class MicroclimateRiskAlert:
     advisory_action: str
 
 
+class WeatherAnalyticsEngine:
