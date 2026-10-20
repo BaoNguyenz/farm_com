@@ -160,3 +160,4 @@ class ExtendedSpectralEngine:
             "msavi2": round(self.compute_msavi2(bands), 4),
             "evi": round(self.compute_evi(bands), 4),
             "evi2": round(self.compute_evi2(bands), 4),
+            "ndwi_canopy": round(self.compute_ndwi_gao(bands), 4),
