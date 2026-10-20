@@ -186,3 +186,4 @@ class WeatherAnalyticsEngine:
         wind_mean = sum(winds) / len(winds)
         total_precip = sum(rains)
 
+        vpd_mean = WeatherAnalyticsEngine.calculate_vpd(t_mean, rh_mean)
