@@ -119,3 +119,4 @@ class PhenologyEngine:
     def advance_day(self, t_max: float, t_min: float) -> float:
         """Advances the simulation by one calendar day with given temperatures."""
         gdd = self.compute_daily_gdd(t_max, t_min)
+        self.accumulated_gdd += gdd
