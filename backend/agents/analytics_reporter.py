@@ -27,3 +27,4 @@ class IrrigationAuditEntry:
     """Water application telemetry and efficiency record."""
     plot_id: str
     water_applied_liters: float
+    energy_consumed_kwh: float
