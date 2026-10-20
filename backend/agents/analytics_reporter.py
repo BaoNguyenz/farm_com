@@ -75,3 +75,4 @@ class FarmIntelligenceReporter:
             if "CHLOROSIS" in m.chlorophyll_level.upper() or "DEFICIENT" in m.chlorophyll_level.upper():
                 chlorosis_plots.append(m.plot_id)
 
+        mean_ndvi = round(total_ndvi / max(1, len(health_metrics)), 3)
