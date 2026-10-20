@@ -163,3 +163,4 @@ class PhenologyEngine:
         elif fraction < 0.80:
             # Mid-season plateau: peak kc_mid
             return p.kc_mid
+        else:
