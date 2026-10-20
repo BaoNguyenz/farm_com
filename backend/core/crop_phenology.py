@@ -108,3 +108,4 @@ class PhenologyEngine:
         t_base = self.params.base_temperature
         t_cut = self.params.cutoff_temperature
 
+        # Apply boundary constraints
