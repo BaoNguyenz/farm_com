@@ -23,3 +23,4 @@ class HourlyWeatherData:
 
 @dataclass
 class MicroclimateRiskAlert:
+    """Actionable weather risk alert for farm operators."""
