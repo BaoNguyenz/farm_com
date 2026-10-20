@@ -163,3 +163,4 @@ class ExtendedSpectralEngine:
             "ndwi_canopy": round(self.compute_ndwi_gao(bands), 4),
             "ndwi_water": round(self.compute_ndwi_mcfeeters(bands), 4),
             "msi": round(self.compute_msi(bands), 4),
+            "ci_green": round(self.compute_cigreen(bands), 4),
