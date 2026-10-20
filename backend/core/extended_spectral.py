@@ -193,3 +193,4 @@ class ExtendedSpectralEngine:
         elif ndwi > -0.10:
             moisture = "MODERATE_WATER_STRESS"
         else:
+            moisture = "SEVERE_DESICCATION"
