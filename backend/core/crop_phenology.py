@@ -23,3 +23,4 @@ class PhenologicalStage(Enum):
 
 
 @dataclass
+class CropParameters:
