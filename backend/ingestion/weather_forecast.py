@@ -126,3 +126,4 @@ class WeatherAnalyticsEngine:
                 category="FROST_PROBABLE",
                 headline="Sub-Freezing Ground Radiation Inversion Expected",
                 advisory_action="Monitor soil thermometers and prep frost countermeasures."
+            )
