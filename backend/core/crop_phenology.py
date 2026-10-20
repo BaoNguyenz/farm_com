@@ -122,3 +122,4 @@ class PhenologyEngine:
         self.accumulated_gdd += gdd
         self.days_since_planting += 1
         return gdd
+
