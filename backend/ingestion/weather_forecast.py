@@ -17,3 +17,4 @@ class HourlyWeatherData:
     relative_humidity_pct: float
     wind_speed_ms: float
     solar_radiation_wm2: float
+    precipitation_mm: float
