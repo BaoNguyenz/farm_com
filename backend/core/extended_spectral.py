@@ -85,3 +85,4 @@ class ExtendedSpectralEngine:
         return (term - math.sqrt(val)) / 2.0
 
     def compute_evi(self, bands: SpectralBands) -> float:
+        """Enhanced Vegetation Index (Huete et al., 2002)."""
