@@ -125,3 +125,4 @@ class FarmIntelligenceReporter:
             f"| **Total Water Dispatched** | `{report.total_water_dispatched_liters:,.1f}` | Liters | Automated Solenoid Flow |",
             f"| **Pumping Energy Consumed** | `{report.total_energy_kwh:,.2f}` | kWh | Off-peak tariff optimization |",
             f"| **Estimated Electricity Cost** | `{report.estimated_daily_operating_cost_vnd:,.0f}` | VND | Tariff indexed |",
+            "",
