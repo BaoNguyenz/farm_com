@@ -255,3 +255,4 @@ def analyze_grid_canopy(
         "mean_ndre": round(accum_ndre / n, 4),
         "total_cells_analyzed": float(n),
     }
+    return results, summary

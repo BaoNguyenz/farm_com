@@ -175,3 +175,4 @@ class FarmIntelligenceReporter:
             "commander_resolutions": report.commander_resolutions,
             "advisory_bulletins": report.advisory_bulletins,
         }
+        return json.dumps(data, indent=2, ensure_ascii=False)

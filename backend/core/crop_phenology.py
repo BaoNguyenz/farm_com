@@ -213,3 +213,4 @@ class PhenologyEngine:
             "current_stage": self.get_current_stage().value,
             "current_kc": self.get_current_kc(),
             "root_depth_meters": self.get_current_root_depth(),
+        }
