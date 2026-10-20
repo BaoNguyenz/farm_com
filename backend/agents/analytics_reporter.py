@@ -139,3 +139,4 @@ class FarmIntelligenceReporter:
                 lines.append(f"- ⚠️ **{b}**")
 
         lines.extend([
+            "",
