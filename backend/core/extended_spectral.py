@@ -187,3 +187,4 @@ class ExtendedSpectralEngine:
 
         # Moisture stress assessment
         if ndwi > 0.30:
+            moisture = "OPTIMAL_TURGID"
