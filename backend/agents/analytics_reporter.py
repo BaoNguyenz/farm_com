@@ -33,3 +33,4 @@ class IrrigationAuditEntry:
 
 
 @dataclass
+class FarmDailyExecutiveReport:
