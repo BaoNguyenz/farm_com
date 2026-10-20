@@ -166,3 +166,4 @@ class FarmIntelligenceReporter:
             "report_id": report.report_id,
             "generated_at": report.generated_at,
             "total_plots": report.total_plots,
+            "mean_farm_ndvi": report.mean_farm_ndvi,
