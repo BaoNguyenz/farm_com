@@ -174,3 +174,4 @@ class WeatherAnalyticsEngine:
         if not hourly_records:
             return {}
 
+        temps = [r.temperature_c for r in hourly_records]
