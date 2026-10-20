@@ -175,3 +175,4 @@ class WeatherAnalyticsEngine:
             return {}
 
         temps = [r.temperature_c for r in hourly_records]
+        rhs = [r.relative_humidity_pct for r in hourly_records]
