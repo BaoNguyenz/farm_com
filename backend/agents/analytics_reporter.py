@@ -17,3 +17,4 @@ class AgronomyHealthMetric:
     crop_type: str
     ndvi_score: float
     ndwi_score: float
+    ndre_score: float
