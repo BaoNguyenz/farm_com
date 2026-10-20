@@ -47,3 +47,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir - bands.red) / denom
 
+    def compute_gndvi(self, bands: SpectralBands) -> float:
