@@ -180,3 +180,4 @@ class PhenologyEngine:
         root_depth = p.initial_root_depth_meters + depth_span * max(0.0, sigmoidal_factor)
         return round(min(p.max_root_depth_meters, root_depth), 3)
 
+    def calculate_yield_response_factor(self, water_stress_ratio: float) -> float:
