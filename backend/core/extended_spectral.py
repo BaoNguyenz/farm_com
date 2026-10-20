@@ -28,3 +28,4 @@ class SpectralBands:
 class CanopyClassification:
     """Classified canopy state from calculated indices."""
     vigor_status: str
+    water_stress_status: str
