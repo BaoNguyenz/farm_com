@@ -57,3 +57,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         max_root_depth_meters=1.20,
         initial_root_depth_meters=0.15,
     ),
+    "rice": CropParameters(
