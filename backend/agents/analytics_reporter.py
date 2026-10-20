@@ -51,3 +51,4 @@ class FarmDailyExecutiveReport:
 class FarmIntelligenceReporter:
     """Compiles multi-agent consensus audits into human-readable dossiers."""
 
+    def __init__(self, farm_name: str = "Farm_com Autonomous Ag Swarm"):
