@@ -188,3 +188,4 @@ class PhenologyEngine:
         ky_table = {
             PhenologicalStage.DORMANT_SOWING: 0.2,
             PhenologicalStage.EMERGENCE: 0.4,
+            PhenologicalStage.TILLERING_VEGETATIVE: 0.8,
