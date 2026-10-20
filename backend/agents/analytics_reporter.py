@@ -103,3 +103,4 @@ class FarmIntelligenceReporter:
             estimated_daily_operating_cost_vnd=round(total_cost, 0),
             plots_under_water_stress=stressed_plots,
             plots_with_nutrient_chlorosis=chlorosis_plots,
+            commander_resolutions=resolutions,
