@@ -235,3 +235,4 @@ def analyze_grid_canopy(
             green=cell.get("green", 0.08),
             red=cell.get("red", 0.04),
             red_edge_1=cell.get("red_edge_1", 0.15),
+            red_edge_2=cell.get("red_edge_2", 0.25),
