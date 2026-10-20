@@ -123,3 +123,5 @@ class FarmIntelligenceReporter:
             f"| **Mean Canopy NDVI** | `{report.mean_farm_ndvi:.3f}` | Scale [-1, 1] | {'Optimal' if report.mean_farm_ndvi >= 0.55 else 'Attention Required'} |",
             f"| **Active Monitored Plots** | `{report.total_plots}` | Plots | Matrix 4x4 Grid |",
             f"| **Total Water Dispatched** | `{report.total_water_dispatched_liters:,.1f}` | Liters | Automated Solenoid Flow |",
+            f"| **Pumping Energy Consumed** | `{report.total_energy_kwh:,.2f}` | kWh | Off-peak tariff optimization |",
+            f"| **Estimated Electricity Cost** | `{report.estimated_daily_operating_cost_vnd:,.0f}` | VND | Tariff indexed |",
