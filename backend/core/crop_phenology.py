@@ -103,3 +103,5 @@ class PhenologyEngine:
         self.accumulated_gdd: float = 0.0
         self.days_since_planting: int = 0
 
+    def compute_daily_gdd(self, t_max: float, t_min: float) -> float:
+        """Standard agronomic GDD equation with upper cutoff and lower base limits."""
