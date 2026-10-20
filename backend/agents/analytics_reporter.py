@@ -31,3 +31,4 @@ class IrrigationAuditEntry:
     cost_vnd: float
     et0_deficit_compensated: bool
 
+
