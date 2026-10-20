@@ -165,3 +165,4 @@ class ExtendedSpectralEngine:
             "msi": round(self.compute_msi(bands), 4),
             "ci_green": round(self.compute_cigreen(bands), 4),
             "ci_rededge": round(self.compute_cirededge(bands), 4),
+            "mtci": round(self.compute_mtci(bands), 4),
