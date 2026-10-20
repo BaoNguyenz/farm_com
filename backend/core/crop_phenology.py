@@ -10,3 +10,4 @@ from typing import Dict, List, Optional
 import math
 
 
+class PhenologicalStage(Enum):
