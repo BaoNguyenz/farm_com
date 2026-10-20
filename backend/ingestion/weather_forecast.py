@@ -120,3 +120,4 @@ class WeatherAnalyticsEngine:
                     headline="Advective Freeze Event with Active Wind Chill",
                     advisory_action="Deploy row covers, fleece, or thermal heaters."
                 )
+        elif temp_c <= 2.5 and dew_point_c <= 0.0:
