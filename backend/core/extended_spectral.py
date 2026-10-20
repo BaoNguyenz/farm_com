@@ -118,3 +118,4 @@ class ExtendedSpectralEngine:
     def compute_msi(self, bands: SpectralBands) -> float:
         """Moisture Stress Index (Rock et al., 1986)."""
         if abs(bands.nir) < self.min_reflectance:
+            return 0.0
