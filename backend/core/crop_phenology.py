@@ -170,3 +170,4 @@ class PhenologyEngine:
 
     def get_current_root_depth(self) -> float:
         """Sigmoidal dynamic root expansion model (Borg and Grimes, 1986)."""
+        p = self.params
