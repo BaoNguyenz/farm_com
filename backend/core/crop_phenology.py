@@ -203,3 +203,4 @@ class PhenologyEngine:
     def get_diagnostic_state(self) -> Dict[str, object]:
         """Exports a snapshot of current phenological and growth indicators."""
         return {
+            "crop_name": self.params.crop_name,
