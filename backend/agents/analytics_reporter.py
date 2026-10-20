@@ -47,3 +47,4 @@ class FarmDailyExecutiveReport:
     commander_resolutions: List[str]
     advisory_bulletins: List[str] = field(default_factory=list)
 
+
