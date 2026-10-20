@@ -82,3 +82,4 @@ class WeatherAnalyticsEngine:
         gsc_factor = (24.0 * 60.0 / math.pi) * solar_constant
 
         ra = gsc_factor * dr * (
+            sunset_hour_angle * math.sin(lat_rad) * math.sin(solar_declination)
