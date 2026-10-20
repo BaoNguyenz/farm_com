@@ -124,3 +124,4 @@ class WeatherAnalyticsEngine:
             return MicroclimateRiskAlert(
                 severity="WARNING",
                 category="FROST_PROBABLE",
+                headline="Sub-Freezing Ground Radiation Inversion Expected",
