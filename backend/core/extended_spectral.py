@@ -246,3 +246,4 @@ def analyze_grid_canopy(
         results.append(idx_dict)
         accum_ndvi += idx_dict["ndvi"]
         accum_ndwi += idx_dict["ndwi_canopy"]
+        accum_ndre += idx_dict["ndre"]
