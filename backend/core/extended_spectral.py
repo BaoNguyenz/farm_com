@@ -121,3 +121,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return bands.swir_1 / bands.nir
 
+    def compute_cigreen(self, bands: SpectralBands) -> float:
