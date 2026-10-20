@@ -204,3 +204,4 @@ class ExtendedSpectralEngine:
             chlorophyll = "CHLOROSIS_DEFICIENT"
 
         # Synthesis recommendation
+        if moisture in ("MODERATE_WATER_STRESS", "SEVERE_DESICCATION"):
