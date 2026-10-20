@@ -175,3 +175,4 @@ class ExtendedSpectralEngine:
         ndwi = indices.get("ndwi_canopy", 0.0)
         ndre = indices.get("ndre", 0.0)
 
+        # Canopy vigor assessment
