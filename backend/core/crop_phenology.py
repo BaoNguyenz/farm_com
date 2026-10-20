@@ -16,3 +16,4 @@ class PhenologicalStage(Enum):
     EMERGENCE = "Emergence / Seedling (Stage 10-19)"
     TILLERING_VEGETATIVE = "Tillering / Rapid Vegetative (Stage 20-39)"
     STEM_ELONGATION = "Stem Elongation / Jointing (Stage 40-49)"
+    BOOTING_FLOWERING = "Booting / Anthesis Flowering (Stage 50-69)"
