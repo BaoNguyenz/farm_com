@@ -15,3 +15,4 @@ class PhenologicalStage(Enum):
     DORMANT_SOWING = "Dormant / Sowing (Stage 00-09)"
     EMERGENCE = "Emergence / Seedling (Stage 10-19)"
     TILLERING_VEGETATIVE = "Tillering / Rapid Vegetative (Stage 20-39)"
+    STEM_ELONGATION = "Stem Elongation / Jointing (Stage 40-49)"
