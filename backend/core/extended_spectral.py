@@ -22,3 +22,4 @@ class SpectralBands:
     narrow_nir: float  # B8A (865 nm)
     swir_1: float      # B11 (1610 nm)
     swir_2: float      # B12 (2190 nm)
+
