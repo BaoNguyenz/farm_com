@@ -70,3 +70,4 @@ class ExtendedSpectralEngine:
 
     def compute_savi(self, bands: SpectralBands) -> float:
         """Soil Adjusted Vegetation Index with calibration factor L (Huete, 1988)."""
+        l = self.soil_factor_l
