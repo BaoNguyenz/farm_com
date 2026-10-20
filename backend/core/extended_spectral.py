@@ -110,3 +110,4 @@ class ExtendedSpectralEngine:
 
     def compute_ndwi_mcfeeters(self, bands: SpectralBands) -> float:
         """Normalized Difference Water Index for surface water delineation."""
+        denom = bands.green + bands.nir
