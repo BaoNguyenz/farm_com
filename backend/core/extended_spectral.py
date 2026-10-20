@@ -216,3 +216,4 @@ class ExtendedSpectralEngine:
         return CanopyClassification(
             vigor_status=vigor,
             water_stress_status=moisture,
+            chlorophyll_status=chlorophyll,
