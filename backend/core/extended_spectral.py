@@ -32,3 +32,4 @@ class CanopyClassification:
     chlorophyll_status: str
     recommendation: str
 
+
