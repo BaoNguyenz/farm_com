@@ -127,3 +127,4 @@ class FarmIntelligenceReporter:
             f"| **Estimated Electricity Cost** | `{report.estimated_daily_operating_cost_vnd:,.0f}` | VND | Tariff indexed |",
             "",
             "---",
+            "",
