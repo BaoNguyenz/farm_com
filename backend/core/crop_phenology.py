@@ -98,3 +98,4 @@ class PhenologyEngine:
         if key not in CROP_DATABASE:
             self.params = CROP_DATABASE["maize"]
         else:
+            self.params = CROP_DATABASE[key]
