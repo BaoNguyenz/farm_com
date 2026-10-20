@@ -30,3 +30,4 @@ class CropParameters:
     cutoff_temperature: float   # Tcutoff (°C) above which development plateaus
     optimal_temperature: float  # Topt (°C) for maximum metabolic efficiency
     gdd_emergence: float        # Accumulated GDD for emergence
+    gdd_vegetative: float       # Accumulated GDD for vegetative stage
