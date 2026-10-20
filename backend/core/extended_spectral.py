@@ -123,3 +123,4 @@ class ExtendedSpectralEngine:
 
     def compute_cigreen(self, bands: SpectralBands) -> float:
         """Chlorophyll Index Green (Gitelson et al., 2005)."""
+        if abs(bands.green) < self.min_reflectance:
