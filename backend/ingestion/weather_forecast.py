@@ -15,3 +15,4 @@ class HourlyWeatherData:
     timestamp: str
     temperature_c: float
     relative_humidity_pct: float
+    wind_speed_ms: float
