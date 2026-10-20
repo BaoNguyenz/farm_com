@@ -78,3 +78,4 @@ class WeatherAnalyticsEngine:
         clamped_term = max(-1.0, min(1.0, term))
         sunset_hour_angle = math.acos(clamped_term)
 
+        solar_constant = 0.0820  # MJ / m^2 / min
