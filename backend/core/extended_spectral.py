@@ -115,3 +115,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.green - bands.nir) / denom
 
+    def compute_msi(self, bands: SpectralBands) -> float:
