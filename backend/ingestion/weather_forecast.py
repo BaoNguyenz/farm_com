@@ -142,3 +142,4 @@ class WeatherAnalyticsEngine:
             safe = False
             msg = "Air is too calm. Atmospheric inversion likely causes airborne droplet drift."
         elif wind_kmh <= 15.0:
+            if temp_c > 30.0 or rh_pct < 40.0:
