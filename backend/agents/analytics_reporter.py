@@ -168,3 +168,4 @@ class FarmIntelligenceReporter:
             "total_plots": report.total_plots,
             "mean_farm_ndvi": report.mean_farm_ndvi,
             "total_water_dispatched_liters": report.total_water_dispatched_liters,
+            "total_energy_kwh": report.total_energy_kwh,
