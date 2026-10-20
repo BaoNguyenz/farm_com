@@ -93,3 +93,4 @@ class WeatherAnalyticsEngine:
     ) -> float:
         """Hargreaves-Samani method for solar radiation Rs when pyranometer is missing."""
         kr = 0.19 if coastal else 0.16
+        delta_t = max(0.0, t_max - t_min)
