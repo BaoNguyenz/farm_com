@@ -22,3 +22,4 @@ class AgronomyHealthMetric:
     water_stress_status: str
 
 
+@dataclass
