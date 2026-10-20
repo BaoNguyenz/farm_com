@@ -53,11 +53,14 @@ e:\z_farm_com\
 │   ├── core\                     # Lõi Digital Twin & Mô hình nông học
 │   │   ├── twin_state.py         # Data models (PlotZone, FarmDigitalTwin, Telemetry)
 │   │   ├── agronomy_models.py    # FAO-56 Penman-Monteith ET0, GDD, Water Deficit
-│   │   └── spectral.py           # Công thức NDVI, NDWI, EVI từ quang phổ vệ tinh
+│   │   ├── spectral.py           # Công thức NDVI, NDWI, EVI từ quang phổ vệ tinh
+│   │   ├── extended_spectral.py  # 15 chỉ số thực vật nâng cao (GNDVI, NDRE, SAVI, MSAVI2)
+│   │   └── crop_phenology.py     # Mô hình nhiệt GDD, thang BBCH, Kc động & phát triển rễ
 │   │
 │   ├── ingestion\                # Thu thập dữ liệu
 │   │   ├── satellite_client.py   # Client Sentinel-2 / Copernicus
 │   │   ├── weather_client.py     # Client thời tiết Open-Meteo (async HTTP)
+│   │   ├── weather_forecast.py   # Phân tích VPD, bức xạ Hargreaves & nguy cơ sương muối
 │   │   └── sensor_sim.py         # Giả lập vật lý bốc thoát hơi & độ ẩm đất
 │   │
 │   ├── agents\                   # Hội đồng Đa tác tử (Multi-Agent Swarm)
@@ -65,7 +68,8 @@ e:\z_farm_com\
 │   │   ├── agronomist.py         # Agent Bác sĩ cây trồng
 │   │   ├── irrigation.py         # Agent Kỹ sư thủy nông & tưới tiêu
 │   │   ├── market.py             # Agent Kinh tế nông nghiệp & giá thị trường
-│   │   └── commander.py          # Agent Giám đốc điều hành & Tổng hợp quyết định
+│   │   ├── commander.py          # Agent Giám đốc điều hành & Tổng hợp quyết định
+│   │   └── analytics_reporter.py # Báo cáo tổng hợp đa tác tử & kiểm toán KPI nông trại
 │   │
 │   ├── api\                      # REST API Endpoints
 │   │   ├── routes_farm.py        # /api/farm (state, zones, tick)
