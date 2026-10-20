@@ -34,3 +34,4 @@ class CanopyClassification:
 
 
 class ExtendedSpectralEngine:
+    """Computes specialized spectral indexes for remote sensing agronomy."""
