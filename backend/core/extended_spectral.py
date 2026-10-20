@@ -105,3 +105,4 @@ class ExtendedSpectralEngine:
         """Normalized Difference Water Index for canopy liquid water (Gao, 1996)."""
         denom = bands.nir + bands.swir_1
         if abs(denom) < self.min_reflectance:
+            return 0.0
