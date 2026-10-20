@@ -48,3 +48,4 @@ class FarmDailyExecutiveReport:
     advisory_bulletins: List[str] = field(default_factory=list)
 
 
+class FarmIntelligenceReporter:
