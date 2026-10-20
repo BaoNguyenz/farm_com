@@ -144,3 +144,4 @@ class WeatherAnalyticsEngine:
         elif wind_kmh <= 15.0:
             if temp_c > 30.0 or rh_pct < 40.0:
                 status = "RAPID_DROPLET_EVAPORATION"
+                safe = False
