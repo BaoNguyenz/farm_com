@@ -54,3 +54,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (bands.nir - bands.green) / denom
 
+    def compute_ndre(self, bands: SpectralBands) -> float:
