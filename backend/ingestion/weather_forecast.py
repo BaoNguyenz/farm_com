@@ -194,3 +194,4 @@ class WeatherAnalyticsEngine:
             "t_max_c": round(t_max, 2),
             "t_min_c": round(t_min, 2),
             "t_mean_c": round(t_mean, 2),
+            "rh_mean_pct": round(rh_mean, 1),
