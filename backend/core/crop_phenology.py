@@ -11,3 +11,4 @@ import math
 
 
 class PhenologicalStage(Enum):
+    """Universal crop growth stages based on the BBCH scale."""
