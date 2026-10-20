@@ -130,3 +130,4 @@ class PhenologyEngine:
 
         if gdd < p.gdd_emergence:
             return PhenologicalStage.DORMANT_SOWING
+        elif gdd < p.gdd_emergence * 1.8:
