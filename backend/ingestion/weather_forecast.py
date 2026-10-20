@@ -156,3 +156,4 @@ class WeatherAnalyticsEngine:
             msg = "Use drift-reducing coarse nozzles and reduce boom height."
         else:
             status = "EXCESSIVE_WIND_PROHIBITED"
+            safe = False
