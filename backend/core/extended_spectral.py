@@ -230,3 +230,4 @@ def analyze_grid_canopy(
     accum_ndvi, accum_ndwi, accum_ndre = 0.0, 0.0, 0.0
 
     for cell in grid_cells:
+        bands = SpectralBands(
