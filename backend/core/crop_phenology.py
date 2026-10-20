@@ -155,3 +155,4 @@ class PhenologyEngine:
 
         if fraction < 0.15:
             # Initial stage: flat kc_initial
+            return p.kc_initial
