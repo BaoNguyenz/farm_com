@@ -79,3 +79,4 @@ class FarmIntelligenceReporter:
 
         total_water = sum(entry.water_applied_liters for entry in irrigation_entries)
         total_energy = sum(entry.energy_consumed_kwh for entry in irrigation_entries)
+        total_cost = sum(entry.cost_vnd for entry in irrigation_entries)
