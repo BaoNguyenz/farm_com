@@ -31,16 +31,16 @@ flowchart LR
 ---
 
 ## 📌 Phase 1: Lõi Nông Học Tính Toán (Core Biophysical Engine)
-- [ ] **Task 1.1: Module Quang Phổ Vệ Tinh (`core/spectral.py`)**
-  - Thuật toán NDVI, NDWI, EVI, SAVI (Soil Adjusted Vegetation Index).
-  - Unit tests cho các trường hợp biên (chia 0, reflectance âm).
-- [ ] **Task 1.2: Mô Hình Bốc Thoát Hơi Nước FAO-56 Penman-Monteith (`core/agronomy/fao56.py`)**
+- [x] **Task 1.1: Module Quang Phổ Vệ Tinh (`core/spectral.py` & `core/extended_spectral.py`)**
+  - Thuật toán NDVI, NDWI, EVI, SAVI, MSAVI2, NDRE, CIgreen, CIrededge.
+  - Unit tests cho các trường hợp biên (chia 0, reflectance âm, canopy classification).
+- [x] **Task 1.2: Mô Hình Bốc Thoát Hơi Nước FAO-56 Penman-Monteith (`core/agronomy/fao56.py`)**
   - Triển khai phương trình chuẩn FAO-56 ($ET_0$).
   - Unit tests đối chiếu với tập dữ liệu chuẩn của tổ chức FAO.
-- [ ] **Task 1.3: Cân Bằng Nước & Hệ Số Cây Trồng ($K_c$) (`core/agronomy/water_balance.py`)**
-  - Ma trận $K_c$ theo từng giai đoạn phát triển của cây.
-  - Tính toán thâm hụt nước tầng rễ (Root Zone Depletion).
-- [ ] **Task 1.4: Mô Hình Nhiệt Độ Tích Lũy GDD (`core/agronomy/gdd.py`)**
+- [x] **Task 1.3: Cân Bằng Nước & Hệ Số Cây Trồng ($K_c$) (`core/crop_phenology.py`)**
+  - Ma trận $K_c$ động theo từng giai đoạn phát triển BBCH của cây.
+  - Tính toán thâm hụt nước tầng rễ & mô hình phát triển rễ Sigmoidal.
+- [x] **Task 1.4: Mô Hình Nhiệt Độ Tích Lũy GDD (`core/crop_phenology.py`)**
   - Tính Growing Degree Days với $T_{base}$ và $T_{cutoff}$ để dự báo ngày thu hoạch.
 
 ---
