@@ -184,3 +184,4 @@ class ExtendedSpectralEngine:
             vigor = "SPARSE_WATCH"
         else:
             vigor = "CRITICAL_POOR"
+
