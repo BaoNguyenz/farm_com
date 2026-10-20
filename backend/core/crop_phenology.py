@@ -38,3 +38,4 @@ class CropParameters:
     kc_end: float               # FAO-56 Kc end (late season harvest)
     max_root_depth_meters: float
     initial_root_depth_meters: float
+
