@@ -64,3 +64,10 @@ class FarmIntelligenceReporter:
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         report_id = f"REP-{datetime.now().strftime('%Y%m%d%H%M')}"
 
+        stressed_plots = []
+        chlorosis_plots = []
+        total_ndvi = 0.0
+
+        for m in health_metrics:
+            total_ndvi += m.ndvi_score
+            if "STRESS" in m.water_stress_status.upper():
