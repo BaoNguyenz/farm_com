@@ -147,3 +147,5 @@ class WeatherAnalyticsEngine:
                 safe = False
                 msg = "High temperature / low humidity will cause droplets to evaporate before canopy contact."
             else:
+                status = "IDEAL_SPRAY_WINDOW"
+                safe = True
