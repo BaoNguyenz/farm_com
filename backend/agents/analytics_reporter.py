@@ -77,3 +77,4 @@ class FarmIntelligenceReporter:
 
         mean_ndvi = round(total_ndvi / max(1, len(health_metrics)), 3)
 
+        total_water = sum(entry.water_applied_liters for entry in irrigation_entries)
