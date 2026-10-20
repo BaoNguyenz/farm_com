@@ -171,3 +171,4 @@ class FarmIntelligenceReporter:
             "total_energy_kwh": report.total_energy_kwh,
             "estimated_daily_operating_cost_vnd": report.estimated_daily_operating_cost_vnd,
             "plots_under_water_stress": report.plots_under_water_stress,
+            "plots_with_nutrient_chlorosis": report.plots_with_nutrient_chlorosis,
