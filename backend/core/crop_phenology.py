@@ -75,3 +75,5 @@ CROP_DATABASE: Dict[str, CropParameters] = {
     "coffee": CropParameters(
         crop_name="Coffee Robusta / Arabica",
         base_temperature=12.0,
+        cutoff_temperature=32.0,
+        optimal_temperature=24.0,
