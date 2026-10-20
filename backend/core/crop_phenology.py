@@ -186,3 +186,4 @@ class PhenologyEngine:
 
         # Vulnerability factor Ky by stage
         ky_table = {
+            PhenologicalStage.DORMANT_SOWING: 0.2,
