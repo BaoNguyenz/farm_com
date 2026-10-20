@@ -106,3 +106,4 @@ class FarmIntelligenceReporter:
             commander_resolutions=resolutions,
             advisory_bulletins=bulletins,
         )
+
