@@ -129,3 +129,4 @@ class PhenologyEngine:
         p = self.params
 
         if gdd < p.gdd_emergence:
+            return PhenologicalStage.DORMANT_SOWING
