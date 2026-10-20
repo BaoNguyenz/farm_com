@@ -100,3 +100,4 @@ class WeatherAnalyticsEngine:
     @staticmethod
     def assess_frost_hazard(
         temp_c: float, dew_point_c: float, wind_speed_ms: float
+    ) -> Optional[MicroclimateRiskAlert]:
