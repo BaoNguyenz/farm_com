@@ -18,3 +18,4 @@ class AgronomyHealthMetric:
     ndvi_score: float
     ndwi_score: float
     ndre_score: float
+    chlorophyll_level: str
