@@ -166,3 +166,4 @@ class WeatherAnalyticsEngine:
             "recommendation": msg,
         }
 
+    @staticmethod
