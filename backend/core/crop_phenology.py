@@ -174,3 +174,4 @@ class PhenologyEngine:
         gdd = self.accumulated_gdd
         total = p.gdd_maturity
 
+        fraction = min(1.0, max(0.0, gdd / total))
