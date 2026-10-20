@@ -60,3 +60,4 @@ class FarmIntelligenceReporter:
         irrigation_entries: List[IrrigationAuditEntry],
         resolutions: List[str],
     ) -> FarmDailyExecutiveReport:
+        """Assembles telemetry records into a structured executive report."""
