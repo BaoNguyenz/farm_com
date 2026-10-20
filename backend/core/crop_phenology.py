@@ -144,3 +144,4 @@ class PhenologyEngine:
             return PhenologicalStage.RIPENING_MATURITY
         else:
             return PhenologicalStage.SENESCENCE_HARVEST
+
