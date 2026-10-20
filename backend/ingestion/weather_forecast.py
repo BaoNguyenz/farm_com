@@ -145,3 +145,4 @@ class WeatherAnalyticsEngine:
             if temp_c > 30.0 or rh_pct < 40.0:
                 status = "RAPID_DROPLET_EVAPORATION"
                 safe = False
+                msg = "High temperature / low humidity will cause droplets to evaporate before canopy contact."
