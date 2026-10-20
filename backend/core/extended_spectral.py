@@ -92,3 +92,5 @@ class ExtendedSpectralEngine:
         if abs(denom) < self.min_reflectance:
             return 0.0
         return gain * ((bands.nir - bands.red) / denom)
+
+    def compute_evi2(self, bands: SpectralBands) -> float:
