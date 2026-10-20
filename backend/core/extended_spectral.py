@@ -26,3 +26,4 @@ class SpectralBands:
 
 @dataclass
 class CanopyClassification:
+    """Classified canopy state from calculated indices."""
