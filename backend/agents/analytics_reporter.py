@@ -72,3 +72,4 @@ class FarmIntelligenceReporter:
             total_ndvi += m.ndvi_score
             if "STRESS" in m.water_stress_status.upper():
                 stressed_plots.append(m.plot_id)
+            if "CHLOROSIS" in m.chlorophyll_level.upper() or "DEFICIENT" in m.chlorophyll_level.upper():
