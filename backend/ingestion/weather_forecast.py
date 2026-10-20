@@ -188,3 +188,4 @@ class WeatherAnalyticsEngine:
 
         vpd_mean = WeatherAnalyticsEngine.calculate_vpd(t_mean, rh_mean)
         ra_daily = WeatherAnalyticsEngine.estimate_extraterrestrial_radiation(latitude, day_of_year)
+        rs_est = WeatherAnalyticsEngine.estimate_solar_radiation_hargreaves(t_max, t_min, ra_daily)
