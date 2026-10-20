@@ -38,3 +38,4 @@ class WeatherAnalyticsEngine:
         """Tetens formula for saturation vapor pressure es(T) in kPa."""
         return 0.61078 * math.exp((17.27 * temp_c) / (temp_c + 237.3))
 
+    @staticmethod
