@@ -83,3 +83,4 @@ class FarmIntelligenceReporter:
 
         bulletins = []
         if len(stressed_plots) > 0:
+            bulletins.append(
