@@ -91,3 +91,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
 
 
 class PhenologyEngine:
+    """Calculates thermal time, stage transitions, dynamic Kc, and root growth."""
