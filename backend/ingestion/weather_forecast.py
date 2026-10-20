@@ -40,3 +40,4 @@ class WeatherAnalyticsEngine:
 
     @staticmethod
     def calculate_actual_vapor_pressure(temp_c: float, rh_pct: float) -> float:
+        """Actual vapor pressure ea in kPa from relative humidity."""
