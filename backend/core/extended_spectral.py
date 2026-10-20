@@ -19,3 +19,4 @@ class SpectralBands:
     red_edge_2: float  # B6 (740 nm)
     red_edge_3: float  # B7 (783 nm)
     nir: float         # B8 (842 nm)
+    narrow_nir: float  # B8A (865 nm)
