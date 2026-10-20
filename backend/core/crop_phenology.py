@@ -207,3 +207,4 @@ class PhenologyEngine:
             "days_since_planting": self.days_since_planting,
             "accumulated_gdd": round(self.accumulated_gdd, 1),
             "target_maturity_gdd": self.params.gdd_maturity,
+            "thermal_progress_percent": round(
