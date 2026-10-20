@@ -139,3 +139,4 @@ class PhenologyEngine:
         elif gdd < p.gdd_flowering:
             return PhenologicalStage.BOOTING_FLOWERING
         elif gdd < p.gdd_maturity * 0.85:
+            return PhenologicalStage.GRAIN_FILL_FRUITING
