@@ -31,3 +31,5 @@ class CropParameters:
     optimal_temperature: float  # Topt (°C) for maximum metabolic efficiency
     gdd_emergence: float        # Accumulated GDD for emergence
     gdd_vegetative: float       # Accumulated GDD for vegetative stage
+    gdd_flowering: float        # Accumulated GDD for flowering stage
+    gdd_maturity: float         # Accumulated GDD for full maturity
