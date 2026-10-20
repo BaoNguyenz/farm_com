@@ -58,3 +58,4 @@ class ExtendedSpectralEngine:
         """Normalized Difference Red Edge Index for mid-to-late season canopy."""
         denom = bands.nir + bands.red_edge_1
         if abs(denom) < self.min_reflectance:
+            return 0.0
