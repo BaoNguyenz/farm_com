@@ -123,3 +123,4 @@ class PhenologyEngine:
         self.days_since_planting += 1
         return gdd
 
+    def get_current_stage(self) -> PhenologicalStage:
