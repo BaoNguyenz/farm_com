@@ -210,3 +210,4 @@ class PhenologyEngine:
             "thermal_progress_percent": round(
                 min(100.0, (self.accumulated_gdd / self.params.gdd_maturity) * 100.0), 1
             ),
+            "current_stage": self.get_current_stage().value,
