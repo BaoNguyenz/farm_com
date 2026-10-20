@@ -97,3 +97,4 @@ class WeatherAnalyticsEngine:
         rs = kr * math.sqrt(delta_t) * ra_mj
         return round(rs, 2)
 
+    @staticmethod
