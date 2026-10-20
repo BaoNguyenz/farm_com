@@ -45,3 +45,4 @@ class FarmDailyExecutiveReport:
     plots_under_water_stress: List[str]
     plots_with_nutrient_chlorosis: List[str]
     commander_resolutions: List[str]
+    advisory_bulletins: List[str] = field(default_factory=list)
