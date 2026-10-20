@@ -105,3 +105,4 @@ class WeatherAnalyticsEngine:
         if temp_c > 3.0:
             return None
 
+        if temp_c <= 0.0:
