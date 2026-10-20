@@ -172,3 +172,4 @@ class FarmIntelligenceReporter:
             "estimated_daily_operating_cost_vnd": report.estimated_daily_operating_cost_vnd,
             "plots_under_water_stress": report.plots_under_water_stress,
             "plots_with_nutrient_chlorosis": report.plots_with_nutrient_chlorosis,
+            "commander_resolutions": report.commander_resolutions,
