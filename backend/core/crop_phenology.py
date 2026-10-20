@@ -157,3 +157,4 @@ class PhenologyEngine:
             # Initial stage: flat kc_initial
             return p.kc_initial
         elif fraction < 0.45:
+            # Crop development stage: linear ramp up to kc_mid
