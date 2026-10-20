@@ -51,3 +51,4 @@ class ExtendedSpectralEngine:
         """Green Normalized Difference Vegetation Index (Gitelson et al., 1996)."""
         denom = bands.nir + bands.green
         if abs(denom) < self.min_reflectance:
+            return 0.0
