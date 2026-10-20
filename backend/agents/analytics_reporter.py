@@ -15,3 +15,4 @@ class AgronomyHealthMetric:
     """Individual plot agronomy index metric."""
     plot_id: str
     crop_type: str
+    ndvi_score: float
