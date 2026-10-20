@@ -38,3 +38,4 @@ class ExtendedSpectralEngine:
 
     def __init__(self, soil_factor_l: float = 0.5):
         self.soil_factor_l = soil_factor_l
+        self.min_reflectance = 1e-6
