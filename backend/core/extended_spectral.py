@@ -227,3 +227,4 @@ def analyze_grid_canopy(
     """Analyzes a batch of plot matrix cells and provides farm-level averages."""
     engine = ExtendedSpectralEngine()
     results = []
+    accum_ndvi, accum_ndwi, accum_ndre = 0.0, 0.0, 0.0
