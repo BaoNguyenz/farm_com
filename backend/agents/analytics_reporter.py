@@ -142,3 +142,4 @@ class FarmIntelligenceReporter:
             "",
             "---",
             "",
+            "## 🤖 Multi-Agent Council Resolutions",
