@@ -19,3 +19,4 @@ class AgronomyHealthMetric:
     ndwi_score: float
     ndre_score: float
     chlorophyll_level: str
+    water_stress_status: str
