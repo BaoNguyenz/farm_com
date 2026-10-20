@@ -151,3 +151,4 @@ class FarmIntelligenceReporter:
         else:
             for idx, res in enumerate(report.commander_resolutions, start=1):
                 lines.append(f"{idx}. {res}")
+
