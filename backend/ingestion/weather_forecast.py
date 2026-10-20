@@ -21,3 +21,4 @@ class HourlyWeatherData:
     surface_pressure_hpa: float = 1013.25
 
 
+@dataclass
