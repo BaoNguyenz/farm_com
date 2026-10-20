@@ -122,3 +122,4 @@ class WeatherAnalyticsEngine:
                 )
         elif temp_c <= 2.5 and dew_point_c <= 0.0:
             return MicroclimateRiskAlert(
+                severity="WARNING",
