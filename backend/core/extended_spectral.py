@@ -81,3 +81,4 @@ class ExtendedSpectralEngine:
         term = 2.0 * bands.nir + 1.0
         val = term * term - 8.0 * (bands.nir - bands.red)
         if val < 0:
+            return 0.0
