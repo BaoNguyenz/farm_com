@@ -198,3 +198,4 @@ class WeatherAnalyticsEngine:
             "wind_speed_2m_ms": round(wind_mean, 2),
             "total_precipitation_mm": round(total_precip, 2),
             "vpd_mean_kpa": round(vpd_mean, 3),
+            "solar_radiation_rs_mj": round(rs_est, 2),
