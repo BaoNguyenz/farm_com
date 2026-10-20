@@ -25,3 +25,4 @@ class SpectralBands:
 
 
 @dataclass
+class CanopyClassification:
