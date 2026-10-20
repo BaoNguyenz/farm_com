@@ -199,3 +199,4 @@ class WeatherAnalyticsEngine:
             "total_precipitation_mm": round(total_precip, 2),
             "vpd_mean_kpa": round(vpd_mean, 3),
             "solar_radiation_rs_mj": round(rs_est, 2),
+            "extraterrestrial_ra_mj": round(ra_daily, 2),
