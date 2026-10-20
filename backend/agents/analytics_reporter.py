@@ -132,3 +132,4 @@ class FarmIntelligenceReporter:
             "",
         ]
 
+        if not report.advisory_bulletins:
