@@ -165,3 +165,4 @@ class PhenologyEngine:
             return p.kc_mid
         else:
             # Late season decline: linear drop down to kc_end
+            t = (fraction - 0.80) / (1.0 - 0.80)
