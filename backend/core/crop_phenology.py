@@ -26,3 +26,4 @@ class PhenologicalStage(Enum):
 class CropParameters:
     """Agronomic and thermal characteristics for a specific crop species."""
     crop_name: str
+    base_temperature: float     # Tbase (°C) below which development stops
