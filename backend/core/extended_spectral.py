@@ -77,3 +77,4 @@ class ExtendedSpectralEngine:
         return ((bands.nir - bands.red) / denom) * (1.0 + l)
 
     def compute_msavi2(self, bands: SpectralBands) -> float:
+        """Modified Soil Adjusted Vegetation Index 2 (Qi et al., 1994)."""
