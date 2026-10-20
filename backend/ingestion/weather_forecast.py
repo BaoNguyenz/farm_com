@@ -101,3 +101,4 @@ class WeatherAnalyticsEngine:
     def assess_frost_hazard(
         temp_c: float, dew_point_c: float, wind_speed_ms: float
     ) -> Optional[MicroclimateRiskAlert]:
+        """Detects advective or radiation frost risks for vulnerable blossoms."""
