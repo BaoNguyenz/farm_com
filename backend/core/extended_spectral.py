@@ -48,3 +48,4 @@ class ExtendedSpectralEngine:
         return (bands.nir - bands.red) / denom
 
     def compute_gndvi(self, bands: SpectralBands) -> float:
+        """Green Normalized Difference Vegetation Index (Gitelson et al., 1996)."""
