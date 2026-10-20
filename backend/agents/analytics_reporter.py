@@ -115,3 +115,4 @@ class FarmIntelligenceReporter:
             f"*Generated at: {report.generated_at}*",
             "",
             "---",
+            "",
