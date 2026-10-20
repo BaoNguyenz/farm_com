@@ -201,3 +201,4 @@ class ExtendedSpectralEngine:
         elif ndre > 0.28:
             chlorophyll = "NORMAL_HEALTHY"
         else:
+            chlorophyll = "CHLOROSIS_DEFICIENT"
