@@ -147,3 +147,4 @@ class PhenologyEngine:
 
     def get_current_kc(self) -> float:
         """Returns the dynamic FAO-56 crop coefficient Kc based on thermal progress."""
+        gdd = self.accumulated_gdd
