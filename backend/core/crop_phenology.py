@@ -72,3 +72,4 @@ CROP_DATABASE: Dict[str, CropParameters] = {
         max_root_depth_meters=0.60,
         initial_root_depth_meters=0.10,
     ),
+    "coffee": CropParameters(
