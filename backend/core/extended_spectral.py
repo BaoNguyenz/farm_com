@@ -197,3 +197,4 @@ class ExtendedSpectralEngine:
 
         # Chlorophyll assessment
         if ndre > 0.45:
+            chlorophyll = "HIGH_NITROGEN_SATURATED"
