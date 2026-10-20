@@ -139,3 +139,4 @@ class WeatherAnalyticsEngine:
 
         if wind_kmh < 3.0:
             status = "DANGEROUS_TEMPERATURE_INVERSION"
+            safe = False
