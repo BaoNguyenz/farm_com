@@ -137,3 +137,4 @@ class ExtendedSpectralEngine:
         """MERIS Terrestrial Chlorophyll Index (Dash & Curran, 2004)."""
         denom = bands.red_edge_1 - bands.red
         if abs(denom) < self.min_reflectance:
+            return 0.0
