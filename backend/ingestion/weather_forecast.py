@@ -129,3 +129,4 @@ class WeatherAnalyticsEngine:
             )
         return None
 
+    @staticmethod
