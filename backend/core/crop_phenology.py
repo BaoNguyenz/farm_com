@@ -42,3 +42,4 @@ class CropParameters:
 
 # Benchmark parameters for primary commercial crops
 CROP_DATABASE: Dict[str, CropParameters] = {
+    "maize": CropParameters(
