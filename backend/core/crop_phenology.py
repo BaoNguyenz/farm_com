@@ -192,3 +192,4 @@ class PhenologyEngine:
             PhenologicalStage.STEM_ELONGATION: 1.1,
             PhenologicalStage.BOOTING_FLOWERING: 1.5,  # Most sensitive
             PhenologicalStage.GRAIN_FILL_FRUITING: 1.3,
+            PhenologicalStage.RIPENING_MATURITY: 0.5,
