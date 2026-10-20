@@ -56,3 +56,4 @@ class WeatherAnalyticsEngine:
         """Classifies VPD for greenhouse and open-field stomatal conductance."""
         if vpd_kpa < 0.4:
             return "TOO_HUMID_FUNGAL_RISK"
+        elif vpd_kpa <= 0.8:
