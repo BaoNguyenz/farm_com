@@ -13,3 +13,4 @@ import math
 class PhenologicalStage(Enum):
     """Universal crop growth stages based on the BBCH scale."""
     DORMANT_SOWING = "Dormant / Sowing (Stage 00-09)"
+    EMERGENCE = "Emergence / Seedling (Stage 10-19)"
