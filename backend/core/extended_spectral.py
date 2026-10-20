@@ -10,3 +10,4 @@ import math
 
 
 @dataclass
+class SpectralBands:
