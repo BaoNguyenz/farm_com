@@ -113,3 +113,4 @@ class PhenologyEngine:
         t_min_adj = max(t_min, t_base)
 
         t_mean = (t_max_adj + t_min_adj) / 2.0
+        daily_gdd = max(0.0, t_mean - t_base)
