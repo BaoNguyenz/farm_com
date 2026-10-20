@@ -22,3 +22,4 @@ class PhenologicalStage(Enum):
     SENESCENCE_HARVEST = "Senescence / Ready for Harvest (Stage 90-99)"
 
 
+@dataclass
