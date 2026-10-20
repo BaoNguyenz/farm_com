@@ -151,3 +151,4 @@ class PhenologyEngine:
         p = self.params
         total = p.gdd_maturity
 
+        fraction = min(1.0, max(0.0, gdd / total))
