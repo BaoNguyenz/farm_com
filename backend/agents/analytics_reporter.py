@@ -112,3 +112,4 @@ class FarmIntelligenceReporter:
         lines = [
             f"# 🌾 {self.farm_name}",
             f"**Executive Intelligence Dossier** | `ID: {report.report_id}`",
+            f"*Generated at: {report.generated_at}*",
