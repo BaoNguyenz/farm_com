@@ -137,3 +137,5 @@ class FarmIntelligenceReporter:
         else:
             for b in report.advisory_bulletins:
                 lines.append(f"- ⚠️ **{b}**")
+
+        lines.extend([
