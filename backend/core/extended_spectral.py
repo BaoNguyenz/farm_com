@@ -213,3 +213,4 @@ class ExtendedSpectralEngine:
         else:
             rec = "Normal growth conditions. Maintain baseline regime."
 
+        return CanopyClassification(
