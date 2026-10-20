@@ -89,3 +89,5 @@ CROP_DATABASE: Dict[str, CropParameters] = {
     ),
 }
 
+
+class PhenologyEngine:
