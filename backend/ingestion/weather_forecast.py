@@ -18,3 +18,4 @@ class HourlyWeatherData:
     wind_speed_ms: float
     solar_radiation_wm2: float
     precipitation_mm: float
+    surface_pressure_hpa: float = 1013.25
