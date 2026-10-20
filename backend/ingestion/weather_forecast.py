@@ -67,3 +67,4 @@ class WeatherAnalyticsEngine:
 
     @staticmethod
     def estimate_extraterrestrial_radiation(
+        latitude_deg: float, day_of_year: int
