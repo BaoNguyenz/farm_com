@@ -48,3 +48,4 @@ class WeatherAnalyticsEngine:
     def calculate_vpd(temp_c: float, rh_pct: float) -> float:
         """Vapor Pressure Deficit (VPD) in kPa: difference between es and ea."""
         es = WeatherAnalyticsEngine.calculate_saturation_vapor_pressure(temp_c)
+        ea = WeatherAnalyticsEngine.calculate_actual_vapor_pressure(temp_c, rh_pct)
