@@ -179,3 +179,4 @@ class WeatherAnalyticsEngine:
         winds = [r.wind_speed_ms for r in hourly_records]
         rains = [r.precipitation_mm for r in hourly_records]
 
+        t_max = max(temps)
