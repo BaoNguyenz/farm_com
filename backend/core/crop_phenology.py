@@ -25,3 +25,4 @@ class PhenologicalStage(Enum):
 @dataclass
 class CropParameters:
     """Agronomic and thermal characteristics for a specific crop species."""
+    crop_name: str
