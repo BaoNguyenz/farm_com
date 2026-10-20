@@ -90,3 +90,4 @@ class FarmIntelligenceReporter:
             bulletins.append(
                 f"Agronomy Alert: {len(chlorosis_plots)} plot(s) display nitrogen chlorosis signatures ({', '.join(chlorosis_plots)})."
             )
+        if total_water > 10000.0:
