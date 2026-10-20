@@ -208,3 +208,4 @@ class PhenologyEngine:
             "accumulated_gdd": round(self.accumulated_gdd, 1),
             "target_maturity_gdd": self.params.gdd_maturity,
             "thermal_progress_percent": round(
+                min(100.0, (self.accumulated_gdd / self.params.gdd_maturity) * 100.0), 1
