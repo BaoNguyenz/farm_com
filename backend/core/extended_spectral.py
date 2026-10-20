@@ -62,3 +62,4 @@ class ExtendedSpectralEngine:
         return (bands.nir - bands.red_edge_1) / denom
 
     def compute_ndre2(self, bands: SpectralBands) -> float:
+        """Alternative Red Edge Index using B6 (740 nm)."""
