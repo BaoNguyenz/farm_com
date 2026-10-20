@@ -160,3 +160,4 @@ class WeatherAnalyticsEngine:
             msg = "Spray operation suspended due to severe off-target drift hazard."
 
         return {
+            "wind_speed_kmh": round(wind_kmh, 1),
