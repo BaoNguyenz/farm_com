@@ -187,3 +187,4 @@ class WeatherAnalyticsEngine:
         total_precip = sum(rains)
 
         vpd_mean = WeatherAnalyticsEngine.calculate_vpd(t_mean, rh_mean)
+        ra_daily = WeatherAnalyticsEngine.estimate_extraterrestrial_radiation(latitude, day_of_year)
