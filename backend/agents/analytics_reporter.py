@@ -102,3 +102,4 @@ class FarmIntelligenceReporter:
             total_energy_kwh=round(total_energy, 2),
             estimated_daily_operating_cost_vnd=round(total_cost, 0),
             plots_under_water_stress=stressed_plots,
+            plots_with_nutrient_chlorosis=chlorosis_plots,
