@@ -174,3 +174,4 @@ class FarmIntelligenceReporter:
             "plots_with_nutrient_chlorosis": report.plots_with_nutrient_chlorosis,
             "commander_resolutions": report.commander_resolutions,
             "advisory_bulletins": report.advisory_bulletins,
+        }
