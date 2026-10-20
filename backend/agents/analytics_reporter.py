@@ -41,3 +41,4 @@ class FarmDailyExecutiveReport:
     mean_farm_ndvi: float
     total_water_dispatched_liters: float
     total_energy_kwh: float
+    estimated_daily_operating_cost_vnd: float
