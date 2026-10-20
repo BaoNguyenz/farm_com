@@ -222,3 +222,4 @@ class ExtendedSpectralEngine:
 
 
 def analyze_grid_canopy(
+    grid_cells: List[Dict[str, float]]
