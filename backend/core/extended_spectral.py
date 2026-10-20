@@ -73,3 +73,4 @@ class ExtendedSpectralEngine:
         l = self.soil_factor_l
         denom = bands.nir + bands.red + l
         if abs(denom) < self.min_reflectance:
+            return 0.0
