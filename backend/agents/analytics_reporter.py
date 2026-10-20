@@ -114,3 +114,4 @@ class FarmIntelligenceReporter:
             f"**Executive Intelligence Dossier** | `ID: {report.report_id}`",
             f"*Generated at: {report.generated_at}*",
             "",
+            "---",
