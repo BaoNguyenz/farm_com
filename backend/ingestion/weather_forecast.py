@@ -196,3 +196,5 @@ class WeatherAnalyticsEngine:
             "t_mean_c": round(t_mean, 2),
             "rh_mean_pct": round(rh_mean, 1),
             "wind_speed_2m_ms": round(wind_mean, 2),
+            "total_precipitation_mm": round(total_precip, 2),
+            "vpd_mean_kpa": round(vpd_mean, 3),
