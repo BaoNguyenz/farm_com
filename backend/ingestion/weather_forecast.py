@@ -90,3 +90,4 @@ class WeatherAnalyticsEngine:
     @staticmethod
     def estimate_solar_radiation_hargreaves(
         t_max: float, t_min: float, ra_mj: float, coastal: bool = False
+    ) -> float:
