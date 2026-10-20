@@ -100,3 +100,4 @@ class PhenologyEngine:
         else:
             self.params = CROP_DATABASE[key]
 
+        self.accumulated_gdd: float = 0.0
