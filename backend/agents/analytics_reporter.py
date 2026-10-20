@@ -32,3 +32,4 @@ class IrrigationAuditEntry:
     et0_deficit_compensated: bool
 
 
+@dataclass
