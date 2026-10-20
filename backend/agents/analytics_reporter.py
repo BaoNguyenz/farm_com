@@ -59,3 +59,4 @@ class FarmIntelligenceReporter:
         health_metrics: List[AgronomyHealthMetric],
         irrigation_entries: List[IrrigationAuditEntry],
         resolutions: List[str],
+    ) -> FarmDailyExecutiveReport:
