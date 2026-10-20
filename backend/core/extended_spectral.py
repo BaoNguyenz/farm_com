@@ -147,3 +147,4 @@ class ExtendedSpectralEngine:
         denom = ndvi + ndwi
         if abs(denom) < self.min_reflectance:
             return 0.0
+        return (ndvi - ndwi) / denom
