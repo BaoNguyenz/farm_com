@@ -101,3 +101,4 @@ class FarmIntelligenceReporter:
             total_water_dispatched_liters=round(total_water, 2),
             total_energy_kwh=round(total_energy, 2),
             estimated_daily_operating_cost_vnd=round(total_cost, 0),
+            plots_under_water_stress=stressed_plots,
