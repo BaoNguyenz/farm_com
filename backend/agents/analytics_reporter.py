@@ -105,3 +105,4 @@ class FarmIntelligenceReporter:
             plots_with_nutrient_chlorosis=chlorosis_plots,
             commander_resolutions=resolutions,
             advisory_bulletins=bulletins,
+        )
