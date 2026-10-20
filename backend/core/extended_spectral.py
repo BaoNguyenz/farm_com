@@ -181,3 +181,4 @@ class ExtendedSpectralEngine:
         elif ndvi > 0.50:
             vigor = "MODERATE_GOOD"
         elif ndvi > 0.30:
+            vigor = "SPARSE_WATCH"
