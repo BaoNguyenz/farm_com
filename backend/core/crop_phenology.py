@@ -184,3 +184,4 @@ class PhenologyEngine:
         """Doorenbos and Kassam (1979) empirical yield reduction model (Ky)."""
         stage = self.get_current_stage()
 
+        # Vulnerability factor Ky by stage
