@@ -118,3 +118,4 @@ class WeatherAnalyticsEngine:
                     severity="HIGH",
                     category="FREEZE",
                     headline="Advective Freeze Event with Active Wind Chill",
+                    advisory_action="Deploy row covers, fleece, or thermal heaters."
