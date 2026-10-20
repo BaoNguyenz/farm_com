@@ -80,3 +80,4 @@ class WeatherAnalyticsEngine:
 
         solar_constant = 0.0820  # MJ / m^2 / min
         gsc_factor = (24.0 * 60.0 / math.pi) * solar_constant
+
