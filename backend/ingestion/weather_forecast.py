@@ -134,3 +134,4 @@ class WeatherAnalyticsEngine:
         wind_speed_ms: float, temp_c: float, rh_pct: float
     ) -> Dict[str, object]:
         """Evaluates agrochemical spray drift window based on atmospheric stability."""
+        # Convert m/s to km/h
