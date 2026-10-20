@@ -149,3 +149,4 @@ class PhenologyEngine:
         """Returns the dynamic FAO-56 crop coefficient Kc based on thermal progress."""
         gdd = self.accumulated_gdd
         p = self.params
+        total = p.gdd_maturity
