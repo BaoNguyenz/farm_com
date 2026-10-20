@@ -176,3 +176,4 @@ class ExtendedSpectralEngine:
         ndre = indices.get("ndre", 0.0)
 
         # Canopy vigor assessment
+        if ndvi > 0.70:
