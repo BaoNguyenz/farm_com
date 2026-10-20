@@ -57,3 +57,4 @@ class WeatherAnalyticsEngine:
         if vpd_kpa < 0.4:
             return "TOO_HUMID_FUNGAL_RISK"
         elif vpd_kpa <= 0.8:
+            return "LOW_OPTIMAL_PROPAGATION"
