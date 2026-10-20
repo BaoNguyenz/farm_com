@@ -164,3 +164,4 @@ class PhenologyEngine:
             # Mid-season plateau: peak kc_mid
             return p.kc_mid
         else:
+            # Late season decline: linear drop down to kc_end
