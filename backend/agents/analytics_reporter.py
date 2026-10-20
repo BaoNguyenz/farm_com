@@ -92,3 +92,4 @@ class FarmIntelligenceReporter:
             )
         if total_water > 10000.0:
             bulletins.append("Resource Advisory: Daily irrigation volume exceeded 10,000 L threshold.")
+
