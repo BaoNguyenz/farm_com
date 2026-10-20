@@ -167,3 +167,4 @@ class ExtendedSpectralEngine:
             "ci_rededge": round(self.compute_cirededge(bands), 4),
             "mtci": round(self.compute_mtci(bands), 4),
             "nddi": round(self.compute_nddi(bands), 4),
+        }
