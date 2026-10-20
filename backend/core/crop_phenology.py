@@ -143,3 +143,4 @@ class PhenologyEngine:
         elif gdd < p.gdd_maturity:
             return PhenologicalStage.RIPENING_MATURITY
         else:
+            return PhenologicalStage.SENESCENCE_HARVEST
