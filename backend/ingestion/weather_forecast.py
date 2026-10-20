@@ -53,3 +53,4 @@ class WeatherAnalyticsEngine:
 
     @staticmethod
     def classify_vpd_range(vpd_kpa: float) -> str:
+        """Classifies VPD for greenhouse and open-field stomatal conductance."""
