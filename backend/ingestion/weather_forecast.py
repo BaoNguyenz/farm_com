@@ -168,3 +168,5 @@ class WeatherAnalyticsEngine:
 
     @staticmethod
     def aggregate_daily_metrics(
+        hourly_records: List[HourlyWeatherData], latitude: float, day_of_year: int
+    ) -> Dict[str, float]:
