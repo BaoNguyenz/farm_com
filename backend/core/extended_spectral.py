@@ -238,3 +238,4 @@ def analyze_grid_canopy(
             red_edge_2=cell.get("red_edge_2", 0.25),
             red_edge_3=cell.get("red_edge_3", 0.32),
             nir=cell.get("nir", 0.45),
+            narrow_nir=cell.get("narrow_nir", 0.47),
