@@ -185,3 +185,4 @@ class PhenologyEngine:
         stage = self.get_current_stage()
 
         # Vulnerability factor Ky by stage
+        ky_table = {
