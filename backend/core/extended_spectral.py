@@ -40,3 +40,4 @@ class ExtendedSpectralEngine:
         self.soil_factor_l = soil_factor_l
         self.min_reflectance = 1e-6
 
+    def compute_ndvi(self, bands: SpectralBands) -> float:
