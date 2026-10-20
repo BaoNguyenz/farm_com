@@ -84,3 +84,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return (term - math.sqrt(val)) / 2.0
 
+    def compute_evi(self, bands: SpectralBands) -> float:
