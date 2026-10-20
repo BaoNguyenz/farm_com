@@ -86,3 +86,4 @@ class FarmIntelligenceReporter:
             bulletins.append(
                 f"Urgent: {len(stressed_plots)} plot(s) require moisture remediation ({', '.join(stressed_plots)})."
             )
+        if len(chlorosis_plots) > 0:
