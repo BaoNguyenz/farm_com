@@ -126,3 +126,4 @@ class FarmIntelligenceReporter:
             f"| **Pumping Energy Consumed** | `{report.total_energy_kwh:,.2f}` | kWh | Off-peak tariff optimization |",
             f"| **Estimated Electricity Cost** | `{report.estimated_daily_operating_cost_vnd:,.0f}` | VND | Tariff indexed |",
             "",
+            "---",
