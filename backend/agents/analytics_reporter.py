@@ -50,3 +50,4 @@ class FarmDailyExecutiveReport:
 
 class FarmIntelligenceReporter:
     """Compiles multi-agent consensus audits into human-readable dossiers."""
+
