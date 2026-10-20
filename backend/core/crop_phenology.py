@@ -128,3 +128,4 @@ class PhenologyEngine:
         gdd = self.accumulated_gdd
         p = self.params
 
+        if gdd < p.gdd_emergence:
