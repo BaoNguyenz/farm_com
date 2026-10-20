@@ -195,3 +195,5 @@ class ExtendedSpectralEngine:
         else:
             moisture = "SEVERE_DESICCATION"
 
+        # Chlorophyll assessment
+        if ndre > 0.45:
