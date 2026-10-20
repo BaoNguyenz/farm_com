@@ -61,3 +61,4 @@ class FarmIntelligenceReporter:
         resolutions: List[str],
     ) -> FarmDailyExecutiveReport:
         """Assembles telemetry records into a structured executive report."""
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
