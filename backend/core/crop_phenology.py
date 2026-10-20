@@ -35,3 +35,4 @@ class CropParameters:
     gdd_maturity: float         # Accumulated GDD for full maturity
     kc_initial: float           # FAO-56 Kc ini (initial stage)
     kc_mid: float               # FAO-56 Kc mid (mid-season peak)
+    kc_end: float               # FAO-56 Kc end (late season harvest)
