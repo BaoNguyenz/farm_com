@@ -170,3 +170,4 @@ class ExtendedSpectralEngine:
         }
 
     def classify_crop_health(self, indices: Dict[str, float]) -> CanopyClassification:
+        """Classifies crop vigor, moisture stress, and chlorophyll adequacy."""
