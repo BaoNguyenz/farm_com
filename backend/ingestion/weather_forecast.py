@@ -157,3 +157,4 @@ class WeatherAnalyticsEngine:
         else:
             status = "EXCESSIVE_WIND_PROHIBITED"
             safe = False
+            msg = "Spray operation suspended due to severe off-target drift hazard."
