@@ -190,3 +190,4 @@ class PhenologyEngine:
             PhenologicalStage.EMERGENCE: 0.4,
             PhenologicalStage.TILLERING_VEGETATIVE: 0.8,
             PhenologicalStage.STEM_ELONGATION: 1.1,
+            PhenologicalStage.BOOTING_FLOWERING: 1.5,  # Most sensitive
