@@ -101,3 +101,4 @@ class ExtendedSpectralEngine:
             return 0.0
         return gain * ((bands.nir - bands.red) / denom)
 
+    def compute_ndwi_gao(self, bands: SpectralBands) -> float:
