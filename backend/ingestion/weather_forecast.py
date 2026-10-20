@@ -184,3 +184,4 @@ class WeatherAnalyticsEngine:
         t_mean = sum(temps) / len(temps)
         rh_mean = sum(rhs) / len(rhs)
         wind_mean = sum(winds) / len(winds)
+        total_precip = sum(rains)
