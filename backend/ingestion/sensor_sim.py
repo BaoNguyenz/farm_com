@@ -62,7 +62,7 @@ class SensorSimulator:
         1000 Liters on a 25m2 plot ~ 40mm water depth ~ +20% soil moisture.
         """
         for zone in self.farm.zones:
-            if zone.zone_id == zone_id:
+            if zone.id == zone_id:
                 moisture_bump = round(water_liters * 0.02, 1)
                 zone.soil_moisture_pct = min(92.0, round(zone.soil_moisture_pct + moisture_bump, 1))
                 if zone.soil_moisture_pct >= 40.0 and zone.health_status == "water_stressed":
