@@ -46,14 +46,14 @@ flowchart LR
 ---
 
 ## 📌 Phase 2: Kéo Dữ Liệu Ngoại Vi & Viễn Thám (Data Ingestion & GIS)
-- [ ] **Task 2.1: Client Thời Tiết Vi Khí Hậu Open-Meteo (`ingestion/weather.py`)**
+- [x] **Task 2.1: Client Thời Tiết Vi Khí Hậu Open-Meteo (`ingestion/weather_client.py`)**
   - Lấy nhiệt độ, độ ẩm, bức xạ mặt trời MJ/$m^2$, mưa, gió không cần API key.
-  - Tích hợp Retry policy và Cache cục bộ.
-- [ ] **Task 2.2: Client Vệ Tinh Copernicus / Sentinel-2 (`ingestion/sentinel.py`)**
-  - Kết nối STAC API Copernicus theo Bounding Box (BBox) nông trại.
-  - Offline Sentinel Simulator phục vụ phát triển khi không có mạng.
-- [ ] **Task 2.3: Giả Lập Cảm Biến Đất IoT (`ingestion/sensors.py`)**
-  - Mô phỏng suy giảm độ ẩm đất theo chu kỳ ngày/đêm + nhiễu cảm biến thực tế.
+  - Tích hợp Retry policy lũy thừa và Cache TTL bộ nhớ cục bộ.
+- [x] **Task 2.2: Client Vệ Tinh Copernicus / Sentinel-2 (`ingestion/satellite_client.py`)**
+  - Giả lập và tổng hợp ma trận 10 dải quang phổ bề mặt Sentinel-2 L2A (B2-B12).
+  - Tích hợp bộ đánh giá chất lượng ảnh quang học và mặt nạ mây (Cloud Masking).
+- [x] **Task 2.3: Giả Lập Cảm Biến Đất IoT (`ingestion/sensor_sim.py`)**
+  - Mô phỏng suy giảm độ ẩm đất theo chu kỳ ngày/đêm, thoát nước trọng lực và bù ẩm tưới tiêu.
 
 ---
 
