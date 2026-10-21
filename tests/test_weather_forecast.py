@@ -1,7 +1,6 @@
 """
 Unit tests for Agro-meteorological Engine, VPD calculations & Frost Hazard
 """
-import pytest
 from backend.ingestion.weather_forecast import WeatherAnalyticsEngine, HourlyWeatherData
 
 

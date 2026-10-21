@@ -14,8 +14,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from backend.ingestion.weather_client import WeatherClient
-from backend.ingestion.satellite_client import SatelliteClient
+from backend.ingestion.weather_client import WeatherClient  # noqa: E402
+from backend.ingestion.satellite_client import SatelliteClient  # noqa: E402
 
 # Configure UTF-8 for Windows console
 if hasattr(sys.stdout, "reconfigure"):

@@ -5,7 +5,7 @@ chlorophyll monitoring, canopy water stress, and biophysical modeling.
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 import math
 
 
@@ -70,11 +70,11 @@ class ExtendedSpectralEngine:
 
     def compute_savi(self, bands: SpectralBands) -> float:
         """Soil Adjusted Vegetation Index with calibration factor L (Huete, 1988)."""
-        l = self.soil_factor_l
-        denom = bands.nir + bands.red + l
+        soil_l = self.soil_factor_l
+        denom = bands.nir + bands.red + soil_l
         if abs(denom) < self.min_reflectance:
             return 0.0
-        return ((bands.nir - bands.red) / denom) * (1.0 + l)
+        return ((bands.nir - bands.red) / denom) * (1.0 + soil_l)
 
     def compute_msavi2(self, bands: SpectralBands) -> float:
         """Modified Soil Adjusted Vegetation Index 2 (Qi et al., 1994)."""
@@ -87,8 +87,8 @@ class ExtendedSpectralEngine:
     def compute_evi(self, bands: SpectralBands) -> float:
         """Enhanced Vegetation Index (Huete et al., 2002)."""
         gain = 2.5
-        c1, c2, l = 6.0, 7.5, 1.0
-        denom = bands.nir + c1 * bands.red - c2 * bands.blue + l
+        c1, c2, canopy_l = 6.0, 7.5, 1.0
+        denom = bands.nir + c1 * bands.red - c2 * bands.blue + canopy_l
         if abs(denom) < self.min_reflectance:
             return 0.0
         return gain * ((bands.nir - bands.red) / denom)

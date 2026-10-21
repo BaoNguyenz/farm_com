@@ -1,7 +1,6 @@
 """
 Unit tests for Multi-Agent Farm Intelligence & Analytics Reporter
 """
-import pytest
 from backend.agents.analytics_reporter import (
     FarmIntelligenceReporter,
     AgronomyHealthMetric,

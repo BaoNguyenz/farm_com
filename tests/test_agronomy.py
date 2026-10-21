@@ -1,7 +1,6 @@
 """
 Unit tests for Core Agronomy & Spectral Formulas (Task 1)
 """
-import pytest
 from backend.core.spectral import compute_ndvi, compute_ndwi, compute_evi, evaluate_crop_health
 from backend.core.agronomy_models import calculate_fao56_et0, calculate_water_deficit, calculate_gdd
 

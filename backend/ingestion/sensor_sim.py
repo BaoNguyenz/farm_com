@@ -4,7 +4,6 @@ Simulates soil moisture dynamic decay, diurnal drying cycles,
 gravity drainage, and targeted irrigation recharge events.
 """
 import random
-import math
 from typing import Dict, Any
 from backend.core.twin_state import FarmDigitalTwin
 

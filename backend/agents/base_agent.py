@@ -28,3 +28,6 @@ class BaseFarmAgent(ABC):
         Evaluate current Digital Twin farm state and generate an informed opinion.
         """
         pass
+
+# Alias for standard naming
+BaseAgent = BaseFarmAgent

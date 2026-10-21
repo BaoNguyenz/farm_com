@@ -6,9 +6,16 @@ canopy classification, thermal time advancement, and FAO-56 irrigation audits.
 """
 
 import sys
-from backend.core.extended_spectral import ExtendedSpectralEngine, SpectralBands
-from backend.core.crop_phenology import PhenologyEngine
-from backend.ingestion.weather_forecast import WeatherAnalyticsEngine
+from pathlib import Path
+
+# Add repository root to path
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from backend.core.extended_spectral import ExtendedSpectralEngine, SpectralBands  # noqa: E402
+from backend.core.crop_phenology import PhenologyEngine  # noqa: E402
+from backend.ingestion.weather_forecast import WeatherAnalyticsEngine  # noqa: E402
 
 # Đảm bảo UTF-8
 if hasattr(sys.stdout, "reconfigure"):

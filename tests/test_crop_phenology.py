@@ -1,7 +1,6 @@
 """
 Unit tests for Crop Phenology, Growing Degree Days (GDD) & dynamic Kc curves
 """
-import pytest
 from backend.core.crop_phenology import PhenologyEngine, PhenologicalStage
 
 

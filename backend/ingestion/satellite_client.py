@@ -3,7 +3,7 @@ Copernicus Sentinel-2 Satellite Client
 Fetches multispectral bands (B2 through B12) or generates high-fidelity
 spatial-temporal synthetic reflectances for development and offline testing.
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 import random
 import time
 
