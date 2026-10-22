@@ -57,6 +57,66 @@ class FarmDigitalTwin(BaseModel):
                 return zone
         return None
 
+    def get_zone_at(self, x: int, y: int) -> Optional[PlotZone]:
+        """Lookup zone by coordinate (x, y)."""
+        for zone in self.zones:
+            if zone.x == x and zone.y == y:
+                return zone
+        return None
+
+    def get_neighbors(self, x: int, y: int, diagonal: bool = False) -> List[PlotZone]:
+        """
+        Retrieves adjacent plot zones for microclimate & pest spread modeling.
+        Von Neumann neighborhood (4-way) or Moore neighborhood (8-way if diagonal=True).
+        """
+        deltas = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        if diagonal:
+            deltas.extend([(1, 1), (1, -1), (-1, 1), (-1, -1)])
+
+        neighbors = []
+        for dx, dy in deltas:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < self.grid_width and 0 <= ny < self.grid_height:
+                zone = self.get_zone_at(nx, ny)
+                if zone:
+                    neighbors.append(zone)
+        return neighbors
+
+    def get_stressed_zones(self) -> List[PlotZone]:
+        """Returns all plot zones currently exhibiting moisture or canopy stress."""
+        return [
+            z for z in self.zones
+            if z.health_status in ("water_stressed", "low_biomass", "chlorosis", "waterlogged_risk")
+            or z.soil_moisture_pct < 40.0
+            or z.ndvi < 0.45
+        ]
+
+    def get_zones_by_crop(self, crop_type: str) -> List[PlotZone]:
+        """Filters plot zones by specific crop species."""
+        target = crop_type.lower().strip()
+        return [z for z in self.zones if target in z.crop_type.lower()]
+
+    def get_spatial_summary(self) -> Dict[str, Any]:
+        """Calculates aggregated macro-indicators across the entire digital twin grid."""
+        if not self.zones:
+            return {}
+
+        total = len(self.zones)
+        mean_moisture = sum(z.soil_moisture_pct for z in self.zones) / total
+        mean_ndvi = sum(z.ndvi for z in self.zones) / total
+        mean_ndwi = sum(z.ndwi for z in self.zones) / total
+        stressed = self.get_stressed_zones()
+
+        return {
+            "total_zones": total,
+            "grid_dimensions": f"{self.grid_width}x{self.grid_height}",
+            "mean_soil_moisture_pct": round(mean_moisture, 1),
+            "mean_ndvi": round(mean_ndvi, 3),
+            "mean_ndwi": round(mean_ndwi, 3),
+            "stressed_zone_count": len(stressed),
+            "healthy_zone_count": total - len(stressed),
+        }
+
 def create_default_farm(width: int = 4, height: int = 4) -> FarmDigitalTwin:
     """Factory to create an initialized farm grid with distinct zones."""
     crops = ["Strawberries", "Bell Pepper", "Arabica Coffee", "Hydrangea"]
