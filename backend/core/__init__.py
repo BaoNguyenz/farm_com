@@ -6,6 +6,10 @@ from backend.core.agronomy_models import calculate_fao56_et0, calculate_water_de
 from backend.core.extended_spectral import ExtendedSpectralEngine, SpectralBands, CanopyClassification
 from backend.core.crop_phenology import PhenologyEngine, PhenologicalStage, CropParameters
 
+from backend.core.twin_state import FarmDigitalTwin, PlotZone, WeatherTelemetry, ActionLog, create_default_farm
+from backend.core.tick_engine import DigitalTwinTickEngine
+from backend.core.dispatcher import ActionDispatcher, AuditReceipt
+
 __all__ = [
     "compute_ndvi",
     "compute_ndwi",
@@ -19,4 +23,12 @@ __all__ = [
     "PhenologyEngine",
     "PhenologicalStage",
     "CropParameters",
+    "FarmDigitalTwin",
+    "PlotZone",
+    "WeatherTelemetry",
+    "ActionLog",
+    "create_default_farm",
+    "DigitalTwinTickEngine",
+    "ActionDispatcher",
+    "AuditReceipt",
 ]

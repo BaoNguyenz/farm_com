@@ -58,12 +58,12 @@ flowchart LR
 ---
 
 ## 📌 Phase 3: Bản Sao Số & Quản Lý Trạng Thái (Digital Twin State)
-- [ ] **Task 3.1: Chia Lưới Không Gian (Spatial Grid Discretization)**
-  - Chia nông trại thành lưới tọa độ $N \times M$ ô (Plot Zones) với các chỉ số sinh thái riêng biệt.
-- [ ] **Task 3.2: Bộ Điều Phối Bước Thời Gian (Tick Engine)**
-  - Hàm `step_simulation(delta_hours)` cập nhật đồng bộ các ô đất.
-- [ ] **Task 3.3: Dispatcher & Audit Log**
-  - Hàng đợi nhận lệnh -> Cập nhật trạng thái đất -> Lưu nhật ký bất biến.
+- [x] **Task 3.1: Chia Lưới Không Gian (Spatial Grid Discretization)**
+  - Chia nông trại thành lưới tọa độ $N \times M$ ô (Plot Zones) với các chỉ số sinh thái riêng biệt và tô pô lân cận (Von Neumann & Moore).
+- [x] **Task 3.2: Bộ Điều Phối Bước Thời Gian (Tick Engine)**
+  - Hàm `advance_tick(elapsed_hours)` cập nhật đồng bộ các ô đất: nhiệt tích lũy GDD, chuyển pha sinh trưởng BBCH, bốc thoát hơi nước FAO-56 và thoát nước trọng lực.
+- [x] **Task 3.3: Dispatcher & Audit Log**
+  - Hàng đợi nhận lệnh ActionDispatcher -> Cập nhật trạng thái đất -> Lưu nhật ký bất biến có băm mật mã SHA-256 (AuditReceipt).
 
 ---
 

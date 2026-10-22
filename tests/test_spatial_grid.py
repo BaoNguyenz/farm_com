@@ -2,7 +2,7 @@
 Unit tests for Spatial Grid Discretization & Topology Indexing (Task 3.1)
 """
 import pytest
-from backend.core.twin_state import create_default_farm, FarmDigitalTwin, PlotZone
+from backend.core.twin_state import create_default_farm
 
 
 @pytest.fixture

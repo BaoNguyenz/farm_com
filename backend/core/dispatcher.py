@@ -4,7 +4,7 @@ Provides an action execution queue, action handlers, and cryptographic
 hash-chained audit receipts for transparent multi-agent governance.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, Any, List, Optional
 import hashlib
 import json

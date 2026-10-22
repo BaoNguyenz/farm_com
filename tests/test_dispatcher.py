@@ -3,7 +3,7 @@ Unit tests for Action Dispatcher & Cryptographic Audit Ledger (Task 3.3)
 """
 import pytest
 from backend.core.twin_state import create_default_farm
-from backend.core.dispatcher import ActionDispatcher, AuditReceipt
+from backend.core.dispatcher import ActionDispatcher
 
 
 @pytest.fixture

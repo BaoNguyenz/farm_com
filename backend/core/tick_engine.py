@@ -7,7 +7,7 @@ degree days (GDD), transitions crop phenology stages, and simulates soil drying.
 from typing import Dict, Any, List
 import time
 from backend.core.twin_state import FarmDigitalTwin
-from backend.core.crop_phenology import PhenologyEngine, PhenologicalStage
+from backend.core.crop_phenology import PhenologyEngine
 from backend.core.agronomy_models import calculate_fao56_et0
 
 

@@ -45,6 +45,7 @@ def test_gravity_drainage_on_saturated_soil(farm_env):
     zone.soil_moisture_pct = 92.0  # Saturated above 80%
 
     result = engine.advance_tick(farm=farm_env, elapsed_hours=2.0, rain_mm=0.0)
+    assert result["elapsed_hours"] == 2.0
 
     # Moisture should drop significantly due to drainage + evapotranspiration
     assert zone.soil_moisture_pct < 92.0
