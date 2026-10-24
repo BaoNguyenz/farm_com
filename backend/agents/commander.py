@@ -68,12 +68,14 @@ class CommanderAgent:
         for agent, vote in zip(self.agents, votes):
             w = agent.get_domain_weight(domain)
             total_weight += w
-            if vote.vote == "accept":
+            v_lower = vote.vote.lower()
+            if v_lower in ("accept", "approve"):
                 weighted_score += w * vote.confidence
-            elif vote.vote == "concerns":
+            elif v_lower in ("concerns", "defer"):
                 weighted_score += (w * vote.confidence) * 0.5
-            elif vote.vote == "reject":
+            elif v_lower in ("reject", "veto"):
                 weighted_score -= w * vote.confidence
+
 
         normalized_score = weighted_score / max(total_weight, 0.001)
 

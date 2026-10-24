@@ -162,22 +162,26 @@ class MarketAgent(BaseFarmAgent):
         urgency = proposal.get("urgency", "low")
         tariff_tier = context.get("tariff_tier", self.get_electricity_tariff()["tier"])
 
-        if "irrigation" in action_type.lower() or "pump" in action_type.lower():
+        if any(k in action_type.lower() for k in ("irrigat", "pump", "water")):
             if tariff_tier == "peak" and urgency != "critical":
+
                 return DebateVote(
-                    voter_id=self.agent_id,
-                    vote="reject",
+                    agent_id=self.agent_id,
+                    topic="irrigation_pumping",
+                    vote_choice="REJECT",
                     confidence=0.88,
-                    argument=(
+                    rationale=(
                         f"Current electricity tier is PEAK ({self.TARIFF_RATES['peak']:,.0f} VND/kWh). "
                         f"Irrigation is non-critical ({urgency}); deferring will save ~63% in pumping power costs."
                     )
                 )
 
         return DebateVote(
-            voter_id=self.agent_id,
-            vote="accept",
+            agent_id=self.agent_id,
+            topic="farm_operation",
+            vote_choice="APPROVE",
             confidence=0.85,
-            argument="Proposed action aligns with farm economic viability and energy budget constraints."
+            rationale="Proposed action aligns with farm economic viability and energy budget constraints."
         )
+
 
