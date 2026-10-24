@@ -2,7 +2,7 @@
 Agronomist (Plant Doctor) Agent
 Analyzes NDVI/NDWI satellite indices and canopy status to identify diseased, stressed, or low-vigor crops.
 """
-from typing import Dict, Any, List
+from typing import List
 from backend.agents.base_agent import BaseFarmAgent, AgentOpinion, AgentRole
 from backend.core.twin_state import FarmDigitalTwin
 import time
@@ -59,7 +59,7 @@ class AgronomistAgent(BaseFarmAgent):
         if urgency == "critical":
             rec = f"EMERGENCY: Apply preventive bio-fungicide to {', '.join(fungal_hazard_zones)} and schedule foliar nutrition."
         elif urgency == "medium":
-            rec = f"Schedule soil pathogen inspection & foliar nitrogen spray for targeted zones."
+            rec = "Schedule soil pathogen inspection & foliar nitrogen spray for targeted zones."
         else:
             rec = "Canopy biophysical health optimal across all plot zones."
 
