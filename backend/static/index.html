@@ -27,8 +27,28 @@
             border-color: rgba(52, 211, 153, 0.4);
             box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15);
         }
+        /* 2.5D Isometric Matrix Styles */
+        .grid-perspective-container {
+            perspective: 1200px;
+            transition: all 0.4s ease;
+        }
+        .isometric-active {
+            transform: rotateX(48deg) rotateZ(-32deg) scale(0.92);
+            transform-style: preserve-3d;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+        .isometric-active .plot-card {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .isometric-active .plot-card:hover {
+            transform: translateZ(24px) scale(1.04);
+            box-shadow: 0 20px 30px -5px rgba(16, 185, 129, 0.3);
+            z-index: 20;
+        }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
     <!-- Top Navbar -->
     <header class="glass-panel sticky top-0 z-50 px-6 py-3.5 border-b border-slate-800 flex items-center justify-between">
@@ -84,25 +104,38 @@
 
             <!-- Digital Twin Farm Grid View -->
             <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex-1 flex flex-col">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div>
                         <h2 class="text-sm font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-border-all text-emerald-400"></i> Digital Twin Plot Matrix (4x4)
                         </h2>
                         <p class="text-xs text-slate-400">Giám sát NDVI quang phổ và độ ẩm tầng rễ theo từng luống</p>
                     </div>
-                    <div class="flex items-center gap-3 text-xs text-slate-400">
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Khỏe mạnh</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Thiếu nước</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span> Đang tưới</span>
+                    <!-- View Mode Switcher -->
+                    <div class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+                        <button onclick="setViewMode('2d')" id="btn-view-2d" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-table-cells"></i> 2D
+                        </button>
+                        <button onclick="setViewMode('isometric')" id="btn-view-iso" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-cube"></i> 2.5D Isometric
+                        </button>
+                        <button onclick="setViewMode('ndvi')" id="btn-view-ndvi" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-leaf"></i> NDVI
+                        </button>
+                        <button onclick="setViewMode('moisture')" id="btn-view-moisture" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-water"></i> Độ Ẩm
+                        </button>
                     </div>
                 </div>
 
-                <!-- Grid Render -->
-                <div id="farm-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1">
-                    <!-- Populated via Javascript -->
+                <!-- Grid Render with Perspective Wrapper -->
+                <div id="grid-wrapper" class="grid-perspective-container flex-1 flex items-center justify-center py-2">
+                    <div id="farm-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full transition-all duration-500">
+                        <!-- Populated via Javascript -->
+                    </div>
                 </div>
             </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -135,9 +168,41 @@
     <script>
         let currentFarm = null;
 
+        let currentViewMode = '2d';
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const grid = document.getElementById('farm-grid');
+            const btn2d = document.getElementById('btn-view-2d');
+            const btnIso = document.getElementById('btn-view-iso');
+            const btnNdvi = document.getElementById('btn-view-ndvi');
+            const btnMoist = document.getElementById('btn-view-moisture');
+
+            // Reset button styles
+            [btn2d, btnIso, btnNdvi, btnMoist].forEach(b => {
+                b.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
+            });
+
+            const activeClass = "px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30 transition flex items-center gap-1.5";
+
+            if (mode === 'isometric') {
+                grid.classList.add('isometric-active');
+                btnIso.className = activeClass;
+            } else {
+                grid.classList.remove('isometric-active');
+                if (mode === '2d') btn2d.className = activeClass;
+                if (mode === 'ndvi') btnNdvi.className = activeClass;
+                if (mode === 'moisture') btnMoist.className = activeClass;
+            }
+
+            if (currentFarm) {
+                renderDashboard(currentFarm);
+            }
+        }
+
         async function fetchFarmState() {
             try {
-                const res = await fetch('/api/farm/state');
+                const res = await fetch('/api/v1/farm/state');
                 const data = await res.json();
                 currentFarm = data;
                 renderDashboard(data);
@@ -165,16 +230,49 @@
             farm.zones.forEach(zone => {
                 let badgeClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
                 let borderClass = 'border-slate-800';
-                
-                if (zone.health_status === 'water_stressed') {
-                    badgeClass = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
-                    borderClass = 'border-amber-500/30 bg-amber-950/10';
-                } else if (zone.health_status === 'recovering') {
-                    badgeClass = 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                let cardBg = '';
+
+                if (currentViewMode === 'ndvi') {
+                    if (zone.ndvi >= 0.70) {
+                        badgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+                        borderClass = 'border-emerald-500/50';
+                        cardBg = 'style="background: rgba(16, 185, 129, 0.12);"';
+                    } else if (zone.ndvi >= 0.50) {
+                        badgeClass = 'bg-lime-500/20 text-lime-300 border-lime-500/40';
+                        borderClass = 'border-lime-500/40';
+                        cardBg = 'style="background: rgba(132, 204, 22, 0.10);"';
+                    } else {
+                        badgeClass = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+                        borderClass = 'border-rose-500/50';
+                        cardBg = 'style="background: rgba(244, 63, 94, 0.15);"';
+                    }
+                } else if (currentViewMode === 'moisture') {
+                    if (zone.soil_moisture_pct >= 70) {
+                        badgeClass = 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+                        borderClass = 'border-cyan-500/50';
+                        cardBg = 'style="background: rgba(6, 182, 212, 0.14);"';
+                    } else if (zone.soil_moisture_pct >= 40) {
+                        badgeClass = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+                        borderClass = 'border-blue-500/40';
+                        cardBg = 'style="background: rgba(59, 130, 246, 0.10);"';
+                    } else {
+                        badgeClass = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+                        borderClass = 'border-amber-500/50';
+                        cardBg = 'style="background: rgba(245, 158, 11, 0.15);"';
+                    }
+                } else {
+                    if (zone.health_status === 'water_stressed') {
+                        badgeClass = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+                        borderClass = 'border-amber-500/30 bg-amber-950/10';
+                    } else if (zone.health_status === 'recovering') {
+                        badgeClass = 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                    }
                 }
 
                 const card = document.createElement('div');
                 card.className = `plot-card glass-panel p-3.5 rounded-xl border ${borderClass} flex flex-col justify-between`;
+                if (cardBg) card.setAttribute('style', cardBg.replace('style="', '').replace('"', ''));
+
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
@@ -202,6 +300,7 @@
                 gridContainer.appendChild(card);
             });
         }
+
 
         async function conveneCouncil() {
             const btn = document.getElementById('btn-convene');
