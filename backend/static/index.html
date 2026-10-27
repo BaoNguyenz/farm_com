@@ -302,57 +302,98 @@
         }
 
 
+        function renderCouncilVerdict(verdict) {
+            document.getElementById('council-time').innerText = new Date().toLocaleTimeString();
+
+            // Show summary
+            const sumBox = document.getElementById('council-summary');
+            sumBox.classList.remove('hidden');
+            sumBox.innerHTML = `
+                <div class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-gavel"></i> Nghị Quyết Điều Hành (Commander Verdict):
+                </div>
+                ${verdict.executive_summary}
+            `;
+
+            const container = document.getElementById('agent-cards');
+            container.innerHTML = '';
+
+            // Render Structured Debate Rounds if present
+            if (verdict.debate_rounds && verdict.debate_rounds.length > 0) {
+                const debateSec = document.createElement('div');
+                debateSec.className = "flex flex-col gap-2.5 mb-2";
+                debateSec.innerHTML = `<h3 class="text-xs font-bold text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-comments text-emerald-400"></i> Tiến Trình Tranh Luận & Đồng Thuận (${verdict.debate_rounds.length} phiên)</h3>`;
+
+                verdict.debate_rounds.forEach(dr => {
+                    const roundBox = document.createElement('div');
+                    let verdictColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+                    if (dr.consensus_verdict === "deferred") verdictColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                    if (dr.consensus_verdict === "rejected") verdictColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+
+                    roundBox.className = "p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs flex flex-col gap-2";
+                    roundBox.innerHTML = `
+                        <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+                            <span class="font-bold text-slate-200">Đề xuất: <code class="text-emerald-400 mono">${dr.proposal?.action_type || 'Thao tác nông nghiệp'}</code></span>
+                            <span class="px-2 py-0.5 rounded-full border ${verdictColor} font-bold uppercase text-[10px]">${dr.consensus_verdict || 'APPROVED'}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 italic">${dr.resolution_notes || ''}</p>
+                        <div class="space-y-1.5 pt-1">
+                            ${(dr.votes || []).map(v => {
+                                let vBadge = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+                                if (v.vote_choice === "DEFER" || v.vote_choice === "CONCERNS") vBadge = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+                                if (v.vote_choice === "REJECT") vBadge = "bg-rose-500/20 text-rose-300 border-rose-500/30";
+                                return `
+                                    <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800/80 flex flex-col gap-1 text-[11px]">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-semibold text-slate-300 mono">${v.agent_id}</span>
+                                            <span class="px-1.5 py-0.5 rounded border ${vBadge} text-[9px] font-bold">${v.vote_choice} (${v.weight || 1.0}x)</span>
+                                        </div>
+                                        <p class="text-slate-400">${v.rationale || v.argument || ''}</p>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    debateSec.appendChild(roundBox);
+                });
+                container.appendChild(debateSec);
+            }
+
+            // Render Specialist Agent Opinion Cards
+            const agentIcons = {
+                'agent_agronomist': { icon: 'fa-stethoscope', color: 'text-emerald-400', border: 'border-emerald-500/20' },
+                'agent_irrigation': { icon: 'fa-faucet-drip', color: 'text-blue-400', border: 'border-blue-500/20' },
+                'agent_market': { icon: 'fa-scale-balanced', color: 'text-amber-400', border: 'border-amber-500/20' }
+            };
+
+            verdict.opinions.forEach(op => {
+                const meta = agentIcons[op.agent_id] || { icon: 'fa-robot', color: 'text-purple-400', border: 'border-purple-500/20' };
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-xl bg-slate-900/60 border ${meta.border} text-xs flex flex-col gap-2`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid ${meta.icon} ${meta.color}"></i> ${op.role}
+                        </span>
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Độ tin cậy: ${(op.confidence * 100).toFixed(0)}%</span>
+                    </div>
+                    <p class="text-slate-300 italic">"${op.recommendation}"</p>
+                    <p class="text-[11px] text-slate-500 leading-normal">${op.reasoning}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         async function conveneCouncil() {
             const btn = document.getElementById('btn-convene');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang họp...`;
             btn.disabled = true;
 
             try {
-                const res = await fetch('/api/agents/convene', { method: 'POST' });
+                const res = await fetch('/api/v1/council/convene', { method: 'POST' });
                 const verdict = await res.json();
-                
-                document.getElementById('council-time').innerText = new Date().toLocaleTimeString();
-                
-                // Show summary
-                const sumBox = document.getElementById('council-summary');
-                sumBox.classList.remove('hidden');
-                sumBox.innerHTML = `
-                    <div class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-gavel"></i> Nghị Quyết Điều Hành (Commander Verdict):
-                    </div>
-                    ${verdict.executive_summary}
-                `;
-
-                // Render agent opinion cards
-                const container = document.getElementById('agent-cards');
-                container.innerHTML = '';
-
-                const agentIcons = {
-                    'agent_agronomist': { icon: 'fa-stethoscope', color: 'text-emerald-400', border: 'border-emerald-500/20' },
-                    'agent_irrigation': { icon: 'fa-faucet-drip', color: 'text-blue-400', border: 'border-blue-500/20' },
-                    'agent_market': { icon: 'fa-scale-balanced', color: 'text-amber-400', border: 'border-amber-500/20' }
-                };
-
-                verdict.opinions.forEach(op => {
-                    const meta = agentIcons[op.agent_id] || { icon: 'fa-robot', color: 'text-purple-400', border: 'border-purple-500/20' };
-                    const card = document.createElement('div');
-                    card.className = `p-3.5 rounded-xl bg-slate-900/60 border ${meta.border} text-xs flex flex-col gap-2`;
-                    card.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-slate-200 flex items-center gap-2">
-                                <i class="fa-solid ${meta.icon} ${meta.color}"></i> ${op.role}
-                            </span>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Độ tin cậy: ${(op.confidence * 100).toFixed(0)}%</span>
-                        </div>
-                        <p class="text-slate-300 italic">"${op.recommendation}"</p>
-                        <p class="text-[11px] text-slate-500 leading-normal">${op.reasoning}</p>
-                    `;
-                    container.appendChild(card);
-                });
-
-                // Refresh state to show any changes
+                renderCouncilVerdict(verdict);
                 await fetchFarmState();
-
             } catch (err) {
                 console.error("Council error:", err);
             } finally {
@@ -363,15 +404,42 @@
 
         async function advanceTime() {
             try {
-                await fetch('/api/farm/tick?hours=1.0', { method: 'POST' });
+                await fetch('/api/v1/simulation/tick', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hours: 1.0, rain_mm: 0.0 })
+                });
                 await fetchFarmState();
             } catch (err) {
                 console.error("Failed to advance time:", err);
             }
         }
 
+        // Setup Real-time WebSocket connection to /ws/council
+        function initCouncilWebSocket() {
+            try {
+                const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+                const socket = new WebSocket(`${proto}${location.host}/ws/council`);
+                socket.onmessage = (event) => {
+                    try {
+                        const msg = JSON.parse(event.data);
+                        if (msg.event === "COUNCIL_CONCLUDED" && msg.data) {
+                            renderCouncilVerdict(msg.data);
+                            fetchFarmState();
+                        }
+                    } catch (e) {
+                        console.error("WS Parse error:", e);
+                    }
+                };
+            } catch (err) {
+                console.warn("WebSocket not supported or failed to connect:", err);
+            }
+        }
+
         // Initialize on load
         fetchFarmState();
+        initCouncilWebSocket();
     </script>
+
 </body>
 </html>
