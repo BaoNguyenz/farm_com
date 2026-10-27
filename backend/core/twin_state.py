@@ -31,7 +31,10 @@ class WeatherTelemetry(BaseModel):
     precipitation_mm: float = 0.0
     cloud_cover_pct: float = 15.0
 
+WeatherSnapshot = WeatherTelemetry
+
 class ActionLog(BaseModel):
+
     timestamp: float = Field(default_factory=time.time)
     agent_name: str
     action_type: str
