@@ -20,6 +20,8 @@ from backend.agents.market import MarketAgent
 from backend.agents.commander import CommanderAgent
 from backend.api.routes_farm import router as farm_router
 from backend.api.routes_agents import router as agent_router
+from backend.api.v1 import api_v1_router
+
 
 # 1. Instantiate Core Farm Digital Twin State
 farm_instance = create_default_farm(width=settings.grid_size_x, height=settings.grid_size_y)
@@ -65,8 +67,10 @@ app.add_middleware(
 )
 
 # Mount Routes
+app.include_router(api_v1_router)
 app.include_router(farm_router)
 app.include_router(agent_router)
+
 
 # WebSocket Connection Manager for Live Telemetry
 class ConnectionManager:

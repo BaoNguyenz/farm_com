@@ -24,5 +24,7 @@ async def convene_council(
     Trigger immediate meeting of the Farm Multi-Agent Council.
     Each agent evaluates telemetry and the Commander renders a verdict.
     """
-    verdict = await commander.convene_council(farm)
+    from backend.api.v1.endpoints.audit import _global_dispatcher
+    verdict = await commander.convene_council(farm, dispatcher=_global_dispatcher)
     return verdict.to_dict()
+

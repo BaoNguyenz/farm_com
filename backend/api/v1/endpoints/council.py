@@ -38,8 +38,10 @@ async def convene_council(
     commander: CommanderAgent = Depends(get_commander)
 ) -> Dict[str, Any]:
     """Trigger an autonomous session of the Farm Council. All specialist agents evaluate state and debate."""
-    verdict: FarmCouncilVerdict = await commander.convene_council(farm)
+    from backend.api.v1.endpoints.audit import _global_dispatcher
+    verdict: FarmCouncilVerdict = await commander.convene_council(farm, dispatcher=_global_dispatcher)
     verdict_dict = verdict.to_dict()
+
 
     # Append to in-memory history (keep latest 50)
     _council_history.append(verdict_dict)
