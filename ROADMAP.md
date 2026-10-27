@@ -83,22 +83,27 @@ flowchart LR
 ---
 
 ## 📌 Phase 5: Tầng API & WebSocket Server
-- [ ] **Task 5.1: RESTful Endpoints (`api/v1/`)**
-  - `/api/v1/farm`: Lấy trạng thái nông trại và từng luống.
-  - `/api/v1/simulation/tick`: Điều khiển dòng thời gian.
-- [ ] **Task 5.2: WebSocket Real-time Stream (`ws/`)**
-  - `/ws/telemetry`: Stream số liệu cảm biến trực tiếp.
-  - `/ws/council`: Stream tiến trình suy luận (reasoning trace) khi các Agent họp.
+- [x] **Task 5.1: RESTful Endpoints (`api/v1/`)**
+  - `/api/v1/farm`: Lấy trạng thái nông trại, kích thước lưới tọa độ và lọc luống theo độ ẩm/tình trạng bệnh.
+  - `/api/v1/simulation`: Điều khiển dòng thời gian (`/tick`), bơm thời tiết dị thường (`/weather`), khôi phục gốc (`/reset`).
+  - `/api/v1/council`: Họp hội đồng đa tác tử (`/convene`), tranh luận đề xuất tùy chỉnh (`/debate`), lịch sử nghị quyết (`/history`).
+  - `/api/v1/audit`: Truy vấn sổ cái băm mật mã SHA-256 (`/ledger`), xác thực tính toàn vẹn chuỗi (`/verify`), phát lệnh thủ công (`/dispatch`).
+- [x] **Task 5.2: WebSocket Real-time Stream (`ws/`)**
+  - `/ws/telemetry`: Stream số liệu cảm biến, độ ẩm đất và thời tiết trực tiếp.
+  - `/ws/council`: Stream tiến trình suy luận (reasoning trace), lượt bỏ phiếu theo trọng số và nghị quyết Commander thời gian thực.
 
 ---
 
 ## 📌 Phase 6: Giao Diện Người Dùng (Interactive Dashboard)
-- [ ] **Task 6.1: Bản Đồ Lưới Digital Twin (2.5D / Isometric)**
-  - Trực quan hóa màu sắc từng ô đất theo độ ẩm và sức khỏe diệp lục.
-- [ ] **Task 6.2: Khung Tranh Luận Hội Đồng Agent**
-  - Hiển thị từng lượt phát biểu và phán quyết của Commander.
-- [ ] **Task 6.3: Bảng Điều Khiển Mô Phỏng (Simulation Control Bar)**
-  - Nút bấm giả lập hạn hán, mưa rào, cúp điện để test phản ứng của đàn Agent.
+- [x] **Task 6.1: Bản Đồ Lưới Digital Twin (2.5D / Isometric)**
+  - Tùy chọn chuyển đổi góc nhìn 2D Top-down sang 2.5D Isometric 3D với hiệu ứng độ sâu bóng đổ.
+  - Heatmap trực quan hóa đa tầng: Vigor quang phổ NDVI và độ ẩm tầng rễ theo từng luống.
+- [x] **Task 6.2: Khung Tranh Luận Hội Đồng Agent**
+  - Hiển thị từng phiên tranh luận (Debate Round), thẻ biểu quyết của từng Agent (`APPROVE`/`DEFER`/`REJECT`), trọng số domain ($2.0\times$), lý lẽ bảo vệ và phán quyết điều hành của Commander.
+  - Kết nối WebSocket `/ws/council` tự động cập nhật khi hội đồng họp xong.
+- [x] **Task 6.3: Bảng Điều Khiển Mô Phỏng (Simulation Control Bar)**
+  - Thanh công cụ kịch bản: Giả lập "Hạn Hán Đột Ngột" ($38^\circ\text{C}$), "Nguy Cơ Nấm Bệnh" ($92\%$ RH), "Giờ Điện Cao Điểm EVN", và nút tua nhanh $+1\text{h}$, $+6\text{h}$, $+24\text{h}$.
+
 
 ---
 
