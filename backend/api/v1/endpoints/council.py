@@ -48,6 +48,11 @@ async def convene_council(
     if len(_council_history) > 50:
         _council_history.pop(0)
 
+    # Broadcast to WebSocket subscribers
+    from backend.core.websocket_manager import ws_hub
+    await ws_hub.broadcast_council_event("COUNCIL_CONCLUDED", verdict_dict)
+
+
     return verdict_dict
 
 

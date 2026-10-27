@@ -7,10 +7,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
 
 from backend.config import settings
 from backend.core.twin_state import create_default_farm
+from backend.core.websocket_manager import ws_hub
 from backend.ingestion.weather_client import WeatherClient
 from backend.ingestion.satellite_client import SatelliteClient
 from backend.ingestion.sensor_sim import SensorSimulator
@@ -21,6 +21,7 @@ from backend.agents.commander import CommanderAgent
 from backend.api.routes_farm import router as farm_router
 from backend.api.routes_agents import router as agent_router
 from backend.api.v1 import api_v1_router
+
 
 
 # 1. Instantiate Core Farm Digital Twin State
@@ -71,42 +72,48 @@ app.include_router(api_v1_router)
 app.include_router(farm_router)
 app.include_router(agent_router)
 
+# Backward-compatible alias for existing imports
+ws_manager = ws_hub
 
-# WebSocket Connection Manager for Live Telemetry
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-
-    async def broadcast(self, message: dict):
-        for connection in self.active_connections:
-            try:
-                await connection.send_json(message)
-            except Exception:
-                pass
-
-ws_manager = ConnectionManager()
 
 @app.websocket("/ws/telemetry")
 async def websocket_telemetry(websocket: WebSocket):
-    await ws_manager.connect(websocket)
+    """Real-time streaming channel for Digital Twin telemetry, sensor state, and weather."""
+    await ws_hub.connect("telemetry", websocket)
     try:
-        # Send immediate initial state
         await websocket.send_json({"type": "INIT_STATE", "payload": farm_instance.model_dump()})
         while True:
             data = await websocket.receive_text()
-            # Echo or process incoming socket commands
             if data == "PING":
                 await websocket.send_text("PONG")
+            elif data == "GET_STATE":
+                await websocket.send_json({"type": "CURRENT_STATE", "payload": farm_instance.model_dump()})
     except WebSocketDisconnect:
-        ws_manager.disconnect(websocket)
+        ws_hub.disconnect("telemetry", websocket)
+
+
+@app.websocket("/ws/council")
+async def websocket_council(websocket: WebSocket):
+    """Real-time streaming channel for Multi-Agent Council deliberations, debates, and verdicts."""
+    await ws_hub.connect("council", websocket)
+    try:
+        await websocket.send_json({
+            "channel": "council",
+            "event": "CONNECTED",
+            "message": "Subscribed to Multi-Agent Council reasoning trace stream."
+        })
+        while True:
+            data = await websocket.receive_text()
+            if data == "PING":
+                await websocket.send_text("PONG")
+            elif "CONVENE" in data:
+                from backend.api.v1.endpoints.audit import _global_dispatcher
+                verdict = await commander_agent.convene_council(farm_instance, dispatcher=_global_dispatcher)
+                await ws_hub.broadcast_council_event("COUNCIL_CONCLUDED", verdict.to_dict())
+    except WebSocketDisconnect:
+        ws_hub.disconnect("council", websocket)
+
 
 # Mount Static UI Directory
 static_dir = os.path.join(os.path.dirname(__file__), "static")
