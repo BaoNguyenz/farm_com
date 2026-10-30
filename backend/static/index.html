@@ -90,6 +90,9 @@
             <button onclick="resetSimulation()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1">
                 <i class="fa-solid fa-rotate-left text-slate-400"></i> Khôi Phục Gốc
             </button>
+            <button onclick="runBenchmarkBattery()" id="btn-run-benchmark" class="px-2.5 py-1 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 transition flex items-center gap-1 font-semibold">
+                <i class="fa-solid fa-chart-simple text-teal-400"></i> Benchmark Suite (4 Kịch Bản)
+            </button>
         </div>
 
         <!-- Time Controls -->
@@ -532,6 +535,84 @@
             } catch (err) {
                 console.warn("WebSocket not supported or failed to connect:", err);
             }
+        }
+
+        async function runBenchmarkBattery() {
+            const btn = document.getElementById('btn-run-benchmark');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-teal-400"></i> Đang chạy 4 kịch bản...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/v1/scenarios/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scenario_id: 'all', broadcast_updates: true })
+                });
+                const data = await res.json();
+                if (data.report) {
+                    renderBenchmarkModal(data.report);
+                }
+                await fetchFarmState();
+            } catch (err) {
+                console.error("Benchmark error:", err);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function renderBenchmarkModal(report) {
+            let modal = document.getElementById('benchmark-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'benchmark-modal';
+                modal.className = "fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm";
+                document.body.appendChild(modal);
+            }
+
+            modal.innerHTML = `
+                <div class="glass-panel p-6 rounded-2xl border border-slate-700 max-w-2xl w-full max-h-[85vh] flex flex-col gap-4 overflow-hidden shadow-2xl">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-award"></i>
+                            </span>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">Báo Cáo Benchmark Toàn Diện (Phase 7)</h3>
+                                <p class="text-[11px] text-slate-400">Tổng điểm: <b class="text-emerald-400">${report.composite_score}/100</b> • Xếp hạng: <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-xs">${report.composite_grade}</span></p>
+                            </div>
+                        </div>
+                        <button onclick="document.getElementById('benchmark-modal').remove()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    </div>
+
+                    <div class="overflow-y-auto space-y-3 pr-1 text-xs">
+                        ${report.results.map(r => `
+                            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-slate-200">${r.scenario_name}</span>
+                                    <span class="px-2 py-0.5 rounded-full ${r.passed ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400'} font-bold text-[10px]">
+                                        ${r.passed ? 'ĐẠT' : 'CHƯA ĐẠT'} • ${r.score}đ (Hạng ${r.grade})
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 italic">${r.summary}</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                                    ${r.metrics.map(m => `
+                                        <div class="p-2 rounded bg-slate-950/60 border border-slate-800/60 flex justify-between items-center text-[11px]">
+                                            <span class="text-slate-400">${m.name}</span>
+                                            <span class="font-mono ${m.passed ? 'text-emerald-400 font-bold' : 'text-slate-300'}">${m.value} ${m.unit}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800 flex justify-end">
+                        <button onclick="document.getElementById('benchmark-modal').remove()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">Đóng</button>
+                    </div>
+                </div>
+            `;
         }
 
         // Initialize on load

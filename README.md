@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-107%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-125%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
