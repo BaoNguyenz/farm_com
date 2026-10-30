@@ -62,6 +62,17 @@ class WebSocketHub:
         }
         await self.broadcast("telemetry", payload)
 
+    async def broadcast_benchmark_progress(self, scenario_id: str, status: str, payload: Dict[str, Any]):
+        """Broadcasts live scenario benchmark progress events to subscribed frontends."""
+        data = {
+            "channel": "council",
+            "event": "BENCHMARK_PROGRESS",
+            "scenario_id": scenario_id,
+            "status": status,
+            "data": payload
+        }
+        await self.broadcast("council", data)
+
 
 # Singleton WebSocket PubSub Hub instance
 ws_hub = WebSocketHub()
