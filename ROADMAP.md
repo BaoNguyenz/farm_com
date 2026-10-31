@@ -118,3 +118,20 @@ flowchart LR
   - Giả lập nhiệt độ hạ sâu $2.2^\circ\text{C}$ ban đêm tại cao nguyên Đà Lạt, kiểm tra cảnh báo sương muối và biện pháp giữ nhiệt tầng rễ.
 - [x] **Task 7.5: Bộ Điều Phối Benchmark Battery & CLI Runner (`scripts/run_scenarios.py`)**
   - Chạy chuỗi kịch bản tự động, tổng hợp điểm số agro-resilience tổng hợp (Grade A+/A/B) và xuất báo cáo JSON/Markdown.
+
+---
+
+## 📌 Phase 8: Đồng Bộ Hóa Viễn Thám & Xuất Dữ Liệu Đo Đạc (Data Assimilation & Telemetry Export)
+- [x] **Task 8.1: Động Cơ Đồng Bộ Dữ Liệu Kalman Filter (`backend/core/assimilation.py`)**
+  - Hiện thực hóa 1D Kalman Filter nội suy liên tục trạng thái thực vật (NDVI/NDWI) giữa các chu kỳ vệ tinh Sentinel-2 (5 ngày/lần).
+  - Tích hợp mô hình vật lý suy biến tán lá theo vi khí hậu (VPD, độ ẩm đất) và phạt bất định khi mây mù che phủ bề mặt.
+- [x] **Task 8.2: Công Cụ Xuất Dữ Liệu Thời Gian Thực (`backend/core/telemetry_export.py`)**
+  - Xuất dữ liệu chuỗi thời gian các PlotZone, vi khí hậu thời tiết và nhật ký hành động hội đồng ra định dạng chuẩn CSV (RFC 4180) và JSON.
+  - Tổng hợp thống kê nông trại (phân bố cây trồng, độ ẩm bình quân, NDVI bình quân).
+- [x] **Task 8.3: Điểm Cuối RESTful Telemetry Export (`backend/api/v1/endpoints/farm.py`)**
+  - `/api/v1/farm/export/summary`: Thống kê tổng hợp số liệu sinh trắc học và hiện trạng nông trại.
+  - `/api/v1/farm/export/zones`: Tải về dữ liệu trắc quang các vùng canh tác (`format=csv` hoặc `json`).
+  - `/api/v1/farm/export/actions`: Tải về lịch sử điều hành và phán quyết hội đồng Agent.
+  - `/api/v1/farm/export/full`: Sao lưu toàn diện Digital Twin dạng tệp tin snapshot JSON.
+- [x] **Task 8.4: Kiểm Thử Tự Động Toàn Diện**
+  - 135/135 Unit & Integration tests vượt qua thành công 100% (`tests/test_assimilation.py`, `tests/test_export.py`).
