@@ -2,9 +2,10 @@
 Farm Digital Twin REST API Endpoints (v1)
 Provides spatial grid state, individual zone diagnostics, and filtered telemetry queries.
 """
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, Response
 from typing import Dict, Any, List, Optional
 from backend.core.twin_state import FarmDigitalTwin
+from backend.core.telemetry_export import TelemetryExporter
 
 
 router = APIRouter(prefix="/farm", tags=["Farm Digital Twin v1"])
@@ -107,3 +108,56 @@ async def get_zone_detail(
         "moore_neighbors": neighbors_moore
     }
     return data
+
+
+@router.get("/export/summary")
+async def export_farm_summary(
+    farm: FarmDigitalTwin = Depends(get_farm_state)
+) -> Dict[str, Any]:
+    """Retrieve statistical telemetry aggregates across all plot zones."""
+    return TelemetryExporter.export_summary_dict(farm)
+
+
+@router.get("/export/zones")
+async def export_zones(
+    format: str = Query("json", pattern="^(json|csv)$", description="Format to export: 'json' or 'csv'"),
+    farm: FarmDigitalTwin = Depends(get_farm_state)
+) -> Any:
+    """Export current zone biophysical telemetry in CSV or JSON format."""
+    if format == "csv":
+        csv_data = TelemetryExporter.export_zones_csv(farm)
+        return Response(
+            content=csv_data,
+            media_type="text/csv",
+            headers={"Content-Disposition": 'attachment; filename="zones_telemetry.csv"'}
+        )
+    return [z.model_dump() for z in farm.zones]
+
+
+@router.get("/export/actions")
+async def export_actions(
+    format: str = Query("json", pattern="^(json|csv)$", description="Format to export: 'json' or 'csv'"),
+    farm: FarmDigitalTwin = Depends(get_farm_state)
+) -> Any:
+    """Export historical council action logs in CSV or JSON format."""
+    if format == "csv":
+        csv_data = TelemetryExporter.export_actions_csv(farm)
+        return Response(
+            content=csv_data,
+            media_type="text/csv",
+            headers={"Content-Disposition": 'attachment; filename="action_history.csv"'}
+        )
+    return [a.model_dump() for a in farm.action_history]
+
+
+@router.get("/export/full")
+async def export_full_farm(
+    farm: FarmDigitalTwin = Depends(get_farm_state)
+) -> Response:
+    """Export complete digital twin snapshot as a formatted JSON document."""
+    raw_json = TelemetryExporter.export_farm_json(farm)
+    return Response(
+        content=raw_json,
+        media_type="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{farm.farm_id}_snapshot.json"'}
+    )
