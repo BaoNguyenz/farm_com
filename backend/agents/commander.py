@@ -87,6 +87,17 @@ class CommanderAgent:
                 "EMERGENCY OVERRIDE: Biological crop preservation takes absolute precedence "
                 "over energy tariff optimization. Proposal approved."
             )
+        # Conflict Resolution Rule 2: Peak Energy Tariff Deferral for Non-Critical Irrigation
+        elif (
+            context.get("tariff_tier") == "peak"
+            and not is_emergency
+            and any(k in proposal.get("action_type", "").lower() for k in ("irrigat", "pump", "water"))
+        ):
+            consensus_verdict = "deferred"
+            resolution_notes = (
+                "PEAK TARIFF DEFERRAL: Electricity tariff is at peak rate (3,076 VND/kWh). "
+                "Non-critical irrigation deferred to off-peak window (22:00)."
+            )
         elif normalized_score >= 0.4:
             consensus_verdict = "approved"
             resolution_notes = f"Consensus reached (weighted score: {normalized_score:.2f}). Proposal passed."
