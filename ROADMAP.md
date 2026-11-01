@@ -135,3 +135,29 @@ flowchart LR
   - `/api/v1/farm/export/full`: Sao lưu toàn diện Digital Twin dạng tệp tin snapshot JSON.
 - [x] **Task 8.4: Kiểm Thử Tự Động Toàn Diện**
   - 135/135 Unit & Integration tests vượt qua thành công 100% (`tests/test_assimilation.py`, `tests/test_export.py`).
+
+---
+
+## 📌 Phase 9: Hạ Tầng IoT Biên, Thủy Nông Hồ Chứa & Châm Phân Bón (IoT Edge & Precision Fertigation)
+- [x] **Task 9.1: Bộ Giải Mã & Đóng Gói Nhị Phân LoRaWAN (`backend/ingestion/lorawan_codec.py`)**
+  - Hiện thực hóa cấu trúc gói tin nén 12 bytes chuẩn hóa (AS923/EU868) cho vi điều khiển ESP32-S3/SX1262.
+  - Tích hợp kiểm tra toàn vẹn mã CRC-8 Dallas/Maxim, tọa độ không gian 4-bit và cờ cảnh báo điện áp/độ mặn.
+- [x] **Task 9.2: Động Cơ Quản Lý Hồ Chứa Thủy Nông & Hạn Hán (`backend/core/water_budget.py`)**
+  - Mô phỏng dung tích hồ chứa ($50.000\text{ L}$), bổ cập nước ngầm tự nhiên và thu hoạch nước mưa.
+  - Phân tầng hạn ngạch cấp nước 5 cấp độ (`abundant`, `normal`, `moderate_deficit`, `severe_drought`, `critical_empty`).
+- [x] **Task 9.3: Tối Ưu Hóa Dinh Dưỡng N-P-K & EC/pH Châm Phân (`backend/core/fertigation.py`)**
+  - Ma trận dinh dưỡng chuyên sâu theo loại cây (Dâu tây, Ớt chuông, Cà phê Arabica) và từng thời kỳ phát triển (ra hoa, nuôi quả).
+  - Tự động tính toán tỷ lệ châm Bể A (Canxi nitrat), Bể B (Photphat, Kali) và đệm axit trung hòa nước kiềm.
+- [x] **Task 9.4: Kiểm Soát Sốc Nhiệt Tán Lá & Phun Sương Hạ Nhiệt (`backend/core/heat_stress.py`)**
+  - Động lực học thâm hụt áp suất hơi nước ($VPD$) và chỉ số sốc nhiệt Steadman.
+  - Điều phối các xung phun sương vi hạt ($< 20\mu\text{m}$) hạ nhiệt độ tán $3.5\text{--}5^\circ\text{C}$ mà không làm úng gốc rễ.
+- [x] **Task 9.5: Mở Rộng Hội Đồng Đa Tác Tử (Agent Council Integration)**
+  - `IrrigationAgent`: Tự động siết hạn ngạch theo trữ lượng hồ chứa, phủ quyết tưới định kỳ khi hồ cạn kiệt.
+  - `AgronomistAgent`: Phát hiện sốc nhiệt cực đoan và kích hoạt phủ quyết bệnh lý khi độ ẩm không khí vượt $85\%$.
+- [x] **Task 9.6: Điểm Cuối RESTful IoT & Fertigation API (`endpoints/iot.py`, `endpoints/fertigation.py`)**
+  - `/api/v1/iot/lorawan/uplink` & `/lorawan/simulate`: Tiếp nhận dữ liệu trắc quan không dây từ Gateway ngoài trời.
+  - `/api/v1/fertigation/recipes` & `/water-budget`: Cung cấp công thức châm phân và báo cáo tự chủ nguồn nước.
+- [x] **Task 9.7: Nâng Cấp Giao Diện Bảng Điều Khiển (`backend/static/index.html`)**
+  - Thẻ trực quan hóa trạng thái mạng LoRaWAN, thanh đo trữ lượng hồ nước và trạng thái phun sương thời gian thực.
+- [x] **Task 9.8: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 167/167 Unit & Integration tests vượt qua thành công 100% (`tests/test_lorawan_codec.py`, `tests/test_water_budget.py`, `tests/test_fertigation.py`, `tests/test_heat_stress.py`, `tests/test_agent_extensions.py`, `tests/test_iot_fertigation_api.py`).
