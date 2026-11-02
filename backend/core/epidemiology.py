@@ -97,7 +97,7 @@ class EpidemiologyEngine:
         bio_control = (
             "CRITICAL: Veto irrigation to allow root zone drainage. "
             "Drench root zone with Trichoderma asperellum T34 (0.5 g/L) and Potassium Phosphite (H2PO3-)."
-        ) if score >= 50.0 else "Maintain aerobic root zone drainage; avoid over-watering."
+        ) if score >= 35.0 else "Maintain aerobic root zone drainage; avoid over-watering."
 
         return PathogenRisk(
             pathogen_name="Phytophthora cactorum",
