@@ -10,6 +10,7 @@ from backend.benchmarks.drought_shock import DroughtShockScenario
 from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
 from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
 from backend.benchmarks.frost_hazard import FrostHazardScenario
+from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
 from backend.core.twin_state import FarmDigitalTwin
 
 
@@ -35,7 +36,8 @@ class BenchmarkRunner:
             "drought_shock": DroughtShockScenario(),
             "fungal_outbreak": FungalOutbreakScenario(),
             "tariff_optimization": TariffOptimizationScenario(),
-            "frost_hazard": FrostHazardScenario()
+            "frost_hazard": FrostHazardScenario(),
+            "biosecurity_hazard": BiosecurityHazardScenario()
         }
         self._last_report: Optional[BenchmarkSuiteReport] = None
 
