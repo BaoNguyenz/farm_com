@@ -228,6 +228,47 @@
                 </div>
             </div>
 
+            <!-- Carbon GHG Footprint & Epidemiological Biosecurity Radar -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Carbon Footprint & ESG Accounting -->
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-leaf text-emerald-400"></i> Dấu Chân Carbon (GHG Protocol)
+                        </span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold" id="carbon-rating-badge">A_CLIMATE_POSITIVE</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <p class="text-xl font-bold text-emerald-400 font-mono" id="carbon-net-val">-0.85 kg</p>
+                        <span class="text-[11px] text-slate-400">CO2e ròng / ngày</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-400 flex flex-col gap-1">
+                        <div class="flex justify-between"><span>Phát thải Bơm (Scope 2):</span><span class="text-slate-300 font-mono" id="carbon-scope2">0.58 kg</span></div>
+                        <div class="flex justify-between"><span>Phân bón N (Scope 1):</span><span class="text-slate-300 font-mono" id="carbon-scope1">0.62 kg</span></div>
+                        <div class="flex justify-between"><span>Hấp thụ đất (Sink):</span><span class="text-emerald-400 font-mono" id="carbon-sink">-2.05 kg CO2e</span></div>
+                    </div>
+                </div>
+
+                <!-- Pathogen Epidemiology Radar -->
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-virus text-rose-400"></i> Radar Dịch Bệnh & An Ninh Sinh Học
+                        </span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 font-bold" id="bio-alert-badge">AN TOÀN</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <p class="text-xl font-bold text-white font-mono" id="bio-risk-score">18.5/100</p>
+                        <span class="text-[11px] text-slate-400" id="bio-threat-label">Mối đe dọa: Thấp</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-400 flex flex-col gap-1">
+                        <div class="flex justify-between"><span>Thối mốc xám (Botrytis):</span><span class="text-slate-300 font-mono" id="bio-botrytis-score">12%</span></div>
+                        <div class="flex justify-between"><span>Thối gốc (Phytophthora):</span><span class="text-slate-300 font-mono" id="bio-phyto-score">15%</span></div>
+                        <div class="flex justify-between"><span>Kê đơn sinh học (IPM):</span><span class="text-teal-300 font-medium truncate max-w-[200px]" id="bio-ipm-rec">Bacillus subtilis phòng ngừa</span></div>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -694,6 +735,30 @@
                     } else {
                         document.getElementById('cooling-status-label').innerText = `Standby (${cool.assessment.alert_level})`;
                         document.getElementById('cooling-status-label').className = "text-emerald-300 font-mono";
+                    }
+                }
+
+                // Carbon footprint
+                const carbRes = await fetch('/api/v1/carbon/footprint');
+                if (carbRes.ok) {
+                    const c = await carbRes.json();
+                    document.getElementById('carbon-rating-badge').innerText = c.carbon_rating;
+                    document.getElementById('carbon-net-val').innerText = `${c.net_footprint_kg_co2e > 0 ? '+' : ''}${c.net_footprint_kg_co2e} kg`;
+                    document.getElementById('carbon-scope2').innerText = `${c.scope2_emissions_kg_co2e} kg`;
+                    document.getElementById('carbon-scope1').innerText = `${c.scope1_emissions_kg_co2e} kg`;
+                    document.getElementById('carbon-sink').innerText = `-${c.total_sequestration_kg_co2e} kg CO2e`;
+                }
+
+                // Biosecurity & Epidemiology
+                const bioRes = await fetch('/api/v1/epidemiology/biosecurity');
+                if (bioRes.ok) {
+                    const b = await bioRes.json();
+                    document.getElementById('bio-risk-score').innerText = `${b.average_pathogen_risk_score}/100`;
+                    document.getElementById('bio-alert-badge').innerText = b.high_risk_zones_count > 0 ? "NGUY CƠ CAO" : "AN TOÀN";
+                    document.getElementById('bio-alert-badge').className = b.high_risk_zones_count > 0 ? "text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold animate-pulse" : "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold";
+                    if (b.highest_threat) {
+                        document.getElementById('bio-threat-label').innerText = `Cảnh báo: ${b.highest_threat.primary_threat}`;
+                        document.getElementById('bio-ipm-rec').innerText = b.highest_threat.recommended_action;
                     }
                 }
             } catch (err) {
