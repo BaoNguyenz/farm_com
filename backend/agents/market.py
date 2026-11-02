@@ -33,6 +33,10 @@ class MarketAgent(BaseFarmAgent):
         "Hydrangea": {"price_vnd": 120000, "unit": "stem_bunch", "trend": "+8%", "status": "high_demand", "yield_kg_m2": 1.0}
     }
 
+    # Grid carbon intensity and carbon credit tax rate (VND / ton CO2e)
+    GRID_CARBON_INTENSITY_KG_KWH = 0.7221
+    CARBON_TAX_VND_PER_TON = 120000.0
+
     def __init__(self):
         super().__init__(
             agent_id="agent_market",
@@ -71,7 +75,7 @@ class MarketAgent(BaseFarmAgent):
 
     def estimate_pumping_cost(self, water_volume_liters: float, tier: str = "normal") -> Dict[str, float]:
         """
-        Estimates energy required and financial cost to pump a given volume of water.
+        Estimates energy required, financial cost, and Scope 2 GHG emissions to pump water.
         Benchmark: 3.5 kW pump delivers 15,000 L/h => ~0.233 kWh per 1,000 Liters.
         """
         kwh_per_1000l = 0.233
@@ -81,12 +85,17 @@ class MarketAgent(BaseFarmAgent):
         peak_cost_vnd = energy_kwh * self.TARIFF_RATES["peak"]
         potential_savings = max(0.0, peak_cost_vnd - cost_vnd)
 
+        co2e_kg = energy_kwh * self.GRID_CARBON_INTENSITY_KG_KWH
+        carbon_tax_vnd = (co2e_kg / 1000.0) * self.CARBON_TAX_VND_PER_TON
+
         return {
             "water_volume_liters": water_volume_liters,
             "energy_kwh": round(energy_kwh, 2),
             "rate_vnd_kwh": rate,
             "cost_vnd": round(cost_vnd, 0),
-            "potential_savings_vs_peak_vnd": round(potential_savings, 0)
+            "potential_savings_vs_peak_vnd": round(potential_savings, 0),
+            "scope2_emissions_kg_co2e": round(co2e_kg, 3),
+            "carbon_tax_liability_vnd": round(carbon_tax_vnd, 1)
         }
 
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
@@ -147,7 +156,9 @@ class MarketAgent(BaseFarmAgent):
                 "electricity_tariff": tariff_info,
                 "harvest_candidates": harvest_candidates,
                 "projected_harvest_value_vnd": total_estimated_value_vnd,
-                "spot_prices": self.SPOT_PRICES
+                "spot_prices": self.SPOT_PRICES,
+                "grid_carbon_intensity_kg_kwh": self.GRID_CARBON_INTENSITY_KG_KWH,
+                "carbon_tax_rate_vnd_ton": self.CARBON_TAX_VND_PER_TON
             },
             reasoning=reasoning,
             timestamp=time.time()
