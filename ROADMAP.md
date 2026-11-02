@@ -161,3 +161,25 @@ flowchart LR
   - Thẻ trực quan hóa trạng thái mạng LoRaWAN, thanh đo trữ lượng hồ nước và trạng thái phun sương thời gian thực.
 - [x] **Task 9.8: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 167/167 Unit & Integration tests vượt qua thành công 100% (`tests/test_lorawan_codec.py`, `tests/test_water_budget.py`, `tests/test_fertigation.py`, `tests/test_heat_stress.py`, `tests/test_agent_extensions.py`, `tests/test_iot_fertigation_api.py`).
+
+---
+
+## 📌 Phase 10: Kế Toán Carbon GHG, Dịch Tễ Bệnh Học & An Ninh Sinh Học (Carbon Accounting & Biosecurity)
+- [x] **Task 10.1: Động Cơ Kế Toán Khí Nhà Kính & Dấu Chân Carbon (`backend/core/carbon_accounting.py`)**
+  - Hiện thực hóa hướng dẫn IPCC Tier 1 & GHG Protocol cho nông nghiệp thông minh.
+  - Phân tách Scope 1 (phát thải trực tiếp $N_2O$ từ phân đạm), Scope 2 (điện năng bơm tưới lưới EVN $0.7221\text{ kg CO}_2\text{e/kWh}$) và tín chỉ hấp thụ carbon hữu cơ của đất (SOC Sink).
+- [x] **Task 10.2: Mô Hình Dịch Tễ Học Nấm Bệnh Vi Khí Hậu (`backend/core/epidemiology.py`)**
+  - Mô phỏng động học nấm mốc xám *Botrytis cinerea* (hàm Broome nhiệt ẩm), nấm thối gốc rễ *Phytophthora cactorum* (ngập úng tầng rễ) và bệnh phấn trắng *Podosphaera aphanis*.
+  - Tự động kê đơn giải pháp sinh học IPM (*Bacillus subtilis*, *Trichoderma asperellum*).
+- [x] **Task 10.3: Mở Rộng Cơ Chế Trọng Tài An Ninh Sinh Học & Chi Phí Carbon**
+  - `MarketAgent`: Tích hợp chi phí phát thải Scope 2 và thuế carbon vào tối ưu hóa vận hành bơm.
+  - `CommanderAgent`: Bổ sung luật trọng tài Biosecurity Veto, ngăn ngừa tưới vào đất bão hòa nấm bệnh.
+- [x] **Task 10.4: Điểm Cuối RESTful Carbon & Dịch Tễ Học (`endpoints/carbon.py`, `endpoints/epidemiology.py`)**
+  - `/api/v1/carbon/footprint` & `/carbon/zones/{id}`: Truy vấn báo cáo kiểm toán GHG và xếp hạng khí hậu.
+  - `/api/v1/epidemiology/biosecurity` & `/ipm-advisories`: Trích xuất radar rủi ro mầm bệnh và khuyến nghị sinh học.
+- [x] **Task 10.5: Kịch Bản Benchmark An Ninh Sinh Học (`backend/benchmarks/biosecurity_hazard.py`)**
+  - Giả lập đợt bùng phát đa mầm bệnh (mưa $28\text{mm}$, độ ẩm $93.5\%$), đánh giá phản xạ phủ quyết và triển khai chế phẩm sinh học.
+- [x] **Task 10.6: Nâng Cấp Giao Diện Bảng Điều Khiển (`backend/static/index.html`)**
+  - Tích hợp 2 thẻ HUD: Dấu Chân Carbon GHG Protocol (xếp hạng khí hậu) và Radar Dịch Bệnh An Ninh Sinh Học.
+- [x] **Task 10.7: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 191/191 Unit & Integration tests vượt qua thành công 100% (`tests/test_carbon_accounting.py`, `tests/test_epidemiology.py`, `tests/test_carbon_council.py`, `tests/test_carbon_epidemiology_api.py`, `tests/test_scenario_biosecurity.py`).

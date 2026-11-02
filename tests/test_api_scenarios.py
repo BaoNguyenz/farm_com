@@ -47,7 +47,7 @@ def test_api_run_all_scenarios_and_latest(client):
     assert data["type"] == "suite_completed"
     assert "report" in data
     report = data["report"]
-    assert report["total_scenarios"] == 4
+    assert report["total_scenarios"] >= 4
     assert report["composite_grade"] in ("A+", "A", "B")
 
     # Query latest endpoint

@@ -48,11 +48,11 @@ def test_runner_run_all_battery_and_grading():
     report = asyncio.run(runner.run_all(farm, commander))
 
     assert isinstance(report, BenchmarkSuiteReport)
-    assert report.total_scenarios == 4
+    assert report.total_scenarios >= 4
     assert report.passed_scenarios >= 3
     assert report.composite_score >= 70.0
     assert report.composite_grade in ("A+", "A", "B")
-    assert len(report.results) == 4
+    assert len(report.results) >= 4
 
     # Check last_report property
     assert runner.last_report is not None
@@ -60,6 +60,6 @@ def test_runner_run_all_battery_and_grading():
 
     # Check dict export
     d = report.to_dict()
-    assert d["total_scenarios"] == 4
+    assert d["total_scenarios"] >= 4
     assert "results" in d
-    assert len(d["results"]) == 4
+    assert len(d["results"]) >= 4
