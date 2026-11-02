@@ -10,6 +10,7 @@ from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.iot import router as iot_router
 from backend.api.v1.endpoints.fertigation import router as fertigation_router
 from backend.api.v1.endpoints.carbon import router as carbon_router
+from backend.api.v1.endpoints.epidemiology import router as epidemiology_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 api_v1_router.include_router(farm_router)
@@ -20,6 +21,7 @@ api_v1_router.include_router(scenarios_router)
 api_v1_router.include_router(iot_router)
 api_v1_router.include_router(fertigation_router)
 api_v1_router.include_router(carbon_router)
+api_v1_router.include_router(epidemiology_router)
 
 __all__ = ["api_v1_router"]
 
