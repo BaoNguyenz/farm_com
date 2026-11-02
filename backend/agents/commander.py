@@ -87,7 +87,14 @@ class CommanderAgent:
                 "EMERGENCY OVERRIDE: Biological crop preservation takes absolute precedence "
                 "over energy tariff optimization. Proposal approved."
             )
-        # Conflict Resolution Rule 2: Peak Energy Tariff Deferral for Non-Critical Irrigation
+        # Conflict Resolution Rule 2: Pathogen Biosecurity Veto
+        elif not is_emergency and any(v.vote in ("reject", "veto") and "pathology" in v.argument.lower() for v in votes):
+            consensus_verdict = "rejected"
+            resolution_notes = (
+                "BIOSECURITY VETO: High pathogen sporulation risk. "
+                "Excess irrigation vetoed by Agronomist to prevent Phytophthora root rot."
+            )
+        # Conflict Resolution Rule 3: Peak Energy Tariff Deferral for Non-Critical Irrigation
         elif (
             context.get("tariff_tier") == "peak"
             and not is_emergency
