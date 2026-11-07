@@ -119,16 +119,18 @@ class DroneScoutingEngine:
         vari = indices["vari"]
         ndre = indices["ndre"]
 
+        zone_area_m2 = getattr(zone, "area_m2", 25.0)
+
         # Canopy cover fraction f_cover estimation based on NDRE & NDVI
         f_cover = min(98.5, max(15.0, round(zone.ndvi * 115.0 - 5.0, 1)))
 
         # Stand count estimation: ~3.5 to 5.0 plants per m2 based on area
-        expected_plants = int(zone.area_m2 * 4.2)
+        expected_plants = int(zone_area_m2 * 4.2)
         stand_establishment_pct = min(1.0, max(0.5, (f_cover / 100.0) * 1.1))
         plant_count = int(expected_plants * stand_establishment_pct)
 
         # Gap and chlorosis detection
-        emergence_gaps = max(0, int((1.0 - (f_cover / 100.0)) * (zone.area_m2 / 120.0)))
+        emergence_gaps = max(0, int((1.0 - (f_cover / 100.0)) * (zone_area_m2 / 120.0)))
         chlorosis_hotspots = 0
         if ndre < 0.25:
             chlorosis_hotspots = max(1, int((0.30 - ndre) * 20))
@@ -177,7 +179,7 @@ class DroneScoutingEngine:
         Execute an autonomous scouting mission over target zones.
         Ensures battery safety margin (RTH threshold 20%).
         """
-        total_area_m2 = sum(z.area_m2 for z in zones)
+        total_area_m2 = sum(getattr(z, "area_m2", 25.0) for z in zones)
         total_ha = total_area_m2 / 10000.0
 
         flight_duration = round(total_ha * self.FLIGHT_MINUTES_PER_HA, 1)
