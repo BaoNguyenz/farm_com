@@ -301,6 +301,47 @@
                 </div>
             </div>
 
+            <!-- Aerial Drone Multispectral Scouting & Yield Forecast HUD -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Drone Scouting Radar -->
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-drone text-sky-400"></i> Radar Khảo Sát Drone Đa Phổ UAV
+                        </span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold" id="drone-status-badge">COMPLETED</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <p class="text-xl font-bold text-sky-400 font-mono" id="drone-area-scouted">0.04 ha</p>
+                        <span class="text-[11px] text-slate-400" id="drone-altitude-label">Độ cao: 30m AGL</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-400 flex flex-col gap-1">
+                        <div class="flex justify-between"><span>Điểm vàng lá (Chlorosis):</span><span class="text-slate-300 font-mono" id="drone-chlorosis-count">0 điểm</span></div>
+                        <div class="flex justify-between"><span>Khoảng trống hạt nảy mầm:</span><span class="text-slate-300 font-mono" id="drone-gaps-count">0 lỗ khuyết</span></div>
+                        <div class="flex justify-between"><span>Chỉ số cỏ dại (Weed Index):</span><span class="text-emerald-400 font-mono" id="drone-weed-score">Thấp (0.12)</span></div>
+                    </div>
+                </div>
+
+                <!-- Crop Yield Forecast & Harvest Logistics -->
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-wheat-awn text-amber-300"></i> Dự Báo Sản Lượng & Hậu Cần Thu Hoạch
+                        </span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold" id="yield-maturity-badge">ĐỘ CHÍN: 68%</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <p class="text-xl font-bold text-amber-300 font-mono" id="yield-total-tons">1.45 tấn</p>
+                        <span class="text-[11px] text-slate-400">Dự kiến toàn trang trại</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-400 flex flex-col gap-1">
+                        <div class="flex justify-between"><span>Số thùng thu hoạch (15kg):</span><span class="text-slate-300 font-mono" id="yield-crates-needed">97 thùng</span></div>
+                        <div class="flex justify-between"><span>Ca công nhân hái quả:</span><span class="text-slate-300 font-mono" id="yield-worker-shifts">10 ca (8h)</span></div>
+                        <div class="flex justify-between"><span>Kho lạnh bảo quản:</span><span class="text-teal-300 font-mono" id="yield-cold-storage">4.85 m³ (làm mát sơ bộ)</span></div>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -802,6 +843,30 @@
                     document.getElementById('bess-soc-val').innerText = `${Math.round(mg.battery_bess.current_soc * 100)}%`;
                     document.getElementById('bess-kwh-val').innerText = `${mg.battery_bess.stored_energy_kwh} / ${mg.battery_bess.capacity_kwh} kWh`;
                     document.getElementById('bess-eff-val').innerText = `${(mg.battery_bess.roundtrip_efficiency * 100).toFixed(1)}%`;
+                }
+
+                // Drone Scouting
+                const droneRes = await fetch('/api/v1/drone/surveys/latest');
+                if (droneRes.ok) {
+                    const dr = await droneRes.json();
+                    document.getElementById('drone-status-badge').innerText = dr.status.toUpperCase();
+                    document.getElementById('drone-area-scouted').innerText = `${dr.total_area_scouted_ha} ha`;
+                    document.getElementById('drone-altitude-label').innerText = `Độ cao: ${dr.flight_altitude_m}m AGL (${dr.flight_duration_minutes}m)`;
+                    const totalChlorosis = dr.zone_surveys.reduce((acc, z) => acc + z.chlorosis_hotspots, 0);
+                    const totalGaps = dr.zone_surveys.reduce((acc, z) => acc + z.emergence_gap_count, 0);
+                    document.getElementById('drone-chlorosis-count').innerText = `${totalChlorosis} điểm`;
+                    document.getElementById('drone-gaps-count').innerText = `${totalGaps} lỗ khuyết`;
+                }
+
+                // Crop Yield & Harvest Logistics
+                const yieldRes = await fetch('/api/v1/yield/forecast');
+                if (yieldRes.ok) {
+                    const y = await yieldRes.json();
+                    document.getElementById('yield-maturity-badge').innerText = `ĐỘ CHÍN: ${y.average_maturity_pct}%`;
+                    document.getElementById('yield-total-tons').innerText = `${y.total_farm_expected_yield_tons} tấn`;
+                    document.getElementById('yield-crates-needed').innerText = `${y.logistics_plan.total_crates_needed} thùng`;
+                    document.getElementById('yield-worker-shifts').innerText = `${y.logistics_plan.labor_worker_shifts_needed} ca (8h)`;
+                    document.getElementById('yield-cold-storage').innerText = `${y.logistics_plan.cold_storage_volume_m3} m³ (~${y.logistics_plan.post_harvest_precooling_load_kwh} kWh)`;
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
