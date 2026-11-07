@@ -203,8 +203,12 @@ class YieldPredictionEngine:
         earliest_days = 999
         latest_days = 0
 
+        temp_c = 22.0
+        if hasattr(farm, "current_weather") and farm.current_weather is not None:
+            temp_c = farm.current_weather.temp_c
+
         for zone in farm.zones:
-            fc = self.forecast_zone(zone, avg_daily_temp_c=farm.weather.temp_c, zone_area_m2=zone_area_m2)
+            fc = self.forecast_zone(zone, avg_daily_temp_c=temp_c, zone_area_m2=zone_area_m2)
             zone_forecasts.append(fc)
             total_kg += fc.expected_yield_kg
             maturity_sum += fc.maturity_percentage
