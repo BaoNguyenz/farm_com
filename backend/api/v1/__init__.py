@@ -14,6 +14,7 @@ from backend.api.v1.endpoints.iot import router as iot_router
 from backend.api.v1.endpoints.microgrid import router as microgrid_router
 from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.simulation import router as simulation_router
+from backend.api.v1.endpoints.yield_forecast import router as yield_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 api_v1_router.include_router(farm_router)
@@ -27,6 +28,7 @@ api_v1_router.include_router(carbon_router)
 api_v1_router.include_router(epidemiology_router)
 api_v1_router.include_router(microgrid_router)
 api_v1_router.include_router(drone_router)
+api_v1_router.include_router(yield_router)
 
 __all__ = ["api_v1_router"]
 
