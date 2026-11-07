@@ -3,14 +3,17 @@ Multi-Scenario Benchmark Suite Runner
 Executes batch scenarios, aggregates performance metrics, and calculates composite agro-resilience grades.
 """
 import time
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
+
 from backend.benchmarks.base import BaseScenarioBenchmark, ScenarioEvaluationResult
-from backend.benchmarks.drought_shock import DroughtShockScenario
-from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
-from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
-from backend.benchmarks.frost_hazard import FrostHazardScenario
 from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
+from backend.benchmarks.drought_shock import DroughtShockScenario
+from backend.benchmarks.frost_hazard import FrostHazardScenario
+from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
+from backend.benchmarks.grid_blackout import GridBlackoutScenario
+from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
 from backend.core.twin_state import FarmDigitalTwin
 
 
@@ -20,10 +23,10 @@ class BenchmarkSuiteReport(BaseModel):
     passed_scenarios: int
     composite_score: float = Field(ge=0.0, le=100.0)
     composite_grade: str
-    results: List[ScenarioEvaluationResult] = Field(default_factory=list)
+    results: list[ScenarioEvaluationResult] = Field(default_factory=list)
     timestamp: float = Field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.model_dump()
 
 
@@ -32,16 +35,17 @@ class BenchmarkRunner:
     Orchestrates execution of agricultural stress and resilience benchmarks.
     """
     def __init__(self):
-        self._scenarios: Dict[str, BaseScenarioBenchmark] = {
+        self._scenarios: dict[str, BaseScenarioBenchmark] = {
             "drought_shock": DroughtShockScenario(),
             "fungal_outbreak": FungalOutbreakScenario(),
             "tariff_optimization": TariffOptimizationScenario(),
             "frost_hazard": FrostHazardScenario(),
-            "biosecurity_hazard": BiosecurityHazardScenario()
+            "biosecurity_hazard": BiosecurityHazardScenario(),
+            "grid_blackout": GridBlackoutScenario(),
         }
-        self._last_report: Optional[BenchmarkSuiteReport] = None
+        self._last_report: BenchmarkSuiteReport | None = None
 
-    def get_available_scenarios(self) -> List[Dict[str, Any]]:
+    def get_available_scenarios(self) -> list[dict[str, Any]]:
         """Returns metadata for all registered scenarios."""
         return [
             {
@@ -90,9 +94,9 @@ class BenchmarkRunner:
         commander: Any
     ) -> BenchmarkSuiteReport:
         """Executes all registered scenarios sequentially and produces a composite scorecard."""
-        results: List[ScenarioEvaluationResult] = []
+        results: list[ScenarioEvaluationResult] = []
 
-        for key in self._scenarios.keys():
+        for key in self._scenarios:
             res = await self.run_scenario(key, farm, commander)
             results.append(res)
 
@@ -122,7 +126,7 @@ class BenchmarkRunner:
         return report
 
     @property
-    def last_report(self) -> Optional[BenchmarkSuiteReport]:
+    def last_report(self) -> BenchmarkSuiteReport | None:
         return self._last_report
 
 
