@@ -2,15 +2,17 @@
 API v1 Router Definition
 """
 from fastapi import APIRouter
-from backend.api.v1.endpoints.farm import router as farm_router
-from backend.api.v1.endpoints.simulation import router as simulation_router
-from backend.api.v1.endpoints.council import router as council_router
+
 from backend.api.v1.endpoints.audit import router as audit_router
-from backend.api.v1.endpoints.scenarios import router as scenarios_router
-from backend.api.v1.endpoints.iot import router as iot_router
-from backend.api.v1.endpoints.fertigation import router as fertigation_router
 from backend.api.v1.endpoints.carbon import router as carbon_router
+from backend.api.v1.endpoints.council import router as council_router
 from backend.api.v1.endpoints.epidemiology import router as epidemiology_router
+from backend.api.v1.endpoints.farm import router as farm_router
+from backend.api.v1.endpoints.fertigation import router as fertigation_router
+from backend.api.v1.endpoints.iot import router as iot_router
+from backend.api.v1.endpoints.microgrid import router as microgrid_router
+from backend.api.v1.endpoints.scenarios import router as scenarios_router
+from backend.api.v1.endpoints.simulation import router as simulation_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 api_v1_router.include_router(farm_router)
@@ -22,6 +24,7 @@ api_v1_router.include_router(iot_router)
 api_v1_router.include_router(fertigation_router)
 api_v1_router.include_router(carbon_router)
 api_v1_router.include_router(epidemiology_router)
+api_v1_router.include_router(microgrid_router)
 
 __all__ = ["api_v1_router"]
 
