@@ -182,8 +182,8 @@ class DroneScoutingEngine:
         total_area_m2 = sum(getattr(z, "area_m2", 25.0) for z in zones)
         total_ha = total_area_m2 / 10000.0
 
-        flight_duration = round(total_ha * self.FLIGHT_MINUTES_PER_HA, 1)
-        battery_needed = round(total_ha * self.BATTERY_PCT_PER_HA, 1)
+        flight_duration = max(0.1, round(total_ha * self.FLIGHT_MINUTES_PER_HA, 2))
+        battery_needed = max(0.1, round(total_ha * self.BATTERY_PCT_PER_HA, 2))
 
         status = DroneMissionStatus.COMPLETED
         if (initial_battery_pct - battery_needed) < 20.0:
