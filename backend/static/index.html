@@ -269,6 +269,38 @@
                 </div>
             </div>
 
+            <!-- Agrivoltaics Micro-Grid & Battery BESS Storage -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-solar-panel text-amber-400"></i> Lưới Điện Nông Nghiệp & Pin Lưu Trữ BESS
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold" id="microgrid-mode-badge">TỰ CHỦ NĂNG LƯỢNG</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Điện Mặt Trời (PV):</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="pv-power-val">18.5 kW</span>
+                        <span class="text-[9px] text-slate-500 block">Công suất định danh: 25 kWp</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Dung Lượng Pin (SoC):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="bess-soc-val">70%</span>
+                        <span class="text-[9px] text-slate-500 block" id="bess-kwh-val">28.0 / 40 kWh</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Khung Giá Điện EVN:</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="evn-tier-val">BÌNH THƯỜNG</span>
+                        <span class="text-[9px] text-slate-500 block" id="evn-rate-val">2,010 đ/kWh</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hiệu Suất Khứ Hồi:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="bess-eff-val">92.0%</span>
+                        <span class="text-[9px] text-slate-500 block">Công nghệ Lithium LFP</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -760,6 +792,16 @@
                         document.getElementById('bio-threat-label').innerText = `Cảnh báo: ${b.highest_threat.primary_threat}`;
                         document.getElementById('bio-ipm-rec').innerText = b.highest_threat.recommended_action;
                     }
+                }
+
+                // Microgrid & Battery Storage
+                const mgRes = await fetch('/api/v1/microgrid/status');
+                if (mgRes.ok) {
+                    const mg = await mgRes.json();
+                    document.getElementById('pv-power-val').innerText = `${mg.solar_pv.current_power_kw.toFixed(1)} kW`;
+                    document.getElementById('bess-soc-val').innerText = `${Math.round(mg.battery_bess.current_soc * 100)}%`;
+                    document.getElementById('bess-kwh-val').innerText = `${mg.battery_bess.stored_energy_kwh} / ${mg.battery_bess.capacity_kwh} kWh`;
+                    document.getElementById('bess-eff-val').innerText = `${(mg.battery_bess.roundtrip_efficiency * 100).toFixed(1)}%`;
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
