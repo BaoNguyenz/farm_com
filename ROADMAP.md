@@ -183,3 +183,39 @@ flowchart LR
   - Tích hợp 2 thẻ HUD: Dấu Chân Carbon GHG Protocol (xếp hạng khí hậu) và Radar Dịch Bệnh An Ninh Sinh Học.
 - [x] **Task 10.7: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 191/191 Unit & Integration tests vượt qua thành công 100% (`tests/test_carbon_accounting.py`, `tests/test_epidemiology.py`, `tests/test_carbon_council.py`, `tests/test_carbon_epidemiology_api.py`, `tests/test_scenario_biosecurity.py`).
+
+---
+
+## 📌 Phase 11: Lưới Điện Nông Nghiệp Tự Chủ & Năng Lượng Tái Tạo (Agrivoltaics & Micro-Grid Energy)
+- [x] **Task 11.1: Động Cơ Lưới Điện Quang Năng & Pin Lưu Trữ BESS (`backend/core/microgrid.py`)**
+  - Mô phỏng giàn quang điện nông nghiệp (Agrivoltaics Solar PV, công suất 25 kWp, suy giảm nhiệt độ pin).
+  - Hệ thống lưu trữ năng lượng pin Lithium LFP (BESS 40 kWh, hiệu suất khứ hồi 92%, giới hạn C-rate và ngưỡng SoC an toàn).
+  - Chiến lược điều phối thông minh: Tự dùng năng lượng mặt trời (Self-consumption), Cắt giảm đỉnh phụ tải giá cao (Peak-shaving) và Cô lập khẩn cấp khi mất điện lưới EVN (Emergency islanding).
+- [x] **Task 11.2: Mở Rộng Tác Tử Kinh Tế Với Cơ Chế Kinh Doanh Năng Lượng**
+  - `MarketAgent`: Tích hợp phân tích kinh tế pin BESS, đề xuất nạp điện giờ thấp điểm EVN (1,400 đ/kWh) và xả điện trong khung giờ cao điểm (3,076 đ/kWh) để cấp điện cho hệ thống bơm tưới với chi phí tối thiểu.
+- [x] **Task 11.3: Điểm Cuối RESTful Quản Lý Năng Lượng (`endpoints/microgrid.py`)**
+  - `/api/v1/microgrid/status`: Truy vấn công suất phát quang điện, tỷ lệ SoC pin và năng lượng lưu trữ khả dụng.
+  - `/api/v1/microgrid/dispatch`: Tính toán phân bổ luồng công suất tối ưu giữa Điện mặt trời, Pin BESS và Lưới EVN.
+  - `/api/v1/microgrid/tariffs`: Bảng tra cứu khung giờ và đơn giá biểu giá điện 3 giá của EVN.
+- [x] **Task 11.4: Kịch Bản Benchmark Mất Điện Lưới & Đảo Lưới Quang Năng (`backend/benchmarks/grid_blackout.py`)**
+  - Giả lập sự cố mất điện lưới EVN giữa trưa nắng gắt (32.5°C, bức xạ 850 W/m²), kiểm chứng khả năng chuyển đổi tức thì sang chế độ đảo lưới độc lập, duy trì phun sương làm mát và bảo vệ ngưỡng pin.
+
+---
+
+## 📌 Phase 12: Khảo Sát Drone Đa Phổ UAV & Dự Báo Sản Lượng Thu Hoạch (Drone Scouting & Crop Yield Logistics)
+- [x] **Task 12.1: Động Cơ Khảo Sát Drone Đa Phổ & Thị Giác Máy Tính Tán Lá (`backend/core/drone_scouting.py`)**
+  - Mô phỏng chuyến bay khảo sát tự động của thiết bị bay không người lái (UAV) độ phân giải dưới centimet.
+  - Xử lý 5 kênh phản xạ bề mặt (Red, Green, Blue, RedEdge, NIR), tính toán chỉ số VARI, NDRE, tỷ lệ che phủ tán ($f_{cover}$), phát hiện lỗ khuyết nảy mầm và cụm cỏ dại xen hàng.
+- [x] **Task 12.2: Mô Hình Dự Báo Sản Lượng Sinh Học & Hậu Cần Thu Hoạch (`backend/core/yield_prediction.py`)**
+  - Tích hợp hàm sản xuất nước FAO 33/66 ($1 - Y_a/Y_m = K_y \cdot [1 - ET_a/ET_c]$) và nhiệt độ tích lũy GDD.
+  - Mô phỏng ngẫu nhiên Monte Carlo xác định khoảng tin cậy sản lượng p10, p50, p90 (tấn/ha).
+  - Lập kế hoạch hậu cần sau thu hoạch: ước tính số thùng chứa 15kg, ca công nhân thu hái và điện năng làm mát sơ bộ kho lạnh.
+- [x] **Task 12.3: Tích Hợp Tác Tử Nông Học Phân Tích Ảnh Không Ảnh**
+  - `AgronomistAgent`: Tiếp nhận báo cáo trinh sát đa phổ UAV, tự động lập đơn thuốc phun biến thiên (VRA) cho các điểm vàng lá và xử lý cỏ dại cục bộ.
+- [x] **Task 12.4: Điểm Cuối RESTful Drone & Dự Báo Sản Lượng (`endpoints/drone.py`, `endpoints/yield_forecast.py`)**
+  - `/api/v1/drone/simulate-flight` & `/drone/anomalies`: Mô phỏng chuyến bay trinh sát và trích xuất điểm nóng dị thường.
+  - `/api/v1/yield/forecast` & `/yield/zone-simulation`: Báo cáo dự báo sản lượng trang trại và kế hoạch hậu cần thu hoạch.
+- [x] **Task 12.5: Nâng Cấp Bảng Điều Khiển Trực Quan (`backend/static/index.html`)**
+  - Bổ sung 3 thẻ HUD thời gian thực: Thẻ Quang Điện & Pin Lưu Trữ BESS, Radar Khảo Sát Drone UAV, và Thẻ Dự Báo Sản Lượng Hậu Cần.
+- [x] **Task 12.6: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 223/223 Unit & Integration tests vượt qua thành công 100% (`tests/test_microgrid.py`, `tests/test_drone_scouting.py`, `tests/test_yield_prediction.py`, `tests/test_drone_microgrid_agents.py`, `tests/test_microgrid_api.py`, `tests/test_drone_api.py`, `tests/test_yield_api.py`, `tests/test_scenario_grid_blackout.py`).
