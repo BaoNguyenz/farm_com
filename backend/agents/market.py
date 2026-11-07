@@ -3,11 +3,12 @@ Market & Economic Analyst Agent
 Evaluates crop harvest maturity (GDD), current spot prices, EVN Time-of-Use (TOU) electricity tariffs,
 and optimizes operation costs (e.g., deferring heavy pump loads to off-peak hours).
 """
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-from backend.agents.base_agent import BaseFarmAgent, AgentOpinion, AgentRole, DebateVote
-from backend.core.twin_state import FarmDigitalTwin
 import time
+from datetime import datetime
+from typing import Any, ClassVar
+
+from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
+from backend.core.twin_state import FarmDigitalTwin
 
 
 class MarketAgent(BaseFarmAgent):
@@ -19,14 +20,14 @@ class MarketAgent(BaseFarmAgent):
 
     # Vietnam EVN 3-Tier Time-of-Use (TOU) Schedule for Agriculture / Medium Voltage
     # Rates in VND / kWh (approximate standard tariff structure)
-    TARIFF_RATES = {
+    TARIFF_RATES: ClassVar[dict[str, float]] = {
         "off_peak": 1133.0,   # 22:00 -> 04:00
         "normal": 1685.0,     # 04:00 -> 09:30, 11:30 -> 17:00, 20:00 -> 22:00
         "peak": 3076.0        # 09:30 -> 11:30, 17:00 -> 20:00
     }
 
     # Standard wholesale prices in Lam Dong / Central Highlands (VND/kg or VND/stem)
-    SPOT_PRICES = {
+    SPOT_PRICES: ClassVar[dict[str, dict[str, Any]]] = {
         "Strawberries": {"price_vnd": 180000, "unit": "kg", "trend": "+12%", "status": "high_demand", "yield_kg_m2": 1.2},
         "Arabica Coffee": {"price_vnd": 95000, "unit": "kg", "trend": "+3%", "status": "stable", "yield_kg_m2": 0.8},
         "Bell Pepper": {"price_vnd": 35000, "unit": "kg", "trend": "-5%", "status": "slight_oversupply", "yield_kg_m2": 2.5},
@@ -44,7 +45,48 @@ class MarketAgent(BaseFarmAgent):
             expertise_domain="economics"
         )
 
-    def get_electricity_tariff(self, hour: Optional[float] = None) -> Dict[str, Any]:
+    def evaluate_microgrid_arbitrage(
+        self,
+        solar_power_kw: float,
+        battery_soc: float,
+        load_kw: float = 3.5,
+        hour: float | None = None,
+    ) -> dict[str, Any]:
+        """
+        Analyzes microgrid solar self-consumption and battery peak-shaving potential.
+        Recommends whether to run loads from PV/BESS or draw from grid.
+        """
+        tariff = self.get_electricity_tariff(hour)
+        tier = tariff["tier"]
+
+        # Available clean energy
+        clean_power_available_kw = solar_power_kw + (10.0 if battery_soc > 0.25 else 0.0)
+        can_self_power = clean_power_available_kw >= load_kw
+
+        strategy = "grid_draw"
+        cost_savings_vnd = 0.0
+
+        if can_self_power:
+            if tier == "peak":
+                strategy = "peak_shaving_discharge"
+                cost_savings_vnd = load_kw * self.TARIFF_RATES["peak"]
+            else:
+                strategy = "solar_self_consumption"
+                cost_savings_vnd = load_kw * tariff["rate_vnd_kwh"]
+        elif tier == "off_peak" and battery_soc < 0.85:
+            strategy = "off_peak_grid_bess_charge"
+
+        return {
+            "tier": tier,
+            "rate_vnd_kwh": tariff["rate_vnd_kwh"],
+            "solar_power_kw": round(solar_power_kw, 2),
+            "battery_soc": round(battery_soc, 2),
+            "can_self_power": can_self_power,
+            "strategy": strategy,
+            "hourly_cost_savings_vnd": round(cost_savings_vnd, 0),
+        }
+
+    def get_electricity_tariff(self, hour: float | None = None) -> dict[str, Any]:
         """
         Determines active EVN TOU electricity tariff tier and rate per kWh.
         If hour is not provided, uses current local time hour.
@@ -73,7 +115,7 @@ class MarketAgent(BaseFarmAgent):
             "savings_vs_peak_pct": savings_vs_peak
         }
 
-    def estimate_pumping_cost(self, water_volume_liters: float, tier: str = "normal") -> Dict[str, float]:
+    def estimate_pumping_cost(self, water_volume_liters: float, tier: str = "normal") -> dict[str, float]:
         """
         Estimates energy required, financial cost, and Scope 2 GHG emissions to pump water.
         Benchmark: 3.5 kW pump delivers 15,000 L/h => ~0.233 kWh per 1,000 Liters.
@@ -102,7 +144,7 @@ class MarketAgent(BaseFarmAgent):
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
 
-        harvest_candidates: List[Dict[str, Any]] = []
+        harvest_candidates: list[dict[str, Any]] = []
         total_estimated_value_vnd = 0.0
 
         for zone in farm.zones:
@@ -123,13 +165,23 @@ class MarketAgent(BaseFarmAgent):
                     "spot_price_vnd": crop_meta["price_vnd"]
                 })
 
+        # Microgrid solar & battery status check
+        solar_est_kw = round((farm.current_weather.solar_radiation_mj / 3.6) * 2.5, 2) if hasattr(farm, "current_weather") else 5.0
+        battery_soc_est = 0.65
+        microgrid_analysis = self.evaluate_microgrid_arbitrage(solar_power_kw=solar_est_kw, battery_soc=battery_soc_est)
+
         urgency = "low"
-        if is_peak:
+        if is_peak and not microgrid_analysis["can_self_power"]:
             rec = (
                 f"EVN PEAK TARIFF WINDOW ACTIVE ({tariff_info['rate_vnd_kwh']:,.0f} VND/kWh). "
                 f"Defer heavy electrical pumps/lighting until off-peak window (22:00) unless critical moisture stress occurs."
             )
             urgency = "medium"
+        elif is_peak and microgrid_analysis["can_self_power"]:
+            rec = (
+                f"PEAK TARIFF ACTIVE, but Microgrid is SELF-POWERED (Solar: {solar_est_kw} kW, SoC: {int(battery_soc_est*100)}%). "
+                f"Discharging BESS for peak-shaving saves ~{microgrid_analysis['hourly_cost_savings_vnd']:,.0f} VND/h."
+            )
         else:
             rec = f"Electricity window favorable ({tariff_info['tier'].upper()} - {tariff_info['rate_vnd_kwh']:,.0f} VND/kWh). "
 
@@ -157,6 +209,7 @@ class MarketAgent(BaseFarmAgent):
                 "harvest_candidates": harvest_candidates,
                 "projected_harvest_value_vnd": total_estimated_value_vnd,
                 "spot_prices": self.SPOT_PRICES,
+                "microgrid_arbitrage": microgrid_analysis,
                 "grid_carbon_intensity_kg_kwh": self.GRID_CARBON_INTENSITY_KG_KWH,
                 "carbon_tax_rate_vnd_ton": self.CARBON_TAX_VND_PER_TON
             },
@@ -164,7 +217,7 @@ class MarketAgent(BaseFarmAgent):
             timestamp=time.time()
         )
 
-    def vote_on_proposal(self, proposal: Dict[str, Any], context: Dict[str, Any]) -> DebateVote:
+    def vote_on_proposal(self, proposal: dict[str, Any], context: dict[str, Any]) -> DebateVote:
         """
         Evaluates operational proposals from an economic lens.
         Defends operating margins by vetoing non-emergency high-power actions during peak tariff.
@@ -174,6 +227,20 @@ class MarketAgent(BaseFarmAgent):
         tariff_tier = context.get("tariff_tier", self.get_electricity_tariff()["tier"])
 
         if any(k in action_type.lower() for k in ("irrigat", "pump", "water")):
+            # Check if microgrid can self-power to bypass peak grid cost
+            microgrid_clean = context.get("microgrid_clean_power", False) or context.get("battery_soc", 0.0) >= 0.40
+            if microgrid_clean:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="irrigation_pumping",
+                    vote_choice="APPROVE",
+                    confidence=0.92,
+                    rationale=(
+                        "Microgrid agrivoltaic solar and BESS battery buffer fully cover pumping demand. "
+                        "Zero EVN grid peak tariff incurred; green self-consumption authorized."
+                    )
+                )
+
             if tariff_tier == "peak" and urgency != "critical":
 
                 return DebateVote(
