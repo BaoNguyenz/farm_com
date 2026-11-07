@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-191%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-223%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
@@ -74,7 +74,10 @@ e:\z_farm_com\
 │   │   ├── agronomy_models.py           # Phương trình FAO-56 Penman-Monteith chuẩn, cân bằng nước & GDD cơ bản
 │   │   ├── spectral.py                  # Công thức viễn thám cơ bản (NDVI, NDWI, EVI)
 │   │   ├── extended_spectral.py         # 15 chỉ số thực vật nâng cao: GNDVI, NDRE, SAVI, MSAVI2, MTCI, NDDI...
-│   │   └── crop_phenology.py            # Mô hình nhiệt BBCH, hệ số Kc động, độ sâu rễ Sigmoidal & hàm tổn thất năng suất Ky
+│   │   ├── crop_phenology.py            # Mô hình nhiệt BBCH, hệ số Kc động, độ sâu rễ Sigmoidal & hàm tổn thất năng suất Ky
+│   │   ├── microgrid.py                 # Lưới quang điện Agrivoltaics, pin lưu trữ BESS & điều phối phụ tải
+│   │   ├── drone_scouting.py            # Khảo sát UAV đa phổ, chỉ số VARI, NDRE & thị giác máy tính tán lá
+│   │   └── yield_prediction.py          # Dự báo sản lượng FAO 33/66, mô phỏng Monte Carlo & hậu cần thu hoạch
 │   │
 │   ├── ingestion\                       # TẦNG KÉO DỮ LIỆU & GIẢ LẬP NGOẠI VI
 │   │   ├── __init__.py                  # Exported API: WeatherClient, SatelliteClient, SensorSimulator...
@@ -159,6 +162,24 @@ $$\text{ET}_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e
   * Giai đoạn phát triển thân lá ($15\% - 45\%$ GDD): Tăng tuyến tính từ $K_{c,\text{ini}} \to K_{c,\text{mid}}$
   * Giai đoạn nở hoa/tạo quả ($45\% - 80\%$ GDD): Đỉnh cao nhất $K_c = K_{c,\text{mid}}$
   * Giai đoạn chín/thu hoạch ($> 80\%$ GDD): Giảm dần về $K_{c,\text{end}}$
+
+---
+
+### D. Lưới Quang Điện Nông Nghiệp & Pin Lưu Trữ BESS
+* **Công suất quang điện hiệu chỉnh theo nhiệt độ:**
+  $$P_{pv} = A \cdot G \cdot \eta_{stc} \cdot [1 + \gamma(T_{cell} - 25)]$$
+* **Động học pin BESS:**
+  $$\text{SoC}_{t+1} = \text{SoC}_t + \frac{P_{charge} \cdot \eta_{batt} \cdot \Delta t}{C_{nominal}}$$
+* **Chiến lược điều phối Peak-Shaving:** Xả pin giờ cao điểm (3,076 đ/kWh), sạc điện giờ thấp điểm (1,400 đ/kWh) và cô lập khẩn cấp khi mất điện lưới.
+
+---
+
+### E. Dự Báo Sản Lượng FAO 33/66 & Trinh Sát Drone Đa Phổ UAV
+* **Hàm sản xuất nước Doorenbos & Kassam:**
+  $$1 - \frac{Y_a}{Y_m} = K_y \left(1 - \frac{\text{ET}_a}{\text{ET}_c}\right)$$
+* **Chỉ số kháng khí quyển tán lá RGB (VARI):**
+  $$\text{VARI} = \frac{R_{green} - R_{red}}{R_{green} + R_{red} - R_{blue}}$$
+* **Mô phỏng ngẫu nhiên Monte Carlo:** Xác định khoảng tin cậy sản lượng p10, p50, p90 và lập lịch hậu cần thùng chứa, ca thu hái kho lạnh.
 
 ---
 
