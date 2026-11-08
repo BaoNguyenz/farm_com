@@ -3,21 +3,22 @@ Farm Commander (Council Orchestrator) Agent
 Collects multi-agent deliberations, reconciles competing priorities (e.g. biology vs. energy costs),
 runs structured debate rounds with weighted consensus, and generates actionable commands.
 """
-from typing import List, Dict, Any, Optional
-from backend.agents.base_agent import AgentOpinion, DebateRound, DebateVote
-from backend.core.twin_state import FarmDigitalTwin, ActionLog
-from backend.core.dispatcher import ActionDispatcher
 import time
+from typing import Any
+
+from backend.agents.base_agent import AgentOpinion, DebateRound, DebateVote
+from backend.core.dispatcher import ActionDispatcher
+from backend.core.twin_state import ActionLog, FarmDigitalTwin
 
 
 class FarmCouncilVerdict:
     """Consolidated outcome of the Multi-Agent Council deliberation and debate."""
     def __init__(
         self,
-        opinions: List[AgentOpinion],
+        opinions: list[AgentOpinion],
         executive_summary: str,
-        scheduled_actions: List[Dict[str, Any]],
-        debate_rounds: Optional[List[DebateRound]] = None
+        scheduled_actions: list[dict[str, Any]],
+        debate_rounds: list[DebateRound] | None = None
     ):
         self.opinions = opinions
         self.executive_summary = executive_summary
@@ -25,7 +26,7 @@ class FarmCouncilVerdict:
         self.debate_rounds = debate_rounds or []
         self.timestamp = time.time()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "timestamp": self.timestamp,
             "executive_summary": self.executive_summary,
@@ -47,7 +48,7 @@ class CommanderAgent:
         self.market = market
         self.agents = [agronomist, irrigation, market]
 
-    def arbitrate_debate(self, proposal: Dict[str, Any], context: Dict[str, Any]) -> DebateRound:
+    def arbitrate_debate(self, proposal: dict[str, Any], context: dict[str, Any]) -> DebateRound:
         """
         Runs a formal multi-agent voting round on a specific operational proposal.
         Applies domain expertise weighting and conflict resolution rules.
@@ -56,7 +57,7 @@ class CommanderAgent:
         urgency = proposal.get("urgency", "low")
         is_emergency = urgency == "critical"
 
-        votes: List[DebateVote] = []
+        votes: list[DebateVote] = []
         for agent in self.agents:
             vote = agent.vote_on_proposal(proposal, context)
             votes.append(vote)
@@ -94,7 +95,17 @@ class CommanderAgent:
                 "BIOSECURITY VETO: High pathogen sporulation risk. "
                 "Excess irrigation vetoed by Agronomist to prevent Phytophthora root rot."
             )
-        # Conflict Resolution Rule 3: Peak Energy Tariff Deferral for Non-Critical Irrigation
+        # Conflict Resolution Rule 3: VietGAP Food Safety Pre-Harvest Interval (PHI) Veto
+        elif any(k in proposal.get("action_type", "").lower() for k in ("harvest", "pick")):
+            phi_cleared = context.get("phi_cleared", True)
+            phi_remaining_h = context.get("phi_remaining_hours", 0.0)
+            if not phi_cleared or phi_remaining_h > 0.0:
+                consensus_verdict = "rejected"
+                resolution_notes = (
+                    f"VIETGAP PHI VETO: Active chemical residue in target zone ({phi_remaining_h}h remaining). "
+                    "Harvest prohibited under TCVN 11892-1 to prevent MRL food safety violation."
+                )
+        # Conflict Resolution Rule 4: Peak Energy Tariff Deferral for Non-Critical Irrigation
         elif (
             context.get("tariff_tier") == "peak"
             and not is_emergency
@@ -130,7 +141,7 @@ class CommanderAgent:
     async def convene_council(
         self,
         farm: FarmDigitalTwin,
-        dispatcher: Optional[ActionDispatcher] = None
+        dispatcher: ActionDispatcher | None = None
     ) -> FarmCouncilVerdict:
         """
         Executes the complete end-to-end deliberation and debate workflow:
@@ -145,8 +156,8 @@ class CommanderAgent:
         op_mark = await self.market.evaluate(farm)
 
         opinions = [op_agro, op_irri, op_mark]
-        scheduled_actions: List[Dict[str, Any]] = []
-        debate_rounds: List[DebateRound] = []
+        scheduled_actions: list[dict[str, Any]] = []
+        debate_rounds: list[DebateRound] = []
 
         tariff_info = op_mark.data_points.get("electricity_tariff", {})
         tariff_tier = tariff_info.get("tier", "normal") if isinstance(tariff_info, dict) else "normal"
@@ -244,6 +255,47 @@ class CommanderAgent:
                 "target_zones": chlorosis_zones,
                 "status": "queued"
             })
+
+        # Step 4: Harvest Candidate Evaluation & PHI Food Safety Verification
+        harvest_candidates = op_mark.data_points.get("harvest_candidates", [])
+        if harvest_candidates:
+            for hc in harvest_candidates:
+                z_id = hc.get("zone_id", "")
+                # Check if zone is quarantined by PHI in context
+                quarantines = context.get("phi_quarantines", {})
+                is_quarantined = z_id in quarantines
+                rem_h = quarantines.get(z_id, 0.0)
+
+                h_proposal = {
+                    "action_type": "harvest_crop",
+                    "action_domain": "economics",
+                    "zone_id": z_id,
+                    "crop": hc.get("crop", ""),
+                    "urgency": "medium",
+                }
+                h_context = dict(context)
+                h_context["phi_cleared"] = not is_quarantined
+                h_context["phi_remaining_hours"] = rem_h
+
+                debate_harvest = self.arbitrate_debate(h_proposal, h_context)
+                debate_rounds.append(debate_harvest)
+
+                if debate_harvest.consensus_verdict == "approved":
+                    scheduled_actions.append({
+                        "type": "harvest_batch",
+                        "zone_id": z_id,
+                        "crop": hc.get("crop", ""),
+                        "status": "queued",
+                        "agent_name": "Commander (Consensus)",
+                    })
+                else:
+                    scheduled_actions.append({
+                        "type": "quarantine_harvest",
+                        "zone_id": z_id,
+                        "crop": hc.get("crop", ""),
+                        "status": "quarantined_phi",
+                        "reason": debate_harvest.resolution_notes,
+                    })
 
         # Step 4: Executive Synthesis Summary
         approved_count = sum(1 for a in scheduled_actions if a.get("status") == "queued")
