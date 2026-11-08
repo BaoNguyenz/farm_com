@@ -219,3 +219,23 @@ flowchart LR
   - Bổ sung 3 thẻ HUD thời gian thực: Thẻ Quang Điện & Pin Lưu Trữ BESS, Radar Khảo Sát Drone UAV, và Thẻ Dự Báo Sản Lượng Hậu Cần.
 - [x] **Task 12.6: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 223/223 Unit & Integration tests vượt qua thành công 100% (`tests/test_microgrid.py`, `tests/test_drone_scouting.py`, `tests/test_yield_prediction.py`, `tests/test_drone_microgrid_agents.py`, `tests/test_microgrid_api.py`, `tests/test_drone_api.py`, `tests/test_yield_api.py`, `tests/test_scenario_grid_blackout.py`).
+
+---
+
+## 📌 Phase 13: Chứng Nhận VietGAP / GlobalG.A.P., An Toàn Thực Phẩm & Truy Xuất Nguồn Gốc (Traceability & Food Safety)
+- [x] **Task 13.1: Động Cơ Truy Xuất Nguồn Gốc & Kiểm Toán VietGAP (`backend/core/traceability.py`)**
+  - Tuân thủ tiêu chuẩn VietGAP Trồng trọt (TCVN 11892-1:2017) và GlobalG.A.P. IFA v6.
+  - Quản lý nhật ký can thiệp hóa chất, tự động tính toán thời gian cách ly thu hoạch Pre-Harvest Interval (PHI) ngăn ngừa dư lượng thuốc BVTV vượt ngưỡng MRL.
+  - Giám sát an toàn sinh học & kim loại nặng nguồn nước tưới theo TCVN 6774:2000 (E. coli, Coliform, Pb, Cd, As).
+  - Khởi tạo Hộ chiếu lô hàng số (Harvest Batch Passport) với chữ ký số SHA-256 bất biến và mã QR truy xuất minh bạch.
+- [x] **Task 13.2: Mở Rộng Trọng Tài Tác Tử Chỉ Huy Với Phủ Quyết An Toàn Thực Phẩm**
+  - `CommanderAgent`: Tự động kích hoạt quy tắc trọng tài *VietGAP PHI Veto*, kiên quyết phủ quyết và đình chỉ thu hoạch đối với mọi lô đất đang trong thời gian cách ly hóa chất để bảo vệ sức khỏe người tiêu dùng và chứng chỉ xuất khẩu.
+- [x] **Task 13.3: Điểm Cuối RESTful Truy Xuất & Chứng Nhận GAP (`endpoints/traceability.py`)**
+  - `/api/v1/traceability/compliance-audit`: Báo cáo xếp hạng tuân thủ toàn diện (AAA Export Ready, AA Domestic Premium...).
+  - `/api/v1/traceability/treatment/log`: Ghi nhật ký xử lý sinh học/hóa chất và kích hoạt bộ đếm thời gian cách ly.
+  - `/api/v1/traceability/batch/passport`: Đúc hộ chiếu xuất khẩu điện tử có xác thực nguồn gốc mật mã học.
+  - `/api/v1/traceability/water-quality`: Đánh giá mức độ an toàn của nguồn nước tưới.
+- [x] **Task 13.4: Nâng Cấp Bảng Điều Khiển Trực Quan (`backend/static/index.html`)**
+  - Tích hợp Thẻ Chứng Nhận VietGAP / GlobalG.A.P. & Truy Xuất Nguồn Gốc Lô Hàng vào bảng điều khiển trung tâm.
+- [x] **Task 13.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 234/234 Unit & Integration tests vượt qua thành công 100% (`tests/test_traceability.py`, `tests/test_traceability_api.py`).

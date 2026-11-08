@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-223%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-234%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
@@ -77,7 +77,8 @@ e:\z_farm_com\
 │   │   ├── crop_phenology.py            # Mô hình nhiệt BBCH, hệ số Kc động, độ sâu rễ Sigmoidal & hàm tổn thất năng suất Ky
 │   │   ├── microgrid.py                 # Lưới quang điện Agrivoltaics, pin lưu trữ BESS & điều phối phụ tải
 │   │   ├── drone_scouting.py            # Khảo sát UAV đa phổ, chỉ số VARI, NDRE & thị giác máy tính tán lá
-│   │   └── yield_prediction.py          # Dự báo sản lượng FAO 33/66, mô phỏng Monte Carlo & hậu cần thu hoạch
+│   │   ├── yield_prediction.py          # Dự báo sản lượng FAO 33/66, mô phỏng Monte Carlo & hậu cần thu hoạch
+│   │   └── traceability.py              # Động cơ VietGAP/GlobalGAP, thời gian cách ly PHI & hộ chiếu số SHA-256
 │   │
 │   ├── ingestion\                       # TẦNG KÉO DỮ LIỆU & GIẢ LẬP NGOẠI VI
 │   │   ├── __init__.py                  # Exported API: WeatherClient, SatelliteClient, SensorSimulator...
@@ -180,6 +181,15 @@ $$\text{ET}_0 = \frac{0.408 \Delta (R_n - G) + \gamma \frac{900}{T + 273} u_2 (e
 * **Chỉ số kháng khí quyển tán lá RGB (VARI):**
   $$\text{VARI} = \frac{R_{green} - R_{red}}{R_{green} + R_{red} - R_{blue}}$$
 * **Mô phỏng ngẫu nhiên Monte Carlo:** Xác định khoảng tin cậy sản lượng p10, p50, p90 và lập lịch hậu cần thùng chứa, ca thu hái kho lạnh.
+
+---
+
+### F. Chứng Nhận VietGAP / GlobalG.A.P. & Truy Xuất Nguồn Gốc Lô Hàng
+* **Thời gian cách ly an toàn Pre-Harvest Interval (PHI):**
+  $$\Delta t_{\text{elapsed}} = t_{\text{now}} - t_{\text{applied}} \ge \text{PHI}_{\text{required}}$$
+  *Tự động đình chỉ và phủ quyết thu hoạch nếu $\Delta t_{\text{elapsed}} < \text{PHI}_{\text{required}}$ nhằm loại bỏ dư lượng thuốc BVTV.*
+* **Hộ chiếu số lô hàng xuất khẩu (Batch Passport):**
+  *Khởi tạo chữ ký số SHA-256 đóng dấu nguồn gốc tọa độ ô đất, nhật ký hóa chất và liên kết mã QR kiểm tra bất biến.*
 
 ---
 
