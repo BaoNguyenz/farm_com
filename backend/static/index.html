@@ -342,6 +342,38 @@
                 </div>
             </div>
 
+            <!-- VietGAP & GlobalGAP Food Safety Traceability Passport -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-certificate text-teal-400"></i> Chứng Nhận VietGAP / GlobalG.A.P. & Truy Xuất Nguồn Gốc
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 font-bold" id="vietgap-tier-badge">AAA_EXPORT_READY</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Điểm Tuân Thủ GAP:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="vietgap-score-val">100/100</span>
+                        <span class="text-[9px] text-slate-500 block">TCVN 11892-1:2017</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Cách Ly Thu Hoạch (PHI):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="vietgap-phi-val">16/16 Lô Sạch</span>
+                        <span class="text-[9px] text-slate-500 block" id="vietgap-quarantine-sub">0 lô cách ly</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">An Toàn Nguồn Nước:</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="vietgap-water-val">ĐẠT CHUẨN</span>
+                        <span class="text-[9px] text-slate-500 block">TCVN 6774:2000 Vi sinh & KLN</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hộ Chiếu Lô Hàng:</span>
+                        <span class="text-base font-bold text-indigo-400 font-mono" id="vietgap-hash-val">SHA-256</span>
+                        <span class="text-[9px] text-slate-500 block">Mã QR truy xuất bất biến</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -867,6 +899,17 @@
                     document.getElementById('yield-crates-needed').innerText = `${y.logistics_plan.total_crates_needed} thùng`;
                     document.getElementById('yield-worker-shifts').innerText = `${y.logistics_plan.labor_worker_shifts_needed} ca (8h)`;
                     document.getElementById('yield-cold-storage').innerText = `${y.logistics_plan.cold_storage_volume_m3} m³ (~${y.logistics_plan.post_harvest_precooling_load_kwh} kWh)`;
+                }
+
+                // VietGAP & Traceability
+                const traceRes = await fetch('/api/v1/traceability/compliance-audit');
+                if (traceRes.ok) {
+                    const t = await traceRes.json();
+                    document.getElementById('vietgap-tier-badge').innerText = t.compliance_tier;
+                    document.getElementById('vietgap-score-val').innerText = `${t.overall_compliance_score}/100`;
+                    document.getElementById('vietgap-phi-val').innerText = `${t.zones_ready_for_harvest_count} Lô Sạch`;
+                    document.getElementById('vietgap-quarantine-sub').innerText = `${t.zones_in_phi_quarantine_count} lô cách ly PHI`;
+                    document.getElementById('vietgap-water-val').innerText = t.water_safety_passed ? "ĐẠT CHUẨN" : "CẢNH BÁO";
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
