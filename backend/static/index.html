@@ -406,6 +406,38 @@
                 </div>
             </div>
 
+            <!-- Post-Harvest Cold-Chain Telemetry & Shelf-Life Radar HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-snowflake text-sky-400"></i> Giám Sát Chuỗi Cung Ứng Lạnh Sau Thu Hoạch (Cold-Chain & Shelf-Life)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold" id="coldchain-status-badge">CHAMBERS OPTIMAL</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Nhiệt Độ Kho A1:</span>
+                        <span class="text-base font-bold text-sky-400 font-mono" id="coldchain-temp-val">3.2°C</span>
+                        <span class="text-[9px] text-slate-500 block">Set-point 3.0°C (92% RH)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hạn Dùng Thương Phẩm:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="coldchain-shelf-val">8.2 Ngày</span>
+                        <span class="text-[9px] text-slate-500 block" id="coldchain-shelf-sub">Strawberries tươi</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Khí Ethylene (C2H4):</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="coldchain-ethylene-val">0.08 ppm</span>
+                        <span class="text-[9px] text-slate-500 block">Scrubber auto-idle</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Phân Hạng Chất Lượng:</span>
+                        <span class="text-base font-bold text-purple-400 font-mono" id="coldchain-grade-val">AAA EXPORT</span>
+                        <span class="text-[9px] text-slate-500 block">Arrhenius Q10 kinetic</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -953,6 +985,19 @@
                     document.getElementById('soil-leaching-val').innerText = `${s.total_estimated_leached_n_kg} kg`;
                     document.getElementById('soil-leaching-sub').innerText = `${s.zones_with_leaching_risk_count} lô rửa trôi`;
                     document.getElementById('soil-hypoxia-val').innerText = `${s.zones_with_hypoxia_risk_count} Lô Úng Nước`;
+                }
+
+                // Cold-Chain Telemetry & Shelf-Life Radar
+                const coldRes = await fetch('/api/v1/cold-chain/audit');
+                if (coldRes.ok) {
+                    const c = await coldRes.json();
+                    if (c.chambers && c.chambers.length > 0) {
+                        const topChamber = c.chambers[0];
+                        document.getElementById('coldchain-status-badge').innerText = topChamber.quality_grade;
+                        document.getElementById('coldchain-shelf-val').innerText = `${topChamber.remaining_shelf_life_days} Ngày`;
+                        document.getElementById('coldchain-shelf-sub').innerText = `${topChamber.crop_type} (Tươi ${topChamber.freshness_index_pct}%)`;
+                        document.getElementById('coldchain-grade-val').innerText = topChamber.quality_grade.replace(/_/g, ' ');
+                    }
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
