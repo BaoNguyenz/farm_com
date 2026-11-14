@@ -16,6 +16,7 @@ from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
 from backend.benchmarks.grid_blackout import GridBlackoutScenario
 from backend.benchmarks.leaching_flood import NitrateLeachingFloodScenario
 from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
+from backend.benchmarks.weed_rover_mission import WeedOutbreakRoverMissionScenario
 from backend.core.twin_state import FarmDigitalTwin
 
 
@@ -46,6 +47,7 @@ class BenchmarkRunner:
             "grid_blackout": GridBlackoutScenario(),
             "leaching_flood": NitrateLeachingFloodScenario(),
             "coldchain_failure": ColdChainChillerFailureScenario(),
+            "weed_rover_mission": WeedOutbreakRoverMissionScenario(),
         }
         self._last_report: BenchmarkSuiteReport | None = None
 

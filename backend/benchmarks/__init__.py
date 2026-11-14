@@ -19,6 +19,7 @@ from backend.benchmarks.runner import (
     benchmark_runner,
 )
 from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
+from backend.benchmarks.weed_rover_mission import WeedOutbreakRoverMissionScenario
 
 __all__ = [
     "BaseScenarioBenchmark",
@@ -34,5 +35,6 @@ __all__ = [
     "ScenarioEvaluationResult",
     "ScenarioMetric",
     "TariffOptimizationScenario",
+    "WeedOutbreakRoverMissionScenario",
     "benchmark_runner",
 ]
