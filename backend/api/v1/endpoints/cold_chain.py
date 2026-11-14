@@ -33,8 +33,8 @@ def get_all_chambers() -> list[ColdChamberState]:
     return list(cold_engine.chambers.values())
 
 
-@router.get("/audit", response_model=list[ShelfLifeProjection])
-def audit_cold_chain_shelf_life() -> list[ShelfLifeProjection]:
+@router.get("/audit")
+def audit_cold_chain_shelf_life() -> dict[str, list[ShelfLifeProjection]]:
     """
     Calculates dynamic Q10 produce respiration, remaining shelf-life days, and freshness grading.
     """
