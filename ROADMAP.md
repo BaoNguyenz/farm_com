@@ -239,3 +239,42 @@ flowchart LR
   - Tích hợp Thẻ Chứng Nhận VietGAP / GlobalG.A.P. & Truy Xuất Nguồn Gốc Lô Hàng vào bảng điều khiển trung tâm.
 - [x] **Task 13.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 234/234 Unit & Integration tests vượt qua thành công 100% (`tests/test_traceability.py`, `tests/test_traceability_api.py`).
+
+---
+
+## 📌 Phase 14: Sinh Thái Vi Sinh Đất, Động Học Rửa Trôi Đạm & Chống Ngạt Rễ (Soil Microbiome & Nitrogen Leaching)
+- [x] **Task 14.1: Động Cơ Sinh Thái Vi Sinh Đất & Thấm Lọc Rửa Trôi (`backend/core/soil_microbiome.py`)**
+  - Mô phỏng mật độ vi sinh dị dưỡng hiếu khí (CFU/g), tỷ lệ cộng sinh rễ nấm rễ Mycorrhizae (%) và mật độ nấm đối kháng *Trichoderma*.
+  - Động học rửa trôi trọng lực Brooks-Corey khi độ ẩm vượt dung tích đồng ruộng (Field Capacity 68%), tính toán lượng đạm nitrate ($NO_3^-$) rửa trôi theo mm nước thoát tầng sâu.
+  - Chỉ số thiếu khí rễ (Root Hypoxia Stress Index) khi đất bão hòa nước (>82%) và chỉ số sức khỏe đất sinh học Soil Health Index (SHI).
+  - Mô phỏng tái phục hồi vi sinh đất (microbial resurgence) sau can thiệp chế phẩm sinh học & mùn hữu cơ.
+- [x] **Task 14.2: Tích Hợp Tác Tử Thủy Văn Ngăn Chặn Thất Thoát Phân Bón**
+  - `IrrigationAgent`: Khảo sát tự động sức khỏe vi sinh đất nông trại, lập tức ngắt tưới nếu rễ thiếu khí hoặc rửa trôi đạm; phủ quyết (VETO) đề xuất tưới khi đất sát ngưỡng bão hòa.
+- [x] **Task 14.3: Điểm Cuối RESTful Sức Khỏe Vi Sinh Đất (`endpoints/soil_microbiome.py`)**
+  - `GET /api/v1/soil-microbiome/health`: Báo cáo SHI toàn nông trại và các lô đất úng nước.
+  - `GET /api/v1/soil-microbiome/zone/{zone_id}`: Kiểm toán chi tiết vi sinh, rủi ro rửa trôi cho từng lô.
+  - `GET /api/v1/soil-microbiome/leaching-risk`: Cảnh báo các điểm nóng rửa trôi dinh dưỡng và giao thức khắc phục.
+  - `POST /api/v1/soil-microbiome/reinoculate`: Mô phỏng tái cấy bào tử vi sinh và bón mùn sinh học.
+- [x] **Task 14.4: Kịch Bản Thử Nghiệm Lũ Quét & Rửa Trôi Đạm (`backend/benchmarks/leaching_flood.py`)**
+  - Mô phỏng mưa cực đoan 75mm, đất ngập 94%, kiểm tra khả năng khóa van tưới, khống chế rửa trôi dưới 10 kg N/ha và chỉ định cấy vi sinh rễ.
+
+---
+
+## 📌 Phase 15: Giám Sát Chuỗi Cung Ứng Lạnh Sau Thu Hoạch, Động Học Arrhenius & Hạn Dùng (Cold-Chain Telemetry & Shelf-Life)
+- [x] **Task 15.1: Động Cơ Động Học Hô Hấp $Q_{10}$ & Phân Rã Arrhenius (`backend/core/cold_chain.py`)**
+  - Mô hình hóa tốc độ hô hấp nông sản phụ thuộc nhiệt độ theo hàm mũ $Q_{10}$ ($R(T) = R_0 \cdot Q_{10}^{(T-4)/10}$).
+  - Hàm phân rã thời hạn thương phẩm Arrhenius, hệ số gia tốc lão hóa khí Ethylene ($C_2H_4$) và tổn hao khối lượng tươi do chênh lệch áp suất hơi nước (VPD).
+  - Phân loại hạng chất lượng tiêu chuẩn: `AAA_PREMIUM_EXPORT`, `AA_FRESH_RETAIL`, `A_STANDARD`, `EXPEDITED_SALE_REQUIRED`.
+- [x] **Task 15.2: Tác Tử Kinh Tế Kinh Doanh Nông Sản & Trọng Tài Xả Kho Cấp Tốc**
+  - `MarketAgent`: Tự động điều chỉnh hệ số định giá nông sản lưu kho theo chất lượng độ tươi (từ xuất khẩu +15% đến giảm giá xả hàng -35%); phủ quyết hành vi lưu giữ kho kéo dài đối với các lô hàng sắp chạm ngưỡng lão hóa.
+- [x] **Task 15.3: Điểm Cuối RESTful Chuỗi Lạnh & Xử Lý Khí Ethylene (`endpoints/cold_chain.py`)**
+  - `GET /api/v1/cold-chain/chambers`: Giám sát nhiệt độ, độ ẩm và nồng độ ethylene thời gian thực trong các buồng lạnh.
+  - `GET /api/v1/cold-chain/audit`: Đánh giá hạn dùng thương phẩm còn lại và phân hạng chất lượng toàn hệ thống.
+  - `POST /api/v1/cold-chain/adjust-temperature`: Điều chỉnh nhiệt độ set-point máy nén làm lạnh nhanh.
+  - `POST /api/v1/cold-chain/purge-ethylene`: Kích hoạt bộ lọc khí ethylene xúc tác KMnO4 đưa C2H4 về mức 0.02 ppm.
+- [x] **Task 15.4: Kịch Bản Thử Nghiệm Sự Cố Máy Nén Kho Lạnh (`backend/benchmarks/coldchain_failure.py`)**
+  - Mô phỏng sự cố nhảy aptomat máy nén buồng A1 trong buổi chiều nhiệt độ 28.5°C, nhiệt độ kho vọt lên 17.5°C, kiểm tra cảnh báo sốc nhiệt và tự động phân loại xả hàng khẩn cấp.
+- [x] **Task 15.5: Nâng Cấp Bảng Điều Khiển Trực Quan HUD (`backend/static/index.html`)**
+  - Tích hợp 2 thẻ HUD trực quan thời gian thực: Thẻ Vi Sinh Đất & Rửa Trôi Đạm + Thẻ Giám Sát Chuỗi Cung Ứng Lạnh Sau Thu Hoạch.
+- [x] **Task 15.6: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 264/264 Unit & Integration tests vượt qua thành công 100% (`tests/test_soil_microbiome.py`, `tests/test_cold_chain.py`, `tests/test_soil_coldchain_agents.py`, `tests/test_soil_microbiome_api.py`, `tests/test_cold_chain_api.py`, `tests/test_scenario_leaching_flood.py`, `tests/test_scenario_coldchain_failure.py`).
