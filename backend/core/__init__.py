@@ -18,6 +18,11 @@ from backend.core.extended_spectral import (
     SpectralBands,
 )
 from backend.core.farm_rover import FarmRover, RoverState, RoverTask
+from backend.core.rover_fleet import (
+    FleetMission,
+    FleetStatusReport,
+    RoverFleetCoordinator,
+)
 from backend.core.spectral import compute_ndvi, compute_ndwi, evaluate_crop_health
 from backend.core.tick_engine import DigitalTwinTickEngine
 from backend.core.twin_state import (
@@ -47,9 +52,12 @@ __all__ = [
     "ExtendedSpectralEngine",
     "FarmDigitalTwin",
     "FarmRover",
+    "FleetMission",
+    "FleetStatusReport",
     "PhenologicalStage",
     "PhenologyEngine",
     "PlotZone",
+    "RoverFleetCoordinator",
     "RoverState",
     "RoverTask",
     "SpectralBands",
