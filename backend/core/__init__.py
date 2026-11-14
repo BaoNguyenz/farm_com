@@ -27,13 +27,22 @@ from backend.core.twin_state import (
     WeatherTelemetry,
     create_default_farm,
 )
+from backend.core.weed_targeting import (
+    BedWeedSurvey,
+    DetectedPlant,
+    TargetingTool,
+    WeedSpecies,
+    WeedTargetingEngine,
+)
 
 __all__ = [
     "ActionDispatcher",
     "ActionLog",
     "AuditReceipt",
+    "BedWeedSurvey",
     "CanopyClassification",
     "CropParameters",
+    "DetectedPlant",
     "DigitalTwinTickEngine",
     "ExtendedSpectralEngine",
     "FarmDigitalTwin",
@@ -44,7 +53,10 @@ __all__ = [
     "RoverState",
     "RoverTask",
     "SpectralBands",
+    "TargetingTool",
     "WeatherTelemetry",
+    "WeedSpecies",
+    "WeedTargetingEngine",
     "calculate_fao56_et0",
     "calculate_gdd",
     "calculate_water_deficit",
