@@ -119,7 +119,12 @@ class SoilMicrobiomeEngine:
             base_score -= 15.0
 
         shi = round(min(100.0, max(15.0, base_score)), 1)
-        reinoculate = shi < 70.0 or hypoxia > 0.4 or self.microbiome.trichoderma_cfu_per_g < 5e5
+        reinoculate = (
+            shi < 70.0
+            or hypoxia > 0.4
+            or leaching_tier in ("moderate", "critical_leaching")
+            or self.microbiome.trichoderma_cfu_per_g < 5e5
+        )
 
         bio_action = "Routine bio-compost maintenance"
         if hypoxia > 0.5:
