@@ -1,13 +1,18 @@
 """
 Market & Economic Analyst Agent
 Evaluates crop harvest maturity (GDD), current spot prices, EVN Time-of-Use (TOU) electricity tariffs,
-and optimizes operation costs (e.g., deferring heavy pump loads to off-peak hours).
+cold-chain post-harvest shelf-life pricing degradation, ethylene arbitrage, and operational cost optimization.
 """
 import time
 from datetime import datetime
 from typing import Any, ClassVar
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
+from backend.core.cold_chain import (
+    ColdChainEngine,
+    ColdChamberState,
+    ShelfLifeProjection,
+)
 from backend.core.twin_state import FarmDigitalTwin
 
 
@@ -15,7 +20,7 @@ class MarketAgent(BaseFarmAgent):
     """
     Agricultural Economics & Market Strategist Agent.
     Monitors wholesale commodity market prices, EVN electricity TOU tariffs,
-    and conducts cost-benefit trade-offs on energy-intensive farm operations.
+    post-harvest cold-chain shelf-life depreciation, and conducts cost-benefit trade-offs.
     """
 
     # Vietnam EVN 3-Tier Time-of-Use (TOU) Schedule for Agriculture / Medium Voltage
@@ -34,16 +39,92 @@ class MarketAgent(BaseFarmAgent):
         "Hydrangea": {"price_vnd": 120000, "unit": "stem_bunch", "trend": "+8%", "status": "high_demand", "yield_kg_m2": 1.0}
     }
 
+    # Quality Grade Pricing Multipliers based on Cold Chain Freshess
+    QUALITY_PRICING_FACTORS: ClassVar[dict[str, float]] = {
+        "AAA_PREMIUM_EXPORT": 1.15,
+        "AA_FRESH_RETAIL": 1.00,
+        "A_STANDARD": 0.90,
+        "EXPEDITED_SALE_REQUIRED": 0.65,
+    }
+
     # Grid carbon intensity and carbon credit tax rate (VND / ton CO2e)
     GRID_CARBON_INTENSITY_KG_KWH = 0.7221
     CARBON_TAX_VND_PER_TON = 120000.0
 
-    def __init__(self):
+    def __init__(self, cold_chain_engine: ColdChainEngine | None = None) -> None:
         super().__init__(
             agent_id="agent_market",
             role=AgentRole.MARKET.value,
             expertise_domain="economics"
         )
+        self.cold_chain_engine = cold_chain_engine or ColdChainEngine()
+
+    def evaluate_cold_chain_inventory(
+        self,
+        chambers: list[ColdChamberState] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Calculates dynamic market valuation and shelf-life clearance priorities for cold storage produce.
+        """
+        if chambers is None:
+            # Default cold room chambers monitoring farm storage
+            chambers = [
+                ColdChamberState(
+                    chamber_id="CHAMBER-A1",
+                    crop_type="Strawberries",
+                    stored_weight_kg=350.0,
+                    air_temp_c=3.2,
+                    relative_humidity_pct=92.0,
+                    ethylene_ppm=0.08,
+                    hours_in_storage=18.0
+                ),
+                ColdChamberState(
+                    chamber_id="CHAMBER-B2",
+                    crop_type="Bell Peppers",
+                    stored_weight_kg=600.0,
+                    air_temp_c=7.5,
+                    relative_humidity_pct=88.0,
+                    ethylene_ppm=0.12,
+                    hours_in_storage=36.0
+                ),
+            ]
+
+        inventory_records: list[dict[str, Any]] = []
+        total_valuation_vnd = 0.0
+        expedited_sale_required = False
+
+        for chamber in chambers:
+            proj: ShelfLifeProjection = self.cold_chain_engine.evaluate_shelf_life(chamber)
+            base_price = self.SPOT_PRICES.get(chamber.crop_type, {"price_vnd": 50000})["price_vnd"]
+            multiplier = self.QUALITY_PRICING_FACTORS.get(proj.quality_grade, 1.0)
+            adjusted_price_per_kg = round(base_price * multiplier, 0)
+            lot_value_vnd = round(chamber.stored_weight_kg * adjusted_price_per_kg, 0)
+            total_valuation_vnd += lot_value_vnd
+
+            is_urgent = proj.quality_grade == "EXPEDITED_SALE_REQUIRED" or proj.remaining_shelf_life_days <= 3.0
+            if is_urgent:
+                expedited_sale_required = True
+
+            inventory_records.append({
+                "chamber_id": chamber.chamber_id,
+                "crop_type": chamber.crop_type,
+                "weight_kg": chamber.stored_weight_kg,
+                "quality_grade": proj.quality_grade,
+                "remaining_shelf_life_days": proj.remaining_shelf_life_days,
+                "freshness_index_pct": proj.freshness_index_pct,
+                "base_price_vnd": base_price,
+                "adjusted_price_vnd": adjusted_price_per_kg,
+                "lot_value_vnd": lot_value_vnd,
+                "expedited_dispatch": is_urgent,
+                "alert": proj.alert_action,
+            })
+
+        return {
+            "total_inventory_valuation_vnd": total_valuation_vnd,
+            "expedited_sale_required": expedited_sale_required,
+            "chambers_count": len(chambers),
+            "inventory_records": inventory_records,
+        }
 
     def evaluate_microgrid_arbitrage(
         self,
@@ -170,8 +251,14 @@ class MarketAgent(BaseFarmAgent):
         battery_soc_est = 0.65
         microgrid_analysis = self.evaluate_microgrid_arbitrage(solar_power_kw=solar_est_kw, battery_soc=battery_soc_est)
 
+        # Cold-chain inventory audit
+        cold_chain_audit = self.evaluate_cold_chain_inventory()
+
         urgency = "low"
-        if is_peak and not microgrid_analysis["can_self_power"]:
+        if cold_chain_audit["expedited_sale_required"]:
+            urgency = "critical"
+            rec = "URGENT LOGISTICS: Cold storage inventory contains produce with expiring shelf-life. Dispatch immediately to avoid spoilage markdown."
+        elif is_peak and not microgrid_analysis["can_self_power"]:
             rec = (
                 f"EVN PEAK TARIFF WINDOW ACTIVE ({tariff_info['rate_vnd_kwh']:,.0f} VND/kWh). "
                 f"Defer heavy electrical pumps/lighting until off-peak window (22:00) unless critical moisture stress occurs."
@@ -195,7 +282,8 @@ class MarketAgent(BaseFarmAgent):
         reasoning = (
             f"Electricity pricing tier: {tariff_info['tier']} ({tariff_info['rate_vnd_kwh']:,.0f} VND/kWh). "
             f"Identified {len(harvest_candidates)} zones meeting thermal GDD maturity thresholds. "
-            f"Lam Dong wholesale market premiums: Strawberries at 180,000 VND/kg (+12%), Hydrangeas at 120,000 VND."
+            f"Cold storage valuation: {cold_chain_audit['total_inventory_valuation_vnd']:,.0f} VND across {cold_chain_audit['chambers_count']} chambers. "
+            f"Wholesale prices: Strawberries at 180,000 VND/kg (+12%), Hydrangeas at 120,000 VND."
         )
 
         return AgentOpinion(
@@ -210,6 +298,7 @@ class MarketAgent(BaseFarmAgent):
                 "projected_harvest_value_vnd": total_estimated_value_vnd,
                 "spot_prices": self.SPOT_PRICES,
                 "microgrid_arbitrage": microgrid_analysis,
+                "cold_chain_inventory": cold_chain_audit,
                 "grid_carbon_intensity_kg_kwh": self.GRID_CARBON_INTENSITY_KG_KWH,
                 "carbon_tax_rate_vnd_ton": self.CARBON_TAX_VND_PER_TON
             },
@@ -220,13 +309,30 @@ class MarketAgent(BaseFarmAgent):
     def vote_on_proposal(self, proposal: dict[str, Any], context: dict[str, Any]) -> DebateVote:
         """
         Evaluates operational proposals from an economic lens.
-        Defends operating margins by vetoing non-emergency high-power actions during peak tariff.
+        Defends operating margins by vetoing non-emergency high-power actions during peak tariff
+        and prioritizing urgent cold-chain produce dispatches over prolonged holding.
         """
-        action_type = proposal.get("action_type", "")
+        action_type = proposal.get("action_type", "").lower()
         urgency = proposal.get("urgency", "low")
         tariff_tier = context.get("tariff_tier", self.get_electricity_tariff()["tier"])
 
-        if any(k in action_type.lower() for k in ("irrigat", "pump", "water")):
+        # Cold chain expedited clearance protection
+        if "hold_storage" in action_type or "defer_shipment" in action_type:
+            chamber_quality = context.get("cold_chain_quality_grade", "")
+            shelf_life_days = context.get("remaining_shelf_life_days", 10.0)
+            if chamber_quality == "EXPEDITED_SALE_REQUIRED" or shelf_life_days < 3.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="market_logistics",
+                    vote_choice="REJECT",
+                    confidence=0.96,
+                    rationale=(
+                        f"COLD-CHAIN ARBITRAGE VETO: Produce shelf-life critical ({shelf_life_days:.1f} days, "
+                        f"Grade: {chamber_quality}). Immediate dispatch required to avoid total asset write-off."
+                    ),
+                )
+
+        if any(k in action_type for k in ("irrigat", "pump", "water")):
             # Check if microgrid can self-power to bypass peak grid cost
             microgrid_clean = context.get("microgrid_clean_power", False) or context.get("battery_soc", 0.0) >= 0.40
             if microgrid_clean:
@@ -242,7 +348,6 @@ class MarketAgent(BaseFarmAgent):
                 )
 
             if tariff_tier == "peak" and urgency != "critical":
-
                 return DebateVote(
                     agent_id=self.agent_id,
                     topic="irrigation_pumping",
@@ -261,5 +366,3 @@ class MarketAgent(BaseFarmAgent):
             confidence=0.85,
             rationale="Proposed action aligns with farm economic viability and energy budget constraints."
         )
-
-
