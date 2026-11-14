@@ -374,6 +374,38 @@
                 </div>
             </div>
 
+            <!-- Soil Microbiome Ecology & Nitrogen Leaching Prevention HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-seedling text-lime-400"></i> Sức Khỏe Hệ Vi Sinh Đất & Ngăn Ngừa Rửa Trôi Nitrate
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-lime-500/10 text-lime-300 border border-lime-500/20 font-bold" id="soil-shi-badge">SHI: 88.5/100</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Chỉ Số Sức Khỏe Đất:</span>
+                        <span class="text-base font-bold text-lime-400 font-mono" id="soil-shi-val">88.5</span>
+                        <span class="text-[9px] text-slate-500 block">Soil Health Index</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Rửa Trôi Đạm (N):</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="soil-leaching-val">0.0 kg</span>
+                        <span class="text-[9px] text-slate-500 block" id="soil-leaching-sub">0 lô rửa trôi</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Thiếu Khí Rễ (Hypoxia):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="soil-hypoxia-val">0 Lô Úng Nước</span>
+                        <span class="text-[9px] text-slate-500 block">Aerobic root zone</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Khuẩn Lợi & Mycorrhizae:</span>
+                        <span class="text-base font-bold text-emerald-300 font-mono" id="soil-bio-val">65.0%</span>
+                        <span class="text-[9px] text-slate-500 block">Fungal colonization</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -910,6 +942,17 @@
                     document.getElementById('vietgap-phi-val').innerText = `${t.zones_ready_for_harvest_count} Lô Sạch`;
                     document.getElementById('vietgap-quarantine-sub').innerText = `${t.zones_in_phi_quarantine_count} lô cách ly PHI`;
                     document.getElementById('vietgap-water-val').innerText = t.water_safety_passed ? "ĐẠT CHUẨN" : "CẢNH BÁO";
+                }
+
+                // Soil Microbiome Health & Leaching Prevention Telemetry
+                const soilRes = await fetch('/api/v1/soil-microbiome/health');
+                if (soilRes.ok) {
+                    const s = await soilRes.json();
+                    document.getElementById('soil-shi-badge').innerText = `SHI: ${s.average_soil_health_index}/100`;
+                    document.getElementById('soil-shi-val').innerText = `${s.average_soil_health_index}`;
+                    document.getElementById('soil-leaching-val').innerText = `${s.total_estimated_leached_n_kg} kg`;
+                    document.getElementById('soil-leaching-sub').innerText = `${s.zones_with_leaching_risk_count} lô rửa trôi`;
+                    document.getElementById('soil-hypoxia-val').innerText = `${s.zones_with_hypoxia_risk_count} Lô Úng Nước`;
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
