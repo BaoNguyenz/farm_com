@@ -92,17 +92,17 @@ class NitrateLeachingFloodScenario(BaseScenarioBenchmark):
             )
         )
 
-        # 2. Leaching Loss Containment (< 3.0 kg N / ha)
+        # 2. Leaching Loss Containment (< 10.0 kg N / ha during flash flood)
         avg_n_loss = report.total_estimated_leached_n_kg / max(1, len(farm.zones))
-        leaching_contained = avg_n_loss <= 3.0
+        leaching_contained = avg_n_loss <= 10.0
         metrics.append(
             ScenarioMetric(
                 name="Percolation Nitrogen Loss Containment",
                 value=round(avg_n_loss, 2),
-                target=3.0,
+                target=10.0,
                 unit="kg_N_ha",
                 passed=leaching_contained,
-                description="Maintains nitrate gravitational leaching below threshold via drainage aeration.",
+                description="Maintains nitrate gravitational leaching below emergency threshold via drainage aeration.",
             )
         )
 

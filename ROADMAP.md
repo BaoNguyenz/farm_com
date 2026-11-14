@@ -278,3 +278,32 @@ flowchart LR
   - Tích hợp 2 thẻ HUD trực quan thời gian thực: Thẻ Vi Sinh Đất & Rửa Trôi Đạm + Thẻ Giám Sát Chuỗi Cung Ứng Lạnh Sau Thu Hoạch.
 - [x] **Task 15.6: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 264/264 Unit & Integration tests vượt qua thành công 100% (`tests/test_soil_microbiome.py`, `tests/test_cold_chain.py`, `tests/test_soil_coldchain_agents.py`, `tests/test_soil_microbiome_api.py`, `tests/test_cold_chain_api.py`, `tests/test_scenario_leaching_flood.py`, `tests/test_scenario_coldchain_failure.py`).
+
+---
+
+## 📌 Phase 16: Hạm Đội Robot Nông Nghiệp Tự Hành & Diệt Cỏ Cơ Học Chính Xác (Autonomous Swarm Robotics & Precision Weeding)
+- [x] **Task 16.1: Động Cơ Động Học & Địa Cơ Học Bánh Xe Rover (`backend/core/farm_rover.py`)**
+  - Mô phỏng động học xe tự hành 4WD di chuyển theo luống đất, tiêu thụ điện năng bộ pin LiFePO4 1200Wh.
+  - Mô hình địa cơ học Bekker: tính toán độ trượt bánh xe (wheel slip %) phụ thuộc độ ẩm đất, tự động bù mô-men xoắn khi gặp bùn lầy.
+  - Cơ chế an toàn tự động quay về trạm sạc năng lượng mặt trời khi pin còn dưới 20%.
+- [x] **Task 16.2: Thị Giác AI Phân Biệt Cây Trồng - Cỏ Dại & Điều Hướng Cơ Cấu Chấp Hành (`backend/core/weed_targeting.py`)**
+  - Phân tích hình thái học lá, tỷ lệ khung hình và NDVI để phân biệt chính xác cây dâu tây / ớt chuông với 4 loài cỏ dại phổ biến (Rau dền gai, Rau sam, Cỏ lồng vực, Cỏ gấu).
+  - Lựa chọn cơ cấu diệt cỏ cơ học không dùng hóa chất: Xung đột cơ học dập dập Delta Punch (cỏ vừa), Dao xới gốc vi mô Micro-Tiller (cỏ bụi lớn), hoặc Tia Laser quang nhiệt 450nm (cỏ mầm nhỏ).
+  - Tích hợp chỉ số giảm phát thải thuốc bảo vệ thực vật: tính toán lượng hoạt chất Glyphosate tránh sử dụng.
+- [x] **Task 16.3: Bộ Điều Phối Hạm Đội Robot Đa Tác Vụ (`backend/core/rover_fleet.py`)**
+  - Quản lý đồng thời hạm đội 4 robot (`ROVER-ALPHA`, `ROVER-BETA`, `ROVER-GAMMA`, `ROVER-DELTA`).
+  - Phân bổ nhiệm vụ tuần tra luống thông minh dựa trên trạng thái pin và khoảng cách Euclidean.
+  - Cơ chế thu hồi khẩn cấp toàn bộ hạm đội về trạm trú ẩn khi thời tiết mưa dông.
+- [x] **Task 16.4: Tác Tử Nông Học Tự Động Điều Phái Hạm Đội & Phủ Quyết Hóa Chất (`backend/agents/agronomist.py`)**
+  - `AgronomistAgent`: Quét các điểm nóng cỏ dại bùng phát trên nông trại và tự động ra lệnh điều phái robot xử lý; thực thi phủ quyết (*Organic Integrity Veto*) đối với mọi đề xuất phun thuốc diệt cỏ hóa học độc hại trên các lô đạt chuẩn VietGAP.
+- [x] **Task 16.5: Điểm Cuối RESTful Điều Khiển Hạm Đội Robot (`endpoints/rovers.py`)**
+  - `GET /api/v1/rovers/telemetry`: Giám sát tọa độ, dung lượng pin, số lượng cỏ đã diệt và độ trượt bánh xe.
+  - `POST /api/v1/rovers/dispatch`: Điều động robot làm nhiệm vụ tại luống đất chỉ định.
+  - `POST /api/v1/rovers/recall`: Thu hồi toàn bộ hạm đội về trạm sạc.
+  - `POST /api/v1/rovers/cycle`: Mô phỏng bước tiến chu kỳ làm việc thực tế của robot.
+- [x] **Task 16.6: Kịch Bản Thử Nghiệm Bùng Phát Cỏ Dại & Bùn Lầy (`backend/benchmarks/weed_rover_mission.py`)**
+  - Mô phỏng bùng phát cỏ dại trong điều kiện đất thịt ẩm ướt 82%, kiểm tra khả năng bám luống, tự động hoàn thành nhiệm vụ và tránh 100% thuốc diệt cỏ hóa học.
+- [x] **Task 16.7: Nâng Cấp Bảng Điều Khiển Trực Quan HUD Hạm Đội Robot (`backend/static/index.html`)**
+  - Bổ sung thẻ HUD hiển thị trạng thái hạm đội robot, mức pin trung bình, số cụm cỏ dại đã dập tắt và khối lượng thuốc BVTV hóa học tiết giảm được.
+- [x] **Task 16.8: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 290/290 Unit & Integration tests vượt qua thành công 100% (`tests/test_farm_rover.py`, `tests/test_weed_targeting.py`, `tests/test_rover_fleet.py`, `tests/test_rover_agronomist_agent.py`, `tests/test_rovers_api.py`, `tests/test_scenario_weed_rover.py`).
