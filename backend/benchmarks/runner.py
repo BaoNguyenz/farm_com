@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from backend.benchmarks.base import BaseScenarioBenchmark, ScenarioEvaluationResult
 from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
+from backend.benchmarks.coldchain_failure import ColdChainChillerFailureScenario
 from backend.benchmarks.drought_shock import DroughtShockScenario
 from backend.benchmarks.frost_hazard import FrostHazardScenario
 from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
@@ -44,6 +45,7 @@ class BenchmarkRunner:
             "biosecurity_hazard": BiosecurityHazardScenario(),
             "grid_blackout": GridBlackoutScenario(),
             "leaching_flood": NitrateLeachingFloodScenario(),
+            "coldchain_failure": ColdChainChillerFailureScenario(),
         }
         self._last_report: BenchmarkSuiteReport | None = None
 

@@ -7,6 +7,7 @@ from backend.benchmarks.base import (
     ScenarioMetric,
 )
 from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
+from backend.benchmarks.coldchain_failure import ColdChainChillerFailureScenario
 from backend.benchmarks.drought_shock import DroughtShockScenario
 from backend.benchmarks.frost_hazard import FrostHazardScenario
 from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
@@ -24,6 +25,7 @@ __all__ = [
     "BenchmarkRunner",
     "BenchmarkSuiteReport",
     "BiosecurityHazardScenario",
+    "ColdChainChillerFailureScenario",
     "DroughtShockScenario",
     "FrostHazardScenario",
     "FungalOutbreakScenario",
