@@ -175,3 +175,30 @@ class SoilMicrobiomeEngine:
             zones_with_leaching_risk_count=leaching_count,
             zone_audits=audits,
         )
+
+    def simulate_microbiome_recovery(
+        self,
+        audit: ZoneSoilEcologyAudit,
+        organic_amendment_kg: float = 50.0,
+        bio_inoculant: bool = True,
+    ) -> MicrobialPopulationProfile:
+        """
+        Simulate microbiological population resurgence following biological inoculation.
+        """
+        boost_factor = 1.0 + (min(200.0, organic_amendment_kg) / 100.0)
+        inoculant_mult = 1.8 if bio_inoculant else 1.1
+
+        new_bacteria = min(1e9, self.microbiome.beneficial_bacteria_cfu_per_g * boost_factor * inoculant_mult)
+        new_mycorrhizae = min(95.0, self.microbiome.mycorrhizae_colonization_pct + (15.0 if bio_inoculant else 5.0))
+        new_som = min(12.0, self.microbiome.soil_organic_matter_pct + (organic_amendment_kg * 0.01))
+        new_trichoderma = min(1e7, self.microbiome.trichoderma_cfu_per_g * (2.5 if bio_inoculant else 1.2))
+        new_resp = min(80.0, self.microbiome.soil_respiration_mg_co2_kg_day * boost_factor)
+
+        return MicrobialPopulationProfile(
+            beneficial_bacteria_cfu_per_g=round(new_bacteria, 0),
+            mycorrhizae_colonization_pct=round(new_mycorrhizae, 1),
+            soil_organic_matter_pct=round(new_som, 2),
+            trichoderma_cfu_per_g=round(new_trichoderma, 0),
+            soil_respiration_mg_co2_kg_day=round(new_resp, 1),
+        )
+
