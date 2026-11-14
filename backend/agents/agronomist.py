@@ -1,6 +1,7 @@
 """
 Agronomist (Plant Doctor) Agent
-Analyzes NDVI/NDWI satellite indices and canopy status to identify diseased, stressed, or low-vigor crops.
+Analyzes NDVI/NDWI satellite indices, canopy microclimate status, UAV multispectral scouting,
+and autonomous rover mechanical weed eradication dispatching.
 """
 import time
 from typing import Any
@@ -9,6 +10,7 @@ from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, De
 from backend.core.drone_scouting import DroneScoutingEngine
 from backend.core.fertigation import FertigationOptimizer
 from backend.core.heat_stress import CanopyHeatStressController
+from backend.core.rover_fleet import RoverFleetCoordinator
 from backend.core.twin_state import FarmDigitalTwin
 
 
@@ -16,15 +18,46 @@ class AgronomistAgent(BaseFarmAgent):
     """
     Chief Agronomist & Plant Doctor Agent.
     Evaluates canopy spectral indices, chlorophyll adequacy, microclimate
-    humidity-temperature vectors for fungal sporulation, and heat stress dynamics.
+    humidity-temperature vectors for fungal sporulation, heat stress dynamics,
+    and dispatches zero-chemical mechanical weeding rovers.
     """
-    def __init__(self):
+    def __init__(self, rover_coordinator: RoverFleetCoordinator | None = None) -> None:
         super().__init__(
             agent_id="agent_agronomist",
             role=AgentRole.AGRONOMIST.value,
             expertise_domain="agronomy"
         )
         self.drone_engine = DroneScoutingEngine()
+        self.rover_coordinator = rover_coordinator or RoverFleetCoordinator()
+
+    def audit_weed_infestation_and_dispatch(self, farm: FarmDigitalTwin) -> dict[str, Any]:
+        """
+        Scans plots for weed resurgence and schedules autonomous ground rover interventions.
+        """
+        infestation_plots: list[str] = []
+        dispatched_missions: list[dict[str, Any]] = []
+
+        for zone in farm.zones:
+            # Weeds thrive when soil moisture is moderate (45-70%) and canopy health is stressed or has gaps
+            if zone.health_status in ("weed_infested", "stressed") or (zone.ndvi < 0.55 and zone.soil_moisture_pct > 50.0):
+                infestation_plots.append(zone.id)
+                try:
+                    mission = self.rover_coordinator.dispatch_mission(
+                        plot_id=zone.id,
+                        row_index=1,
+                        priority="urgent_infestation"
+                    )
+                    dispatched_missions.append(mission.model_dump())
+                except RuntimeError:
+                    continue
+
+        return {
+            "infestation_plots_detected": len(infestation_plots),
+            "infestation_plot_ids": infestation_plots,
+            "dispatched_missions_count": len(dispatched_missions),
+            "missions": dispatched_missions,
+            "fleet_status": self.rover_coordinator.get_fleet_status().model_dump(),
+        }
 
     def ingest_drone_survey(self, report_dict: dict[str, Any]) -> dict[str, Any]:
         """
@@ -96,16 +129,20 @@ class AgronomistAgent(BaseFarmAgent):
         drone_report = self.drone_engine.simulate_mission(zones=farm.zones, mission_id="SCOUT-AGRO-LATEST")
         drone_findings = self.ingest_drone_survey(drone_report.model_dump())
 
+        # Autonomous rover weed management audit
+        rover_audit = self.audit_weed_infestation_and_dispatch(farm)
+
         urgency = "low"
         if len(fungal_hazard_zones) >= 2 or len(low_biomass_zones) >= 2 or heat_assessment.alert_level == "extreme_thermal_shock" or len(drone_report.critical_anomalies) >= 2:
             urgency = "critical"
-        elif len(low_biomass_zones) > 0 or len(stressed_zones) > 0 or len(fungal_hazard_zones) > 0 or heat_assessment.fogging_required or len(drone_report.critical_anomalies) > 0:
+        elif len(low_biomass_zones) > 0 or len(stressed_zones) > 0 or len(fungal_hazard_zones) > 0 or heat_assessment.fogging_required or len(drone_report.critical_anomalies) > 0 or rover_audit["infestation_plots_detected"] > 0:
             urgency = "medium"
 
         reasoning = (
             f"Agronomic survey completed across {len(farm.zones)} plot zones. "
             f"Weather vector: {w.temp_c}°C, {w.humidity_percent}% RH. "
             f"Drone scout detected {len(drone_report.critical_anomalies)} canopy anomalies. "
+            f"Rover fleet dispatched {rover_audit['dispatched_missions_count']} autonomous mechanical weeding missions. "
         )
         if fungal_hazard_zones:
             reasoning += f"High fungal outbreak risk in saturated zones: {', '.join(fungal_hazard_zones)}. "
@@ -120,6 +157,8 @@ class AgronomistAgent(BaseFarmAgent):
             rec = f"EMERGENCY: Apply preventive bio-fungicide to {', '.join(fungal_hazard_zones)} and schedule foliar nutrition."
         elif heat_assessment.fogging_required:
             rec = f"Canopy heat stress ({heat_assessment.alert_level}): Activate {heat_assessment.pulse_duration_seconds}s micro-fogging pulse."
+        elif rover_audit["dispatched_missions_count"] > 0:
+            rec = f"ROBOTIC FLEET: Dispatched {rover_audit['dispatched_missions_count']} mechanical weeding rovers to eradicate weeds without chemical herbicides."
         elif drone_findings["prescriptions_generated"] > 0:
             rec = f"UAV Scouting: Deploy drone targeted spray missions for {drone_findings['prescriptions_generated']} hotspot zones."
         elif urgency == "medium":
@@ -137,6 +176,7 @@ class AgronomistAgent(BaseFarmAgent):
             "heat_stress": heat_assessment.model_dump(),
             "fertigation_recipes_count": len(fert_recipes),
             "drone_scouting": drone_findings,
+            "rover_weed_management": rover_audit,
         }
 
         return AgentOpinion(
@@ -156,6 +196,32 @@ class AgronomistAgent(BaseFarmAgent):
         urgency = proposal.get("urgency", "low")
 
         action_type = proposal.get("action_type", "").lower()
+
+        # Herbicide veto on VietGAP/organic certified plots
+        if any(k in action_type for k in ("glyphosate", "chemical_herbicide", "paraquat")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="REJECT",
+                weight=max(weight, 3.5),
+                confidence=0.98,
+                rationale=(
+                    "ORGANIC INTEGRITY VETO: Chemical herbicide application strictly prohibited "
+                    "under VietGAP / GlobalG.A.P. Zero-Residue MRL protocols. "
+                    "Dispatch autonomous mechanical weeding rovers instead."
+                ),
+            )
+
+        # Autonomous mechanical rover weeding endorsement
+        if any(k in action_type for k in ("rover", "weed_punch", "mechanical_weeding", "delta_arm")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist strongly endorses zero-chemical autonomous mechanical weeding rover deployment."
+            )
 
         # Veto irrigation if soil pathogen risk is severe and soil is saturated
         if any(k in action_type for k in ("irrigat", "pump", "water")):
