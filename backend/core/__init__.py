@@ -23,6 +23,12 @@ from backend.core.greenhouse_cea import (
     GreenhouseCEAEngine,
     GreenhouseMicroclimate,
 )
+from backend.core.pollination import (
+    BioAcousticPollinationEngine,
+    BuzzPollinationEvent,
+    FarmPollinationReport,
+    ZonePollinationAudit,
+)
 from backend.core.rover_fleet import (
     FleetMission,
     FleetStatusReport,
@@ -50,12 +56,15 @@ __all__ = [
     "ActionLog",
     "AuditReceipt",
     "BedWeedSurvey",
+    "BioAcousticPollinationEngine",
+    "BuzzPollinationEvent",
     "CanopyClassification",
     "CropParameters",
     "DetectedPlant",
     "DigitalTwinTickEngine",
     "ExtendedSpectralEngine",
     "FarmDigitalTwin",
+    "FarmPollinationReport",
     "FarmRover",
     "FleetMission",
     "FleetStatusReport",
@@ -73,6 +82,7 @@ __all__ = [
     "WeatherTelemetry",
     "WeedSpecies",
     "WeedTargetingEngine",
+    "ZonePollinationAudit",
     "calculate_fao56_et0",
     "calculate_gdd",
     "calculate_water_deficit",
