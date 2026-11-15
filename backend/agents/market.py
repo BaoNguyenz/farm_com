@@ -51,6 +51,9 @@ class MarketAgent(BaseFarmAgent):
     GRID_CARBON_INTENSITY_KG_KWH = 0.7221
     CARBON_TAX_VND_PER_TON = 120000.0
 
+    # Bulk Industrial Liquid CO2 input pricing for CEA greenhouses (VND / kg)
+    CO2_COST_PER_KG_VND: ClassVar[float] = 12000.0
+
     def __init__(self, cold_chain_engine: ColdChainEngine | None = None) -> None:
         super().__init__(
             agent_id="agent_market",
@@ -221,6 +224,45 @@ class MarketAgent(BaseFarmAgent):
             "carbon_tax_liability_vnd": round(carbon_tax_vnd, 1)
         }
 
+    def evaluate_co2_enrichment_economics(
+        self,
+        co2_kg_dosed: float,
+        projected_yield_gain_pct: float,
+        crop_type: str = "Strawberries",
+        area_m2: float = 100.0,
+    ) -> dict[str, Any]:
+        """
+        Assesses marginal financial return on liquid CO2 enrichment dosing.
+        Compares industrial CO2 procurement costs against elevated photosynthetic crop yield value.
+        """
+        crop_meta = self.SPOT_PRICES.get(crop_type, {"price_vnd": 50000, "yield_kg_m2": 1.0, "unit": "kg"})
+        co2_cost_vnd = co2_kg_dosed * self.CO2_COST_PER_KG_VND
+
+        base_yield_kg = area_m2 * crop_meta.get("yield_kg_m2", 1.0)
+        marginal_yield_kg = round(base_yield_kg * (projected_yield_gain_pct / 100.0), 2)
+        marginal_revenue_vnd = round(marginal_yield_kg * crop_meta["price_vnd"], 0)
+        net_profit_vnd = round(marginal_revenue_vnd - co2_cost_vnd, 0)
+        roi_ratio = round(marginal_revenue_vnd / max(1.0, co2_cost_vnd), 2)
+        is_profitable = net_profit_vnd > 0
+
+        recommendation = (
+            f"CO2 enrichment highly viable (ROI: {roi_ratio}x, Net: +{net_profit_vnd:,.0f} VND)."
+            if is_profitable
+            else f"CO2 enrichment unprofitable (ROI: {roi_ratio}x, Net: {net_profit_vnd:,.0f} VND). Defer dosing."
+        )
+
+        return {
+            "crop_type": crop_type,
+            "co2_kg_dosed": co2_kg_dosed,
+            "co2_cost_vnd": co2_cost_vnd,
+            "marginal_yield_kg": marginal_yield_kg,
+            "marginal_revenue_vnd": marginal_revenue_vnd,
+            "net_profit_vnd": net_profit_vnd,
+            "roi_ratio": roi_ratio,
+            "is_profitable": is_profitable,
+            "recommendation": recommendation,
+        }
+
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
@@ -254,6 +296,14 @@ class MarketAgent(BaseFarmAgent):
         # Cold-chain inventory audit
         cold_chain_audit = self.evaluate_cold_chain_inventory()
 
+        # CO2 enrichment marginal yield economics
+        co2_economics = self.evaluate_co2_enrichment_economics(
+            co2_kg_dosed=12.0,
+            projected_yield_gain_pct=15.0,
+            crop_type="Strawberries",
+            area_m2=150.0,
+        )
+
         urgency = "low"
         if cold_chain_audit["expedited_sale_required"]:
             urgency = "critical"
@@ -283,6 +333,7 @@ class MarketAgent(BaseFarmAgent):
             f"Electricity pricing tier: {tariff_info['tier']} ({tariff_info['rate_vnd_kwh']:,.0f} VND/kWh). "
             f"Identified {len(harvest_candidates)} zones meeting thermal GDD maturity thresholds. "
             f"Cold storage valuation: {cold_chain_audit['total_inventory_valuation_vnd']:,.0f} VND across {cold_chain_audit['chambers_count']} chambers. "
+            f"CO2 enrichment economics: {co2_economics['recommendation']} "
             f"Wholesale prices: Strawberries at 180,000 VND/kg (+12%), Hydrangeas at 120,000 VND."
         )
 
@@ -299,6 +350,7 @@ class MarketAgent(BaseFarmAgent):
                 "spot_prices": self.SPOT_PRICES,
                 "microgrid_arbitrage": microgrid_analysis,
                 "cold_chain_inventory": cold_chain_audit,
+                "co2_enrichment_economics": co2_economics,
                 "grid_carbon_intensity_kg_kwh": self.GRID_CARBON_INTENSITY_KG_KWH,
                 "carbon_tax_rate_vnd_ton": self.CARBON_TAX_VND_PER_TON
             },
@@ -358,6 +410,34 @@ class MarketAgent(BaseFarmAgent):
                         f"Irrigation is non-critical ({urgency}); deferring will save ~63% in pumping power costs."
                     )
                 )
+
+        # Greenhouse CO2 enrichment economic veto and ROI validation
+        if any(k in action_type for k in ("co2_enrichment", "co2_injection", "co2_dosing")):
+            vents_open = context.get("roof_vent_pct", 0.0) > 50.0
+            roi = context.get("projected_roi", 2.5)
+            if vents_open:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="greenhouse_economics",
+                    vote_choice="REJECT",
+                    confidence=0.95,
+                    rationale="CO2 ECONOMIC VETO: Roof vents >50% open causes atmospheric gas dissipation. Liquid CO2 capital will be lost with negative ROI.",
+                )
+            if roi < 1.0 or not context.get("is_profitable", True):
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="greenhouse_economics",
+                    vote_choice="REJECT",
+                    confidence=0.92,
+                    rationale=f"CO2 ECONOMIC VETO: Projected return on investment (ROI {roi}x) fails to cover liquid CO2 input costs.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="greenhouse_economics",
+                vote_choice="APPROVE",
+                confidence=0.93,
+                rationale=f"Market agent approves CO2 enrichment: projected yield uplift generates positive ROI ({roi}x).",
+            )
 
         return DebateVote(
             agent_id=self.agent_id,
