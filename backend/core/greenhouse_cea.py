@@ -113,7 +113,9 @@ class GreenhouseCEAEngine:
                 self.actuators.side_curtain_pct = 75.0
                 self.actuators.pad_and_fan_active = True
                 self.actuators.shade_screen_deployed = solar_radiation_mj > 18.0
-                internal_temp -= 6.5
+                # Full active CEA cooling (shade screen reflection + wet pad evaporative depression + cross ventilation)
+                cooling = 7.5 + (4.0 if self.actuators.shade_screen_deployed else 0.0) + (3.5 if self.actuators.pad_and_fan_active else 0.0)
+                internal_temp -= cooling
             elif internal_temp > target_temp_c:
                 self.actuators.roof_vent_pct = 45.0
                 self.actuators.side_curtain_pct = 30.0
@@ -126,10 +128,11 @@ class GreenhouseCEAEngine:
                 self.actuators.pad_and_fan_active = False
                 self.actuators.shade_screen_deployed = False
         else:
-            # Under manual control, cooling is proportional to vent aperture and wet pad
-            vent_cooling = (self.actuators.roof_vent_pct / 100.0) * 5.0
+            # Under manual control, cooling is proportional to vent aperture, wet pad, and shade
+            vent_cooling = (self.actuators.roof_vent_pct / 100.0) * 7.5
             pad_cooling = 3.5 if self.actuators.pad_and_fan_active else 0.0
-            internal_temp -= (vent_cooling + pad_cooling)
+            shade_cooling = 4.0 if self.actuators.shade_screen_deployed else 0.0
+            internal_temp -= (vent_cooling + pad_cooling + shade_cooling)
 
         internal_temp = round(internal_temp, 1)
         internal_rh = min(95.0, max(35.0, ambient_humidity_pct + (15.0 if self.actuators.pad_and_fan_active else -5.0)))
