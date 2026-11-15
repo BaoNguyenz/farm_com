@@ -502,6 +502,38 @@
                 </div>
             </div>
 
+            <!-- Bio-Acoustic Pollination Monitoring & Buzz Frequency HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-bug text-amber-400"></i> Giám Sát Âm Sinh Học Thụ Phấn Ong (Bio-Acoustic Pollination)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold" id="pollination-status-badge">OPTIMAL AAA SET</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Lượt Thụ Phấn / Hoa:</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="pollination-visits-val">3.0 lượt/hoa</span>
+                        <span class="text-[9px] text-slate-500 block">Target: ≥2.5 AAA Grade</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Tần Số Rung Hoa (Buzz):</span>
+                        <span class="text-base font-bold text-yellow-400 font-mono" id="pollination-freq-val">345 Hz</span>
+                        <span class="text-[9px] text-slate-500 block">Bombus sonication (310-390 Hz)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Rủi Ro Dị Dạng Trái:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="pollination-risk-val">3.0%</span>
+                        <span class="text-[9px] text-slate-500 block" id="pollination-risk-sub">Tỉ lệ quả tròn đều xuất khẩu: 97%</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Trạng Thái Tìm Kiếm (Foraging):</span>
+                        <span class="text-base font-bold text-lime-400 font-mono" id="pollination-foraging-val">Đang Kiếm Ăn</span>
+                        <span class="text-[9px] text-slate-500 block" id="pollination-foragers-sub">~180 ong thợ hoạt động</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1091,6 +1123,24 @@
                     document.getElementById('cea-pn-val').innerText = `${gh.canopy_net_photosynthesis_umol_m2_s} µmol/m²·s`;
                     const ventPct = gh.actuators ? gh.actuators.roof_vent_pct : 25;
                     document.getElementById('cea-vent-sub').innerText = `Cửa Mái Thông Gió: ${ventPct}%`;
+                }
+
+                // Bio-Acoustic Pollination Telemetry
+                const polRes = await fetch('/api/v1/pollination/status');
+                if (polRes.ok) {
+                    const pol = await polRes.json();
+                    document.getElementById('pollination-status-badge').innerText = (pol.average_visitations_per_flower >= 2.5) ? 'OPTIMAL AAA SET' : 'DEFICIT DETECTED';
+                    document.getElementById('pollination-visits-val').innerText = `${pol.average_visitations_per_flower} lượt/hoa`;
+                    document.getElementById('pollination-freq-val').innerText = `345 Hz`;
+                    const avgRisk = pol.zone_audits && pol.zone_audits.length > 0
+                        ? pol.zone_audits[0].fruit_deformation_risk_pct
+                        : 3.0;
+                    document.getElementById('pollination-risk-val').innerText = `${avgRisk}%`;
+                    document.getElementById('pollination-risk-sub').innerText = `Tỉ lệ quả tròn đều xuất khẩu: ${Math.round(100 - avgRisk)}%`;
+                    const hasStress = pol.zone_audits && pol.zone_audits.some(z => z.foraging_thermal_stress);
+                    document.getElementById('pollination-foraging-val').innerText = hasStress ? 'Tạm Ngưng (Nhiệt)' : 'Đang Kiếm Ăn';
+                    document.getElementById('pollination-foraging-val').className = hasStress ? 'text-base font-bold text-rose-400 font-mono' : 'text-base font-bold text-lime-400 font-mono';
+                    document.getElementById('pollination-foragers-sub').innerText = `~${pol.estimated_active_foragers} ong thợ hoạt động`;
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
