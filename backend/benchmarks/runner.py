@@ -13,6 +13,7 @@ from backend.benchmarks.coldchain_failure import ColdChainChillerFailureScenario
 from backend.benchmarks.drought_shock import DroughtShockScenario
 from backend.benchmarks.frost_hazard import FrostHazardScenario
 from backend.benchmarks.fungal_outbreak import FungalOutbreakScenario
+from backend.benchmarks.greenhouse_heat_trap import GreenhouseHeatTrapScenario
 from backend.benchmarks.grid_blackout import GridBlackoutScenario
 from backend.benchmarks.leaching_flood import NitrateLeachingFloodScenario
 from backend.benchmarks.tariff_optimization import TariffOptimizationScenario
@@ -48,6 +49,7 @@ class BenchmarkRunner:
             "leaching_flood": NitrateLeachingFloodScenario(),
             "coldchain_failure": ColdChainChillerFailureScenario(),
             "weed_rover_mission": WeedOutbreakRoverMissionScenario(),
+            "greenhouse_heat_trap": GreenhouseHeatTrapScenario(),
         }
         self._last_report: BenchmarkSuiteReport | None = None
 
