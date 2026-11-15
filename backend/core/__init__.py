@@ -18,6 +18,11 @@ from backend.core.extended_spectral import (
     SpectralBands,
 )
 from backend.core.farm_rover import FarmRover, RoverState, RoverTask
+from backend.core.greenhouse_cea import (
+    GreenhouseActuators,
+    GreenhouseCEAEngine,
+    GreenhouseMicroclimate,
+)
 from backend.core.rover_fleet import (
     FleetMission,
     FleetStatusReport,
@@ -54,6 +59,9 @@ __all__ = [
     "FarmRover",
     "FleetMission",
     "FleetStatusReport",
+    "GreenhouseActuators",
+    "GreenhouseCEAEngine",
+    "GreenhouseMicroclimate",
     "PhenologicalStage",
     "PhenologyEngine",
     "PlotZone",
