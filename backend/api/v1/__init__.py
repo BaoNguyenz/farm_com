@@ -14,6 +14,7 @@ from backend.api.v1.endpoints.fertigation import router as fertigation_router
 from backend.api.v1.endpoints.greenhouse import router as greenhouse_router
 from backend.api.v1.endpoints.iot import router as iot_router
 from backend.api.v1.endpoints.microgrid import router as microgrid_router
+from backend.api.v1.endpoints.pollination import router as pollination_router
 from backend.api.v1.endpoints.rovers import router as rovers_router
 from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.simulation import router as simulation_router
@@ -39,6 +40,7 @@ api_v1_router.include_router(soil_microbiome_router)
 api_v1_router.include_router(cold_chain_router)
 api_v1_router.include_router(rovers_router)
 api_v1_router.include_router(greenhouse_router)
+api_v1_router.include_router(pollination_router)
 
 __all__ = ["api_v1_router"]
 
