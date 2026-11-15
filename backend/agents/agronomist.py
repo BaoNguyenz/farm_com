@@ -9,7 +9,9 @@ from typing import Any
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
 from backend.core.drone_scouting import DroneScoutingEngine
 from backend.core.fertigation import FertigationOptimizer
+from backend.core.greenhouse_cea import GreenhouseCEAEngine
 from backend.core.heat_stress import CanopyHeatStressController
+from backend.core.pollination import BioAcousticPollinationEngine
 from backend.core.rover_fleet import RoverFleetCoordinator
 from backend.core.twin_state import FarmDigitalTwin
 
@@ -19,9 +21,15 @@ class AgronomistAgent(BaseFarmAgent):
     Chief Agronomist & Plant Doctor Agent.
     Evaluates canopy spectral indices, chlorophyll adequacy, microclimate
     humidity-temperature vectors for fungal sporulation, heat stress dynamics,
-    and dispatches zero-chemical mechanical weeding rovers.
+    autonomous mechanical weed eradication, greenhouse CEA climate regulation,
+    and bio-acoustic pollinator buzz density.
     """
-    def __init__(self, rover_coordinator: RoverFleetCoordinator | None = None) -> None:
+    def __init__(
+        self,
+        rover_coordinator: RoverFleetCoordinator | None = None,
+        pollination_engine: BioAcousticPollinationEngine | None = None,
+        greenhouse_engine: GreenhouseCEAEngine | None = None,
+    ) -> None:
         super().__init__(
             agent_id="agent_agronomist",
             role=AgentRole.AGRONOMIST.value,
@@ -29,6 +37,8 @@ class AgronomistAgent(BaseFarmAgent):
         )
         self.drone_engine = DroneScoutingEngine()
         self.rover_coordinator = rover_coordinator or RoverFleetCoordinator()
+        self.pollination_engine = pollination_engine or BioAcousticPollinationEngine()
+        self.greenhouse_engine = greenhouse_engine or GreenhouseCEAEngine()
 
     def audit_weed_infestation_and_dispatch(self, farm: FarmDigitalTwin) -> dict[str, Any]:
         """
@@ -132,10 +142,37 @@ class AgronomistAgent(BaseFarmAgent):
         # Autonomous rover weed management audit
         rover_audit = self.audit_weed_infestation_and_dispatch(farm)
 
+        # Greenhouse CEA microclimate and photosynthetic kinetics
+        gh_microclimate = self.greenhouse_engine.regulate_microclimate(
+            ambient_temp_c=w.temp_c,
+            ambient_humidity_pct=w.humidity_percent,
+            solar_radiation_mj=w.solar_radiation_mj,
+        )
+
+        # Bio-acoustic pollination assessment
+        pollination_report = self.pollination_engine.audit_farm(farm)
+        pollination_deficient = pollination_report.zones_requiring_supplementary_pollination > 0
+        thermal_foraging_stress = any(z.foraging_thermal_stress for z in pollination_report.zone_audits)
+
         urgency = "low"
-        if len(fungal_hazard_zones) >= 2 or len(low_biomass_zones) >= 2 or heat_assessment.alert_level == "extreme_thermal_shock" or len(drone_report.critical_anomalies) >= 2:
+        if (
+            len(fungal_hazard_zones) >= 2
+            or len(low_biomass_zones) >= 2
+            or heat_assessment.alert_level == "extreme_thermal_shock"
+            or len(drone_report.critical_anomalies) >= 2
+            or pollination_report.zones_requiring_supplementary_pollination >= 2
+        ):
             urgency = "critical"
-        elif len(low_biomass_zones) > 0 or len(stressed_zones) > 0 or len(fungal_hazard_zones) > 0 or heat_assessment.fogging_required or len(drone_report.critical_anomalies) > 0 or rover_audit["infestation_plots_detected"] > 0:
+        elif (
+            len(low_biomass_zones) > 0
+            or len(stressed_zones) > 0
+            or len(fungal_hazard_zones) > 0
+            or heat_assessment.fogging_required
+            or len(drone_report.critical_anomalies) > 0
+            or rover_audit["infestation_plots_detected"] > 0
+            or pollination_deficient
+            or gh_microclimate.climate_status in ("heat_stress", "excessive_humidity")
+        ):
             urgency = "medium"
 
         reasoning = (
@@ -143,6 +180,8 @@ class AgronomistAgent(BaseFarmAgent):
             f"Weather vector: {w.temp_c}°C, {w.humidity_percent}% RH. "
             f"Drone scout detected {len(drone_report.critical_anomalies)} canopy anomalies. "
             f"Rover fleet dispatched {rover_audit['dispatched_missions_count']} autonomous mechanical weeding missions. "
+            f"CEA Microclimate: {gh_microclimate.climate_status} (VPD: {gh_microclimate.vpd_kpa} kPa, CO2: {gh_microclimate.co2_concentration_ppm} ppm, Pn: {gh_microclimate.canopy_net_photosynthesis_umol_m2_s}). "
+            f"Pollination: {pollination_report.average_visitations_per_flower} visits/flower ({pollination_report.zones_requiring_supplementary_pollination} zones deficient). "
         )
         if fungal_hazard_zones:
             reasoning += f"High fungal outbreak risk in saturated zones: {', '.join(fungal_hazard_zones)}. "
@@ -153,6 +192,10 @@ class AgronomistAgent(BaseFarmAgent):
 
         if heat_assessment.alert_level == "extreme_thermal_shock":
             rec = f"EMERGENCY: Extreme thermal shock detected ({w.temp_c}°C, VPD {heat_assessment.vpd_kpa} kPa). Immediate evaporative fogging required."
+        elif thermal_foraging_stress:
+            rec = f"POLLINATION THERMAL CESSATION ({w.temp_c}°C): Adjust ridge vents and wet pads to restore bumblebee foraging range."
+        elif pollination_report.zones_requiring_supplementary_pollination >= 2:
+            rec = f"POLLINATION DEFICIT: {pollination_report.zones_requiring_supplementary_pollination} blooming zones lack pollinator visitation. Deploy supplementary Bombus hive."
         elif urgency == "critical":
             rec = f"EMERGENCY: Apply preventive bio-fungicide to {', '.join(fungal_hazard_zones)} and schedule foliar nutrition."
         elif heat_assessment.fogging_required:
@@ -161,6 +204,8 @@ class AgronomistAgent(BaseFarmAgent):
             rec = f"ROBOTIC FLEET: Dispatched {rover_audit['dispatched_missions_count']} mechanical weeding rovers to eradicate weeds without chemical herbicides."
         elif drone_findings["prescriptions_generated"] > 0:
             rec = f"UAV Scouting: Deploy drone targeted spray missions for {drone_findings['prescriptions_generated']} hotspot zones."
+        elif pollination_deficient:
+            rec = "Pollination density below target: schedule supplementary bumblebee hive release."
         elif urgency == "medium":
             rec = "Schedule soil pathogen inspection & foliar nitrogen spray for targeted zones."
         else:
@@ -177,6 +222,8 @@ class AgronomistAgent(BaseFarmAgent):
             "fertigation_recipes_count": len(fert_recipes),
             "drone_scouting": drone_findings,
             "rover_weed_management": rover_audit,
+            "greenhouse_cea": gh_microclimate.model_dump(),
+            "pollination_report": pollination_report.model_dump(),
         }
 
         return AgentOpinion(
@@ -257,6 +304,41 @@ class AgronomistAgent(BaseFarmAgent):
                 weight=weight,
                 confidence=0.95,
                 rationale="Agronomist approves evaporative fogging to restore optimal leaf transpiration."
+            )
+
+        # CO2 enrichment anti-exhaust loss veto
+        if "co2_injection" in action_type or "co2_dosing" in action_type:
+            vents_open = context.get("roof_vent_pct", 0.0) > 50.0
+            if vents_open:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic=domain,
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.0),
+                    confidence=0.96,
+                    rationale="CO2 LOSS VETO: Roof vents are open >50%. Liquid CO2 dosing will vent to the atmosphere with zero photosynthetic gain.",
+                )
+
+        # Vent opening during scheduled CO2 dosing veto
+        if ("open_vent" in action_type or "vent_aperture" in action_type) and context.get("co2_dosing_active", False):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="REJECT",
+                weight=weight,
+                confidence=0.94,
+                rationale="VENT VETO: Active CO2 enrichment scheduled. Restrict roof vents <50% to prevent gas loss.",
+            )
+
+        # Supplementary pollination endorsement
+        if any(k in action_type for k in ("pollinat", "bombus", "hive", "buzz")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.95,
+                rationale="Agronomist strongly endorses supplementary bumblebee hive placement to ensure symmetrical AAA fruit set.",
             )
 
         return DebateVote(
