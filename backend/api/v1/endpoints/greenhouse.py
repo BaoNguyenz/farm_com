@@ -62,6 +62,7 @@ def adjust_greenhouse_vents(payload: VentAdjustmentRequest) -> GreenhouseMicrocl
         ambient_temp_c=25.0,
         ambient_humidity_pct=60.0,
         solar_radiation_mj=16.0,
+        manual_actuators=True,
     )
 
 
@@ -89,6 +90,7 @@ def inject_photosynthetic_co2(payload: CO2InjectionRequest) -> GreenhouseMicrocl
         ambient_humidity_pct=62.0,
         solar_radiation_mj=18.0,
         target_co2_ppm=payload.target_co2_ppm,
+        manual_actuators=True,
     )
 
 

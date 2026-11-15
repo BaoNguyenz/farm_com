@@ -17,7 +17,7 @@ from backend.core.twin_state import FarmDigitalTwin
 class BuzzPollinationEvent(BaseModel):
     """Detected acoustic sonication event by a foraging pollinator."""
     timestamp: float
-    frequency_hz: float = Field(..., ge=200.0, le=500.0, description="Sonication resonance frequency (Hz)")
+    frequency_hz: float = Field(..., ge=100.0, le=600.0, description="Sonication resonance frequency (Hz)")
     amplitude_db: float = Field(..., description="Audio signal amplitude in dBFS")
     duration_seconds: float = Field(..., ge=0.1, le=10.0)
     zone_id: str

@@ -93,6 +93,7 @@ class GreenhouseCEAEngine:
         solar_radiation_mj: float,
         target_temp_c: float = 24.0,
         target_co2_ppm: float = 850.0,
+        manual_actuators: bool = False,
     ) -> GreenhouseMicroclimate:
         """
         Computes actuator setpoints and resulting internal microclimate.
@@ -106,24 +107,29 @@ class GreenhouseCEAEngine:
 
         # Actuator dispatch logic:
         # 1. Thermal control
-        if internal_temp > (target_temp_c + 4.0):
-            self.actuators.roof_vent_pct = 90.0
-            self.actuators.side_curtain_pct = 75.0
-            self.actuators.pad_and_fan_active = True
-            self.actuators.shade_screen_deployed = solar_radiation_mj > 18.0
-            # Cooling effect
-            internal_temp -= 6.5
-        elif internal_temp > target_temp_c:
-            self.actuators.roof_vent_pct = 45.0
-            self.actuators.side_curtain_pct = 30.0
-            self.actuators.pad_and_fan_active = False
-            self.actuators.shade_screen_deployed = False
-            internal_temp -= 3.0
+        if not manual_actuators:
+            if internal_temp > (target_temp_c + 4.0):
+                self.actuators.roof_vent_pct = 90.0
+                self.actuators.side_curtain_pct = 75.0
+                self.actuators.pad_and_fan_active = True
+                self.actuators.shade_screen_deployed = solar_radiation_mj > 18.0
+                internal_temp -= 6.5
+            elif internal_temp > target_temp_c:
+                self.actuators.roof_vent_pct = 45.0
+                self.actuators.side_curtain_pct = 30.0
+                self.actuators.pad_and_fan_active = False
+                self.actuators.shade_screen_deployed = False
+                internal_temp -= 3.0
+            else:
+                self.actuators.roof_vent_pct = 15.0
+                self.actuators.side_curtain_pct = 10.0
+                self.actuators.pad_and_fan_active = False
+                self.actuators.shade_screen_deployed = False
         else:
-            self.actuators.roof_vent_pct = 15.0
-            self.actuators.side_curtain_pct = 10.0
-            self.actuators.pad_and_fan_active = False
-            self.actuators.shade_screen_deployed = False
+            # Under manual control, cooling is proportional to vent aperture and wet pad
+            vent_cooling = (self.actuators.roof_vent_pct / 100.0) * 5.0
+            pad_cooling = 3.5 if self.actuators.pad_and_fan_active else 0.0
+            internal_temp -= (vent_cooling + pad_cooling)
 
         internal_temp = round(internal_temp, 1)
         internal_rh = min(95.0, max(35.0, ambient_humidity_pct + (15.0 if self.actuators.pad_and_fan_active else -5.0)))
@@ -134,15 +140,21 @@ class GreenhouseCEAEngine:
         # 2. Photosynthetic CO2 dosing control
         # Anti-exhaust loss rule: Only inject CO2 if vents are restricted (<55%) and PAR > 200 umol/m2-s
         can_enrich_co2 = self.actuators.roof_vent_pct < 55.0 and par > 200.0
-        if can_enrich_co2:
-            self.actuators.co2_dosing_valve_open = True
-            self.actuators.co2_dosing_rate_kg_h = 4.5
-            self.current_co2_ppm = min(1200.0, target_co2_ppm)
+        if not manual_actuators:
+            if can_enrich_co2:
+                self.actuators.co2_dosing_valve_open = True
+                self.actuators.co2_dosing_rate_kg_h = 4.5
+                self.current_co2_ppm = min(1200.0, target_co2_ppm)
+            else:
+                self.actuators.co2_dosing_valve_open = False
+                self.actuators.co2_dosing_rate_kg_h = 0.0
+                self.current_co2_ppm = 415.0
         else:
-            self.actuators.co2_dosing_valve_open = False
-            self.actuators.co2_dosing_rate_kg_h = 0.0
-            # Depletes towards ambient ~410 ppm under active canopy photosynthesis
-            self.current_co2_ppm = 415.0
+            # If manual actuator had CO2 valve open but vents opened >= 55%, force shut off valve
+            if self.actuators.roof_vent_pct >= 55.0 and self.actuators.co2_dosing_valve_open:
+                self.actuators.co2_dosing_valve_open = False
+                self.actuators.co2_dosing_rate_kg_h = 0.0
+                self.current_co2_ppm = 415.0
 
         pn = self.calculate_photosynthesis(par, self.current_co2_ppm, internal_temp)
 
