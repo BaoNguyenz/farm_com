@@ -307,3 +307,28 @@ flowchart LR
   - Bổ sung thẻ HUD hiển thị trạng thái hạm đội robot, mức pin trung bình, số cụm cỏ dại đã dập tắt và khối lượng thuốc BVTV hóa học tiết giảm được.
 - [x] **Task 16.8: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 290/290 Unit & Integration tests vượt qua thành công 100% (`tests/test_farm_rover.py`, `tests/test_weed_targeting.py`, `tests/test_rover_fleet.py`, `tests/test_rover_agronomist_agent.py`, `tests/test_rovers_api.py`, `tests/test_scenario_weed_rover.py`).
+
+---
+
+## 📌 Phase 17: Nông Nghiệp Môi Trường Kiểm Soát (CEA Greenhouse), Bù Khí CO2 & Giám Sát Âm Sinh Học Thụ Phấn (Bio-Acoustic Pollination)
+- [x] **Task 17.1: Động Học Vi Khí Hậu Nhà Màng & Hấp Thụ CO2 Quang Hợp (`backend/core/greenhouse_cea.py`)**
+  - Công thức Tetens tính áp suất hơi thiếu hụt (VPD): $e_s(T) = 0.61078 \exp(17.27 T / (T + 237.3))$.
+  - Mô hình quang hợp Farquhar-von Caemmerer-Berry (FvCB) / Michaelis-Menten tính tỷ lệ đồng hóa CO2 ($P_n$) phụ thuộc PAR, nhiệt độ và nồng độ CO2.
+  - Điều khiển cơ cấu chấp hành: cửa mái thông gió (0-100%), rèm cuộn hông, tấm làm mát cellulose ướt (pad-and-fan) và van châm khí hóa lỏng CO2.
+  - Cơ chế khóa liên động chống thất thoát (Anti-Exhaust Interlock): tự động ngắt van bơm khí CO2 khi cửa mái mở $\ge 55\%$ hoặc bức xạ PAR $< 200 \mu\text{mol/m}^2\text{s}$.
+- [x] **Task 17.2: Giám Sát Âm Sinh Học Thụ Phấn Ong Rung & Rủi Ro Dị Dạng Trái (`backend/core/pollination.py`)**
+  - Phân tích phổ âm thanh từ micro trường âm thanh: nhận diện dải cộng hưởng rung hoa sonication của ong nghệ (*Bombus*) ở tần số 310-390 Hz (so với tần số đập cánh bay 150-200 Hz).
+  - Định lượng mật độ thụ phấn (lượt ghé thăm/hoa, mục tiêu $\ge 2.5$ lượt để đạt chuẩn xuất khẩu AAA).
+  - Mô hình xác suất dị dạng trái ("cat-facing") và chỉ số suy giảm do nhiệt độ ($<12^\circ\text{C}$ hoặc $>32^\circ\text{C}$ ong tạm ngừng kiếm ăn).
+- [x] **Task 17.3: Tác Tử Nông Học & Kinh Tế Quản Trị CEA (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Cảnh báo thiếu hụt thụ phấn, khuyến nghị bổ sung tổ ong nghệ nhân tạo hoặc đũa rung khí nén; phủ quyết mở cửa thông gió khi đang bơm khí CO2.
+  - `MarketAgent`: Phân tích hiệu quả cận biên và hoàn vốn (ROI) chi phí khí CO2 lỏng (~12,000 đ/kg) so với giá trị sản lượng dâu tây gia tăng (+15% @ 180,000 đ/kg); phủ quyết bơm khí khi cửa thông gió mở quá 50% gây lãng phí kinh tế.
+- [x] **Task 17.4: Điểm Cuối RESTful CEA & Thụ Phấn (`backend/api/v1/endpoints/greenhouse.py`, `backend/api/v1/endpoints/pollination.py`)**
+  - `GET /api/v1/greenhouse/telemetry`, `POST /api/v1/greenhouse/adjust-vents`, `POST /api/v1/greenhouse/inject-co2`, `GET /api/v1/greenhouse/photosynthesis-curve`.
+  - `GET /api/v1/pollination/status`, `GET /api/v1/pollination/zone/{zone_id}`, `POST /api/v1/pollination/simulate-buzz`.
+- [x] **Task 17.5: Kịch Bản Thử Nghiệm Bẫy Nhiệt Nhà Màng & Khôi Phục Thụ Phấn (`backend/benchmarks/greenhouse_heat_trap.py`)**
+  - Kịch bản 10: Nhà màng tích nhiệt 38.2°C khiến ong ngưng thụ phấn; tự động kích hoạt cửa mái 90% kết hợp tấm làm mát hạ nhiệt về <28.5°C, khóa liên động van CO2 và khôi phục hoạt động rung phấn của ong.
+- [x] **Task 17.6: Tích Hợp Bảng Điều Khiển Trực Quan HUD Nhà Màng & Thụ Phấn (`backend/static/index.html`)**
+  - Hiển thị HUD Vi khí hậu nhà màng CEA (Nhiệt/Ẩm, VPD, CO2 ppm, Pn, Cửa mái %) và HUD Âm sinh học thụ phấn ong (Lượt/hoa, Tần số buzz 345 Hz, Rủi ro dị dạng %, Trạng thái ong kiếm ăn).
+- [x] **Task 17.7: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 312/312 Unit & Integration tests vượt qua thành công 100% (`tests/test_greenhouse_cea.py`, `tests/test_pollination.py`, `tests/test_cea_pollination_agents.py`, `tests/test_greenhouse_pollination_api.py`, `tests/test_scenario_greenhouse_heat_trap.py`).

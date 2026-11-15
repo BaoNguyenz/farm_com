@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-290%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-312%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
@@ -25,8 +25,12 @@ flowchart TB
         Grid["4x4 Spatial Plot Matrix\n(Coordinate Zones: ZONE_0_0 to ZONE_3_3)"]
         SpectralEngine["Extended Spectral Engine\n(15 chỉ số: NDVI, NDRE, SAVI, MSAVI2, EVI, NDWI, MTCI)"]
         BioModel["FAO-56 Penman-Monteith & Crop Phenology\n(ET0, GDD, Dynamic Kc, Root Depth, VPD, Frost Hazard)"]
+        CEA["CEA Greenhouse & CO2 Enrichment\n(Tetens VPD, FvCB Photosynthesis, Anti-Exhaust Interlock)"]
+        Pollination["Bio-Acoustic Pollination Engine\n(Bombus Buzz Resonance 310-390Hz, Fruit Deformation Risk)"]
         Grid <--> BioModel
         Grid <--> SpectralEngine
+        Grid <--> CEA
+        Grid <--> Pollination
     end
 
     subgraph AgentSwarm ["3. MULTI-AGENT COUNCIL (HỘI ĐỒNG TÁC TỬ)"]
@@ -44,7 +48,7 @@ flowchart TB
     end
 
     subgraph DeliveryLayer ["4. API & USER INTERFACE"]
-        FastAPI_App["FastAPI v1 RESTful Endpoints\n(/api/v1/farm, /api/v1/simulation, /api/v1/council, /api/v1/audit)"]
+        FastAPI_App["FastAPI v1 RESTful Endpoints\n(/api/v1/farm, /api/v1/greenhouse, /api/v1/pollination, /api/v1/rovers)"]
         WebSockets["Multi-Channel WebSocket Hub\n(/ws/telemetry & /ws/council)"]
         UI["Interactive 2.5D Digital Twin Dashboard\n(Isometric Matrix, Debate Timeline, Scenario Control Bar)"]
     end
