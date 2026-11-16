@@ -54,6 +54,9 @@ class MarketAgent(BaseFarmAgent):
     # Bulk Industrial Liquid CO2 input pricing for CEA greenhouses (VND / kg)
     CO2_COST_PER_KG_VND: ClassVar[float] = 12000.0
 
+    # Hauled fresh municipal water benchmark during drought / salinity events (VND / m3)
+    MUNICIPAL_WATER_COST_PER_M3_VND: ClassVar[float] = 25000.0
+
     def __init__(self, cold_chain_engine: ColdChainEngine | None = None) -> None:
         super().__init__(
             agent_id="agent_market",
@@ -263,6 +266,50 @@ class MarketAgent(BaseFarmAgent):
             "recommendation": recommendation,
         }
 
+    def evaluate_solar_desalination_economics(
+        self,
+        permeate_m3: float,
+        solar_available_kw: float,
+        sec_kwh_m3: float = 1.4,
+        hour: float | None = None,
+    ) -> dict[str, Any]:
+        """
+        Calculates financial cost-benefit of on-site solar RO desalination
+        vs purchasing and hauling fresh irrigation water (25,000 VND/m3).
+        """
+        tariff = self.get_electricity_tariff(hour)
+        tier = tariff["tier"]
+        rate = tariff["rate_vnd_kwh"]
+
+        # Clean energy availability: if solar covers pump power (~2.0 kW)
+        is_solar_powered = solar_available_kw >= 2.0
+        effective_energy_cost_vnd = 0.0 if is_solar_powered else (permeate_m3 * sec_kwh_m3 * rate)
+
+        water_truck_cost_vnd = permeate_m3 * self.MUNICIPAL_WATER_COST_PER_M3_VND
+        net_savings_vnd = round(water_truck_cost_vnd - effective_energy_cost_vnd, 0)
+        roi_ratio = round(water_truck_cost_vnd / max(1.0, effective_energy_cost_vnd), 2)
+
+        recommendation = (
+            f"Solar RO highly profitable (100% solar self-powered: Net savings +{net_savings_vnd:,.0f} VND vs hauled water)."
+            if is_solar_powered
+            else (
+                f"Grid-powered RO economically viable during {tier} tariff (Net: +{net_savings_vnd:,.0f} VND, ROI: {roi_ratio}x)."
+                if net_savings_vnd > 0 and tier != "peak"
+                else f"DEFER RO DESALINATION: Peak grid tariff ({rate:,.0f} VND/kWh) renders pumping uneconomical. Defer to solar midday."
+            )
+        )
+
+        return {
+            "permeate_m3": permeate_m3,
+            "is_solar_powered": is_solar_powered,
+            "tariff_tier": tier,
+            "energy_cost_vnd": round(effective_energy_cost_vnd, 0),
+            "hauled_water_cost_vnd": round(water_truck_cost_vnd, 0),
+            "net_savings_vnd": net_savings_vnd,
+            "roi_ratio": roi_ratio,
+            "recommendation": recommendation,
+        }
+
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
@@ -304,6 +351,12 @@ class MarketAgent(BaseFarmAgent):
             area_m2=150.0,
         )
 
+        # Solar RO desalination cost-benefit arbitrage
+        solar_ro_economics = self.evaluate_solar_desalination_economics(
+            permeate_m3=4.0,
+            solar_available_kw=solar_est_kw,
+        )
+
         urgency = "low"
         if cold_chain_audit["expedited_sale_required"]:
             urgency = "critical"
@@ -334,6 +387,7 @@ class MarketAgent(BaseFarmAgent):
             f"Identified {len(harvest_candidates)} zones meeting thermal GDD maturity thresholds. "
             f"Cold storage valuation: {cold_chain_audit['total_inventory_valuation_vnd']:,.0f} VND across {cold_chain_audit['chambers_count']} chambers. "
             f"CO2 enrichment economics: {co2_economics['recommendation']} "
+            f"Solar RO: {solar_ro_economics['recommendation']} "
             f"Wholesale prices: Strawberries at 180,000 VND/kg (+12%), Hydrangeas at 120,000 VND."
         )
 
@@ -351,6 +405,7 @@ class MarketAgent(BaseFarmAgent):
                 "microgrid_arbitrage": microgrid_analysis,
                 "cold_chain_inventory": cold_chain_audit,
                 "co2_enrichment_economics": co2_economics,
+                "solar_desalination_economics": solar_ro_economics,
                 "grid_carbon_intensity_kg_kwh": self.GRID_CARBON_INTENSITY_KG_KWH,
                 "carbon_tax_rate_vnd_ton": self.CARBON_TAX_VND_PER_TON
             },
@@ -437,6 +492,33 @@ class MarketAgent(BaseFarmAgent):
                 vote_choice="APPROVE",
                 confidence=0.93,
                 rationale=f"Market agent approves CO2 enrichment: projected yield uplift generates positive ROI ({roi}x).",
+            )
+
+        # Solar RO Desalination economic evaluation & peak tariff avoidance
+        if any(k in action_type for k in ("desalination", "ro_membrane", "ro_pump")):
+            is_solar = context.get("is_solar_powered", False) or context.get("solar_available_kw", 0.0) >= 2.0
+            if is_solar:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="water_economics",
+                    vote_choice="APPROVE",
+                    confidence=0.96,
+                    rationale="Solar array generates sufficient surplus power for RO desalination. Zero grid power cost incurred.",
+                )
+            if tariff_tier == "peak" and urgency != "critical":
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="water_economics",
+                    vote_choice="REJECT",
+                    confidence=0.92,
+                    rationale=f"RO ECONOMIC VETO: Peak electricity tariff active ({self.TARIFF_RATES['peak']:,.0f} VND/kWh) without solar offset. Defer RO batch to midday.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="water_economics",
+                vote_choice="APPROVE",
+                confidence=0.90,
+                rationale="RO desalination cost is lower than hauled municipal water.",
             )
 
         return DebateVote(

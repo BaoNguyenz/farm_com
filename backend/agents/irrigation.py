@@ -9,7 +9,9 @@ from typing import Any
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
 from backend.core.agronomy_models import calculate_fao56_et0, calculate_water_deficit
+from backend.core.rainwater_harvesting import RainwaterHarvestingEngine
 from backend.core.soil_microbiome import SoilMicrobiomeEngine
+from backend.core.solar_desalination import SolarDesalinationEngine
 from backend.core.twin_state import FarmDigitalTwin
 from backend.core.water_budget import WaterBudgetManager
 
@@ -19,12 +21,14 @@ class IrrigationAgent(BaseFarmAgent):
     Hydrological & Irrigation Engineer Agent.
     Calculates dynamic FAO-56 crop water requirements ($ET_c = ET_0 \times K_c$)
     factoring in growth stage phenology, root-zone water depletion, reservoir solvency,
-    and soil microbiome preservation (anti-leaching & aeration limits).
+    soil microbiome preservation, smart rainwater harvesting, and solar RO desalination.
     """
     def __init__(
         self,
         water_budget_mgr: WaterBudgetManager | None = None,
         soil_engine: SoilMicrobiomeEngine | None = None,
+        rainwater_engine: RainwaterHarvestingEngine | None = None,
+        desalination_engine: SolarDesalinationEngine | None = None,
     ) -> None:
         super().__init__(
             agent_id="agent_irrigation",
@@ -33,6 +37,8 @@ class IrrigationAgent(BaseFarmAgent):
         )
         self.water_budget_mgr = water_budget_mgr
         self.soil_engine = soil_engine or SoilMicrobiomeEngine()
+        self.rainwater_engine = rainwater_engine or RainwaterHarvestingEngine()
+        self.desalination_engine = desalination_engine or SolarDesalinationEngine()
 
     def _get_dynamic_kc(self, crop: str, stage: str) -> float:
         """Determines FAO-56 crop coefficient by species and phenological phase."""
@@ -112,10 +118,17 @@ class IrrigationAgent(BaseFarmAgent):
                 factor = 0.7 if rep.rationing_tier == "moderate_deficit" else (0.4 if rep.rationing_tier == "severe_drought" else 0.0)
                 total_volume_liters = round(total_volume_liters * factor, 1)
 
+        # Smart Rainwater Harvesting & Solar RO resilience audit
+        rainwater_summary = self.rainwater_engine.get_system_summary()
+        salinity_hazard = self.desalination_engine.assess_crop_salinity_hazard(
+            raw_tds_ppm=200.0 if w.precipitation_mm > 5.0 else 1450.0,
+            crop_type="Strawberries",
+        )
+
         urgency = "low"
         if emergency_wilting:
             urgency = "critical"
-        elif len(parched_zones) > 0:
+        elif len(parched_zones) > 0 or salinity_hazard["salinity_exceeded"]:
             urgency = "medium"
 
         reasoning = (
@@ -124,14 +137,19 @@ class IrrigationAgent(BaseFarmAgent):
             f"Total volume demand: {total_volume_liters:,.0f} L across the farm. "
             f"Soil Health Index: {soil_report.average_soil_health_index:.1f}/100 "
             f"({soil_report.zones_with_hypoxia_risk_count} zones hypoxic, "
-            f"{soil_report.zones_with_leaching_risk_count} leaching risks)."
+            f"{soil_report.zones_with_leaching_risk_count} leaching risks). "
+            f"Rainwater cistern: {rainwater_summary['current_storage_liters']:,.0f} L ({rainwater_summary['fill_percentage']}%). "
         )
+        if salinity_hazard["salinity_exceeded"]:
+            reasoning += f"Salinity hazard: {salinity_hazard['raw_tds_ppm']} ppm TDS (Solar RO required). "
         if water_budget_data:
             reasoning += f" Reservoir storage: {water_budget_data['storage_percentage']}% (Tier: {water_budget_data['rationing_tier']}, Autonomy: {water_budget_data['days_of_autonomy']} days)."
 
         if emergency_wilting:
             critical_targets = [pz["zone_id"] for pz in parched_zones if pz["emergency"]]
             rec = f"EMERGENCY: Immediate drip irrigation required for wilted zones: {', '.join(critical_targets)}."
+        elif salinity_hazard["salinity_exceeded"] and rainwater_summary["current_storage_liters"] < 1000.0:
+            rec = "Salinity hazard detected in well water: Activate Solar RO Desalination to supply low-EC permeate."
         elif parched_zones:
             targets_str = ", ".join([f"{pz['zone_id']} ({pz['needed_mm']}mm)" for pz in parched_zones[:4]])
             rec = f"Execute drip irrigation cycles for: {targets_str} (Total: {total_volume_liters:,.0f} L)."
@@ -148,6 +166,8 @@ class IrrigationAgent(BaseFarmAgent):
             "zones": parched_zones,
             "emergency_wilting": emergency_wilting,
             "soil_health_report": soil_report.model_dump(),
+            "rainwater_harvesting": rainwater_summary,
+            "salinity_hazard": salinity_hazard,
         }
         if water_budget_data:
             data_points["water_budget"] = water_budget_data
@@ -209,6 +229,33 @@ class IrrigationAgent(BaseFarmAgent):
                     confidence=0.85,
                     rationale="DEFER: Daily water extraction quota exhausted (15,000 L/day). Reschedule to next solar cycle."
                 )
+
+        # Salinity hazard veto on salt-sensitive crops
+        raw_tds = context.get("water_tds_ppm", 0.0)
+        crop_target = context.get("crop_type", "")
+        if is_water_action and raw_tds > 750.0 and crop_target in ("Strawberries", "Bell Pepper") and not context.get("ro_desalinated", False):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="salinity_management",
+                vote_choice="REJECT",
+                weight=max(weight, 3.2),
+                confidence=0.96,
+                rationale=(
+                    f"SALINITY VETO: Raw water TDS is {raw_tds:.0f} ppm. Direct application on {crop_target} "
+                    "will cause osmotic root burning and yield penalty. Activate Solar RO Desalination first."
+                ),
+            )
+
+        # Endorse rainwater harvesting & solar RO desalination
+        if any(k in action_type for k in ("rainwater", "harvest_runoff", "desalination", "ro_membrane")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="water_resilience",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.95,
+                rationale="Irrigation engineer strongly endorses rainwater harvesting and solar RO membrane desalination for sustainable zero-salinity irrigation.",
+            )
 
         return DebateVote(
             agent_id=self.agent_id,
