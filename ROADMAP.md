@@ -332,3 +332,29 @@ flowchart LR
   - Hiển thị HUD Vi khí hậu nhà màng CEA (Nhiệt/Ẩm, VPD, CO2 ppm, Pn, Cửa mái %) và HUD Âm sinh học thụ phấn ong (Lượt/hoa, Tần số buzz 345 Hz, Rủi ro dị dạng %, Trạng thái ong kiếm ăn).
 - [x] **Task 17.7: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 312/312 Unit & Integration tests vượt qua thành công 100% (`tests/test_greenhouse_cea.py`, `tests/test_pollination.py`, `tests/test_cea_pollination_agents.py`, `tests/test_greenhouse_pollination_api.py`, `tests/test_scenario_greenhouse_heat_trap.py`).
+
+---
+
+## 📌 Phase 18: An Ninh Nguồn Nước Nông Nghiệp, Thu Gom Nước Mưa & Khử Mặn RO Năng Lượng Mặt Trời (Water Resilience & Solar Desalination)
+- [x] **Task 18.1: Động Học Thu Gom Nước Mưa & Lọc Cặn Dòng Chảy Mái (`backend/core/rainwater_harvesting.py`)**
+  - Phương pháp Rational Method tính lưu lượng đỉnh dòng chảy: $Q = (C \cdot I \cdot A) / 3.6$ với hệ số thoát nước mái nhà màng $C=0.92$.
+  - Cơ chế phân tách xả rửa đợt mưa đầu (First-Flush diverter $1.2\text{ mm}$) loại bỏ bụi bẩn, phân chim và chất ô nhiễm khí quyển.
+  - Cụm lọc lắng xoáy hydrocyclone và lọc đĩa disc-filter giảm độ đục xuống $< 5\text{ NTU}$ (chuẩn tưới nhỏ giọt không tắc béc).
+  - Quản lý trữ lượng bể chứa ngầm $150\text{ m}^3$ và van chống tràn an toàn.
+- [x] **Task 18.2: Khử Mặn Nước Lợ Bằng Màng Thẩm Thấu Ngược RO Năng Lượng Mặt Trời (`backend/core/solar_desalination.py`)**
+  - Mô hình vận chuyển màng Solution-Diffusion: áp suất thẩm thấu van 't Hoff $\pi = 0.00078 \cdot \text{TDS} \cdot (T_K / 298.15)$.
+  - Áp suất vận hành thực tế điều biến biến tần (VFD) bám theo công suất điện mặt trời (tối đa $2.4\text{ kW}$, lưu lượng $1.5\text{ m}^3/\text{h}$).
+  - Tỉ lệ thu hồi nước ngọt $Y=70\%$ và tỉ lệ loại bỏ muối $R_s \ge 99.2\%$ (nước ngọt ngõ ra $\text{TDS} < 30\text{ ppm}$, $\text{EC} < 0.05\text{ dS/m}$).
+  - Thiết bị thu hồi năng lượng (ERD - isobaric pressure exchanger) giảm tiêu thụ điện năng riêng (SEC) xuống $1.37\text{ kWh/m}^3$.
+- [x] **Task 18.3: Tác Tử Thủy Văn & Kinh Tế Quản Trị Khử Mặn (`backend/agents/irrigation.py`, `backend/agents/market.py`)**
+  - `IrrigationAgent`: Phủ quyết dùng nước ngầm nhiễm mặn ($>750\text{ ppm TDS}$) tưới dâu tây / ớt chuông tránh sốc thẩm thấu cháy rễ; ưu tiên hòa trộn nước mưa siêu sạch và nước RO.
+  - `MarketAgent`: Đánh giá kinh tế khử mặn RO điện mặt trời (0 đồng tiền điện) tiết kiệm hơn 100,000 đ/mẻ so với mua nước bồn xe téc ($25,000\text{ đ/m}^3$); phủ quyết chạy bơm RO từ lưới điện EVN vào giờ cao điểm.
+- [x] **Task 18.4: Điểm Cuối RESTful Thu Gom Nước Mưa & Khử Mặn (`backend/api/v1/endpoints/water_resilience.py`)**
+  - `GET /api/v1/water-resilience/telemetry`: Giám sát dung lượng bể nước mưa, độ đục NTU, cảnh báo độ mặn nước ngầm và trạng thái màng RO.
+  - `POST /api/v1/water-resilience/harvest-runoff`: Mô phỏng cơn mưa, tách First-Flush và cập nhật bể trữ.
+  - `POST /api/v1/water-resilience/run-desalination`: Lập lệnh chạy mẻ lọc khử mặn RO theo công suất điện mặt trời.
+  - `POST /api/v1/water-resilience/withdraw-rainwater`: Xuất nước mưa sạch phục vụ tưới châm phân.
+- [x] **Task 18.5: Tích Hợp Bảng Điều Khiển Trực Quan HUD An Ninh Nguồn Nước (`backend/static/index.html`)**
+  - Thẻ HUD An Ninh Nguồn Nước & Khử Mặn RO Mặt Trời: Dung tích bể nước mưa, EC/NTU, TDS nước giếng và trạng thái khử muối 99.2%.
+- [x] **Task 18.6: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 329/329 Unit & Integration tests vượt qua thành công 100% (`tests/test_rainwater_harvesting.py`, `tests/test_solar_desalination.py`, `tests/test_water_resilience.py`).

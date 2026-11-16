@@ -534,6 +534,38 @@
                 </div>
             </div>
 
+            <!-- Water Resilience, Rainwater Harvesting & Solar RO Desalination HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-water text-sky-400"></i> An Ninh Nguồn Nước & Khử Mặn RO Mặt Trời (Water Resilience & Solar RO)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold" id="resilience-status-badge">OPTIMAL RESERVES</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bể Thu Nước Mưa:</span>
+                        <span class="text-base font-bold text-sky-400 font-mono" id="resilience-cistern-val">45,000 L</span>
+                        <span class="text-[9px] text-slate-500 block" id="resilience-cistern-sub">Dung tích 150 m³ (30%)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Chất Lượng Nước Mưa (EC/NTU):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="resilience-quality-val">0.05 dS/m | 4.2 NTU</span>
+                        <span class="text-[9px] text-slate-500 block">Đã tách First-Flush & đĩa lọc</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Độ Mặn Nước Giếng (TDS):</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="resilience-tds-val">1,450 ppm</span>
+                        <span class="text-[9px] text-slate-500 block" id="resilience-tds-sub">Ngưỡng dâu tây: 450 ppm</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Màng RO Năng Lượng MT:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="resilience-ro-val">Khử Muối 99.2%</span>
+                        <span class="text-[9px] text-slate-500 block" id="resilience-ro-sub">SEC: 1.4 kWh/m³ (ERD On)</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1141,6 +1173,22 @@
                     document.getElementById('pollination-foraging-val').innerText = hasStress ? 'Tạm Ngưng (Nhiệt)' : 'Đang Kiếm Ăn';
                     document.getElementById('pollination-foraging-val').className = hasStress ? 'text-base font-bold text-rose-400 font-mono' : 'text-base font-bold text-lime-400 font-mono';
                     document.getElementById('pollination-foragers-sub').innerText = `~${pol.estimated_active_foragers} ong thợ hoạt động`;
+                }
+
+                // Water Resilience & Solar RO Desalination Telemetry
+                const waterRes = await fetch('/api/v1/water-resilience/telemetry');
+                if (waterRes.ok) {
+                    const wr = await waterRes.json();
+                    document.getElementById('resilience-status-badge').innerText = (wr.resilience_status || 'OPTIMAL').replace(/_/g, ' ').toUpperCase();
+                    if (wr.rainwater_cistern) {
+                        document.getElementById('resilience-cistern-val').innerText = `${wr.rainwater_cistern.current_storage_liters.toLocaleString()} L`;
+                        document.getElementById('resilience-cistern-sub').innerText = `Dung tích ${(wr.rainwater_cistern.capacity_liters / 1000).toFixed(0)} m³ (${wr.rainwater_cistern.fill_percentage}%)`;
+                    }
+                    if (wr.solar_desalination && wr.solar_desalination.groundwater_assessment) {
+                        const gw = wr.solar_desalination.groundwater_assessment;
+                        document.getElementById('resilience-tds-val').innerText = `${gw.raw_tds_ppm} ppm`;
+                        document.getElementById('resilience-tds-sub').innerText = gw.salinity_exceeded ? `Vượt ngưỡng (${gw.crop_type}: ${gw.crop_tds_threshold} ppm)` : `An toàn cho ${gw.crop_type}`;
+                    }
                 }
             } catch (err) {
                 console.error("Subsystems telemetry sync error:", err);
