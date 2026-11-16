@@ -20,6 +20,7 @@ from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.simulation import router as simulation_router
 from backend.api.v1.endpoints.soil_microbiome import router as soil_microbiome_router
 from backend.api.v1.endpoints.traceability import router as traceability_router
+from backend.api.v1.endpoints.water_resilience import router as water_resilience_router
 from backend.api.v1.endpoints.yield_forecast import router as yield_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
@@ -41,6 +42,7 @@ api_v1_router.include_router(cold_chain_router)
 api_v1_router.include_router(rovers_router)
 api_v1_router.include_router(greenhouse_router)
 api_v1_router.include_router(pollination_router)
+api_v1_router.include_router(water_resilience_router)
 
 __all__ = ["api_v1_router"]
 
