@@ -6,6 +6,7 @@ from backend.benchmarks.base import (
     ScenarioEvaluationResult,
     ScenarioMetric,
 )
+from backend.benchmarks.biocontrol_outbreak import SpiderMiteOutbreakScenario
 from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
 from backend.benchmarks.coldchain_failure import ColdChainChillerFailureScenario
 from backend.benchmarks.drought_shock import DroughtShockScenario
@@ -36,6 +37,7 @@ __all__ = [
     "NitrateLeachingFloodScenario",
     "ScenarioEvaluationResult",
     "ScenarioMetric",
+    "SpiderMiteOutbreakScenario",
     "TariffOptimizationScenario",
     "WeedOutbreakRoverMissionScenario",
     "benchmark_runner",

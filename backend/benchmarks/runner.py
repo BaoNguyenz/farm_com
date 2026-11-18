@@ -8,6 +8,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from backend.benchmarks.base import BaseScenarioBenchmark, ScenarioEvaluationResult
+from backend.benchmarks.biocontrol_outbreak import SpiderMiteOutbreakScenario
 from backend.benchmarks.biosecurity_hazard import BiosecurityHazardScenario
 from backend.benchmarks.coldchain_failure import ColdChainChillerFailureScenario
 from backend.benchmarks.drought_shock import DroughtShockScenario
@@ -50,6 +51,7 @@ class BenchmarkRunner:
             "coldchain_failure": ColdChainChillerFailureScenario(),
             "weed_rover_mission": WeedOutbreakRoverMissionScenario(),
             "greenhouse_heat_trap": GreenhouseHeatTrapScenario(),
+            "biocontrol_outbreak": SpiderMiteOutbreakScenario(),
         }
         self._last_report: BenchmarkSuiteReport | None = None
 
