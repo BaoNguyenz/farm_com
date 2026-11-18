@@ -69,7 +69,7 @@ class SpiderMiteOutbreakScenario(BaseScenarioBenchmark):
             if "B" in zone.id or zone.crop_type == "Strawberries":
                 zone.health_status = "pest_stressed"
 
-    async def execute_step(self, farm: FarmDigitalTwin, step_index: int, **kwargs: Any) -> dict[str, Any]:
+    async def step_scenario(self, farm: FarmDigitalTwin, elapsed_hours: float) -> None:
         """
         Executes biological control intervention pipeline:
         1. Safety verification
@@ -118,19 +118,18 @@ class SpiderMiteOutbreakScenario(BaseScenarioBenchmark):
         for zone in farm.zones:
             if "B" in zone.id or zone.crop_type == "Strawberries":
                 zone.health_status = "healthy"
-                zone.pest_pressure_score = max(0.05, self.final_pest_density / 100.0)
+                zone.ndvi = 0.75
 
+    async def execute_step(self, farm: FarmDigitalTwin, step_index: int, **kwargs: Any) -> dict[str, Any]:
+        await self.step_scenario(farm, elapsed_hours=self.duration_hours)
         return {
             "safety_cleared": self.safety_cleared,
             "packages_dispatched": self.packages_dispatched,
-            "initial_pest_density": self.initial_pest_density,
             "final_pest_density": self.final_pest_density,
             "final_predator_density": self.final_predator_density,
-            "export_premium_preserved_vnd": self.export_premium_preserved_vnd,
-            "suppression_status": final_state.suppression_status,
         }
 
-    async def evaluate_results(self, farm: FarmDigitalTwin) -> ScenarioEvaluationResult:
+    async def evaluate_response(self, farm: FarmDigitalTwin, verdict: Any) -> ScenarioEvaluationResult:
         """Evaluates biological suppression benchmark metrics."""
         start_t = time.time()
         metrics: list[ScenarioMetric] = []
@@ -205,5 +204,8 @@ class SpiderMiteOutbreakScenario(BaseScenarioBenchmark):
             grade=grade,
             metrics=metrics,
             summary=summary,
-            execution_time_ms=round((time.time() - start_t) * 1000.0, 2),
+            elapsed_time_s=round((time.time() - start_t), 4),
         )
+
+    async def evaluate_results(self, farm: FarmDigitalTwin) -> ScenarioEvaluationResult:
+        return await self.evaluate_response(farm, verdict=None)
