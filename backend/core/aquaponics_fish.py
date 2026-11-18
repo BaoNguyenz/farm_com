@@ -147,9 +147,10 @@ class FishBioenergeticsEngine:
         new_tan = state.tan_mg_l + delta_tan_mg_l
         toxic_nh3 = cls.calculate_toxic_nh3_concentration(new_tan, state.ph, state.water_temp_c)
 
-        # Dissolved oxygen reduction without supplementary aeration
+        # Dissolved oxygen transient depression buffered by continuous tank aeration
         delta_do_mg_l = o2_demand_grams / state.water_volume_m3
-        new_do = max(0.5, state.dissolved_oxygen_mg_l - (0.4 * delta_do_mg_l))
+        transient_drop = min(1.5, 0.05 * delta_do_mg_l)
+        new_do = max(0.5, state.dissolved_oxygen_mg_l - transient_drop)
 
         is_nh3_alarm = toxic_nh3 >= cls.TOXIC_NH3_WARNING_MG_L
         is_hypo_alarm = new_do < cls.HYPOXIA_CRITICAL_MG_L
