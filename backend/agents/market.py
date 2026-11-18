@@ -310,6 +310,58 @@ class MarketAgent(BaseFarmAgent):
             "recommendation": recommendation,
         }
 
+    def evaluate_biocontrol_economics(
+        self,
+        canopy_area_m2: float,
+        pest_density: float,
+        crop_type: str = "Strawberries",
+    ) -> dict[str, Any]:
+        """
+        Calculates financial cost-benefit of biological predator release
+        vs chemical pesticide spraying with organic export premium preservation.
+        """
+        import math
+
+        crop_meta = self.SPOT_PRICES.get(crop_type, {"price_vnd": 50000, "yield_kg_m2": 1.0, "unit": "kg"})
+        crop_yield_kg = canopy_area_m2 * crop_meta.get("yield_kg_m2", 1.0)
+        base_revenue_vnd = crop_yield_kg * crop_meta["price_vnd"]
+
+        # Chemical spray carries risk of forfeiting the 25% organic export price premium
+        organic_premium_forfeited_vnd = round(base_revenue_vnd * 0.25, 0)
+        chemical_spray_cost_vnd = 250000.0 + (canopy_area_m2 * 250.0)  # chemical + labor
+        total_chemical_cost_vnd = chemical_spray_cost_vnd + organic_premium_forfeited_vnd
+
+        # Biocontrol cost: bottle packs (350,000 VND / 2,000 mites) + drone application (150,000 VND)
+        dose_m2 = 2.5 if pest_density <= 5.0 else (12.0 if pest_density <= 15.0 else 28.0)
+        total_mites = canopy_area_m2 * dose_m2
+        bottles = max(1, math.ceil(total_mites / 2000.0))
+        biocontrol_cost_vnd = (bottles * 350000.0) + 150000.0
+
+        net_savings_vnd = round(total_chemical_cost_vnd - biocontrol_cost_vnd, 0)
+        roi_ratio = round(total_chemical_cost_vnd / max(1.0, biocontrol_cost_vnd), 2)
+        recommend_biocontrol = net_savings_vnd > 0
+
+        rec = (
+            f"Biocontrol highly cost-effective (Net savings: +{net_savings_vnd:,.0f} VND, ROI: {roi_ratio}x). "
+            f"Preserves 25% organic export premium ({organic_premium_forfeited_vnd:,.0f} VND)."
+            if recommend_biocontrol
+            else f"Biocontrol expenditure ({biocontrol_cost_vnd:,.0f} VND) exceeds chemical savings. Evaluate hotspot release."
+        )
+
+        return {
+            "crop_type": crop_type,
+            "canopy_area_m2": canopy_area_m2,
+            "pest_density": pest_density,
+            "biocontrol_cost_vnd": biocontrol_cost_vnd,
+            "chemical_spray_cost_vnd": chemical_spray_cost_vnd,
+            "organic_premium_preserved_vnd": organic_premium_forfeited_vnd,
+            "total_chemical_alternative_cost_vnd": total_chemical_cost_vnd,
+            "net_savings_vnd": net_savings_vnd,
+            "roi_ratio": roi_ratio,
+            "recommend_biocontrol": recommend_biocontrol,
+            "recommendation": rec,
+        }
+
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
@@ -519,6 +571,20 @@ class MarketAgent(BaseFarmAgent):
                 vote_choice="APPROVE",
                 confidence=0.90,
                 rationale="RO desalination cost is lower than hauled municipal water.",
+            )
+
+        # Biological pest control vs chemical pesticide export premium veto
+        if any(k in action_type for k in ("chemical_spray", "pesticide_spray")) and context.get("export_grade", True):
+            crop = context.get("crop_type", "Strawberries")
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="crop_export_economics",
+                vote_choice="REJECT",
+                confidence=0.96,
+                rationale=(
+                    f"MARKET EXPORT VETO: Chemical spraying on export-grade {crop} triggers chemical residue "
+                    f"withholding and forfeits the 25% organic export premium. Deploy biological control instead."
+                ),
             )
 
         return DebateVote(

@@ -7,6 +7,9 @@ import time
 from typing import Any
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
+from backend.core.biocontrol import PredatorSpecies, PreySpecies
+from backend.core.biocontrol_dispersion import MacroBiologicDispersionEngine
+from backend.core.biocontrol_safety import BiocontrolSafetyEngine, SprayApplication
 from backend.core.drone_scouting import DroneScoutingEngine
 from backend.core.fertigation import FertigationOptimizer
 from backend.core.greenhouse_cea import GreenhouseCEAEngine
@@ -67,6 +70,67 @@ class AgronomistAgent(BaseFarmAgent):
             "dispatched_missions_count": len(dispatched_missions),
             "missions": dispatched_missions,
             "fleet_status": self.rover_coordinator.get_fleet_status().model_dump(),
+        }
+
+    def audit_biocontrol_safety_and_release(
+        self,
+        zone_id: str,
+        canopy_area_m2: float,
+        pest_density: float,
+        target_pest: str = "spider_mite",
+        beneficial_species: str = "phytoseiulus_persimilis",
+        spray_history: list[dict[str, Any]] | None = None,
+        use_drone: bool = True,
+    ) -> dict[str, Any]:
+        """
+        Evaluates pesticide residue withholding safety and calculates precision
+        macro-biologic release dosage for greenhouse biological pest control.
+        """
+        spray_records = []
+        if spray_history:
+            for s in spray_history:
+                spray_records.append(
+                    SprayApplication(
+                        ingredient_name=s.get("ingredient_name", ""),
+                        application_date_days_ago=float(s.get("application_date_days_ago", 0.0)),
+                        initial_dose_ppm=float(s.get("initial_dose_ppm", 10.0)),
+                    )
+                )
+
+        safety_report = BiocontrolSafetyEngine.evaluate_release_safety(
+            spray_history=spray_records,
+            target_beneficial=beneficial_species,
+        )
+
+        p_species = PredatorSpecies.PHYTOSEIULUS_PERSIMILIS
+        for sp in PredatorSpecies:
+            if sp.value == beneficial_species or sp.name.lower() == beneficial_species.lower():
+                p_species = sp
+                break
+
+        prey_sp = PreySpecies.TWO_SPOTTED_SPIDER_MITE
+        for py in PreySpecies:
+            if py.value == target_pest or py.name.lower() == target_pest.lower():
+                prey_sp = py
+                break
+
+        release_plan = None
+        if safety_report.is_safe_to_release and pest_density > 2.0:
+            plan_obj = MacroBiologicDispersionEngine.plan_zone_release(
+                zone_id=zone_id,
+                canopy_area_m2=canopy_area_m2,
+                pest_density=pest_density,
+                target_pest=prey_sp,
+                beneficial_species=p_species,
+                use_drone=use_drone,
+            )
+            release_plan = plan_obj.model_dump()
+
+        return {
+            "zone_id": zone_id,
+            "safety_clearance": safety_report.model_dump(),
+            "release_authorized": safety_report.is_safe_to_release and (release_plan is not None),
+            "release_plan": release_plan,
         }
 
     def ingest_drone_survey(self, report_dict: dict[str, Any]) -> dict[str, Any]:
@@ -339,6 +403,28 @@ class AgronomistAgent(BaseFarmAgent):
                 weight=weight,
                 confidence=0.95,
                 rationale="Agronomist strongly endorses supplementary bumblebee hive placement to ensure symmetrical AAA fruit set.",
+            )
+
+        # Pesticide toxicity veto when beneficials are active
+        if any(k in action_type for k in ("chemical_spray", "insecticide", "pesticide_spray")) and context.get("beneficials_active", False):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="REJECT",
+                weight=max(weight, 3.5),
+                confidence=0.98,
+                rationale="PESTICIDE TOXICITY VETO: Active beneficial macro-biologics (Phytoseiulus/Encarsia) established in canopy. Broad-spectrum chemical sprays will destroy predator cohorts.",
+            )
+
+        # Macro-biologic biological control endorsement
+        if any(k in action_type for k in ("biocontrol", "macro_biologic", "predator_release")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic=domain,
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.95,
+                rationale="Agronomist endorses macro-biologic release to suppress pest infestation below economic injury level without synthetic chemical residues.",
             )
 
         return DebateVote(
