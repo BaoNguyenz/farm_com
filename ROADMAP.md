@@ -358,3 +358,60 @@ flowchart LR
   - Thẻ HUD An Ninh Nguồn Nước & Khử Mặn RO Mặt Trời: Dung tích bể nước mưa, EC/NTU, TDS nước giếng và trạng thái khử muối 99.2%.
 - [x] **Task 18.6: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 329/329 Unit & Integration tests vượt qua thành công 100% (`tests/test_rainwater_harvesting.py`, `tests/test_solar_desalination.py`, `tests/test_water_resilience.py`).
+
+---
+
+## 📌 Phase 19: Quản Lý Dịch Hại Sinh Học Bằng Thiên Địch & Drone Phun Phóng Thích (Biological Pest Management & Macro-Biologics Dispatch)
+- [x] **Task 19.1: Động Học Quần Thể Thiên Địch & Phản Ứng Chức Năng Holling Type II (`backend/core/biocontrol.py`)**
+  - Phương trình phản ứng chức năng Holling Type II: $N_a = \frac{a \cdot N}{1 + a \cdot T_h \cdot N} \cdot P$.
+  - Động học Lotka-Volterra điều chỉnh theo sức chứa môi trường (carrying capacity $K$) và nhiệt độ tối ưu ($22^\circ\text{C}-28^\circ\text{C}$).
+  - Mô phỏng thiên địch ăn thịt: *Phytoseiulus persimilis*, *Neoseiulus californicus*, *Amblyseius swirskii* săn bắt nhện đỏ (*Tetranychus urticae*), bọ trĩ và bọ phấn trắng.
+  - Phân loại trạng thái kiểm soát: `outbreak_damage` ($N > \text{EIL}$), `alert`, `controlled` ($N \le \text{ET}$), và `eradicated`.
+- [x] **Task 19.2: Động Học Ong Ký Sinh & Mô Hình Nicholson-Bailey (`backend/core/biocontrol_parasitoid.py`)**
+  - Mô hình ký sinh trên bọ phấn trắng (*Encarsia formosa* & *Eretmocerus eremicus*): $P_{\text{parasitized}} = N \cdot [1 - \exp(-\frac{a \cdot W}{1 + a \cdot T_h \cdot N})]$.
+  - Cơ chế ong cái châm hút dịch ấu trùng non (host-feeding mortality ~22%) kết hợp đẻ trứng hình thành nhộng đen mummified.
+  - Tính thời gian phát triển nhộng theo nhiệt độ tích lũy (Degree-Days emergence: $D = DD / \max(0.5, T - T_{\text{base}})$).
+  - Thuật toán tính toán liều lượng thả thẻ bìa treo nhộng ong (*cardboard release tags*) theo diện tích tán và mật độ sâu hại.
+- [x] **Task 19.3: Động Học Phân Hủy Tồn Dư Thuốc BVTV & Chứng Nhận An Toàn (`backend/core/biocontrol_safety.py`)**
+  - Động học phân hủy bậc nhất trên tán lá: $C(t) = C_0 \cdot \exp(-\frac{\ln 2}{t_{1/2}} \cdot t) = C_0 \cdot (0.5)^{t / t_{1/2}}$.
+  - Tiêu chuẩn phân hạng độc tính IOBC (International Organization for Biological Control): Class 1 (vô hại) đến Class 4 (nguy hiểm).
+  - Cơ chế khóa an toàn (Safety Withholding Clearance): tính số ngày cách ly còn lại trước khi thả thiên địch, ngăn ngừa tồn dư Deltamethrin / Imidacloprid sát hại đàn thiên địch đắt tiền.
+- [x] **Task 19.4: Lập Kế Hoạch Phân Bổ Không Gian & Drone Rải Hạt Thiên Địch (`backend/core/biocontrol_dispersion.py`)**
+  - Định mức phóng thích theo mật độ: 2.5 con/m² (phòng ngừa $\le$ ET), 12.0 con/m² (trung bình), và 28.0 con/m² (bùng phát > EIL).
+  - Tính toán lưu lượng phễu rải tự động trên drone: $\dot{M}_{\text{dispenser}} = \text{Dose}_{\text{m}^2} \cdot v_{\text{flight}} \cdot w_{\text{swath}}$.
+  - Tổng hợp bảng kê phân phối toàn trang trại (*Farm Release Manifest*), tính số chai chất mang vermiculite/mùn cưa và chi phí kinh tế VND.
+- [x] **Task 19.5: Tác Tử Nông Học & Kinh Tế Quản Trị Thiên Địch (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm tra an toàn tồn dư lá, tạo lệnh phóng thích thiên địch; phủ quyết phun thuốc hóa học phổ rộng khi đàn thiên địch đang hoạt động.
+  - `MarketAgent`: Đánh giá kinh tế thiên địch so với hóa chất; bảo vệ mức cộng giá 25% nông sản hữu cơ xuất khẩu (+45,000 đ/kg dâu tây) nhờ tránh hoàn toàn dư lượng thuốc BVTV.
+- [x] **Task 19.6: Điểm Cuối RESTful Quản Lý Dịch Hại Sinh Học (`backend/api/v1/endpoints/biocontrol.py`)**
+  - `GET /api/v1/biocontrol/telemetry`, `POST /api/v1/biocontrol/simulate-predation`, `POST /api/v1/biocontrol/check-safety`, `POST /api/v1/biocontrol/plan-zone-release`, `POST /api/v1/biocontrol/plan-farm-manifest`.
+- [x] **Task 19.7: Kịch Bản Thử Nghiệm Bùng Phát Nhện Đỏ & Dập Tịch Sinh Học (`backend/benchmarks/biocontrol_outbreak.py`)**
+  - Kịch bản 11: Ổ dịch 28.5 nhện đỏ/lá ở luống dâu tây B (> EIL); điều động drone rải 28 con/m² *Phytoseiulus persimilis*, dập tắt dịch về <5.0 con/lá trong 10 ngày, tránh 100% thuốc trừ sâu hóa học và bảo toàn 27 triệu đồng giá trị xuất khẩu hữu cơ.
+
+---
+
+## 📌 Phase 20: Hệ Thống Tuần Hoàn Thủy Canh Aquaponics & Động Học Vi Sinh Lọc MBBR (Circular Aquaponics & RAS)
+- [x] **Task 20.1: Động Học Trao Đổi Chất Cá & Bài Tiết Amoniac TAN (`backend/core/aquaponics_fish.py`)**
+  - Sinh khối cá rô phi (*Oreochromis niloticus*), nhu cầu khẩu phần ăn hàng ngày $F_d = B \cdot \text{feed\_pct}$ theo nhiệt độ nước tối ưu.
+  - Công thức bài tiết Total Ammonia Nitrogen (TAN) từ chuyển hóa đạm: $\text{TAN}_{\text{day}} = \text{Feed} \cdot \text{Protein} \cdot 0.092 \cdot 10$.
+  - Phương trình Emerson tính toán nồng độ amoniac độc tự do không phân ly ($NH_3$) so với ammonium ($NH_4^+$) theo pH và nhiệt độ.
+  - Tiêu thụ oxy hòa tan hô hấp ($250-380\text{ mg } O_2/\text{kg}\cdot\text{h}$) và ngưỡng cảnh báo thiếu oxy cá.
+- [x] **Task 20.2: Động Học Nitrat Hóa Hai Giai Đoạn Trong Lọc Động MBBR (`backend/core/aquaponics_biofilter.py`)**
+  - Đệm vi sinh chuyển động K1 media ($800\text{ m}^2/\text{m}^3$ diện tích bề mặt màng sinh học).
+  - Giai đoạn 1: Vi khuẩn oxy hóa amoniac (AOB - *Nitrosomonas*): $NH_4^+ + 1.5 O_2 \to NO_2^- + H_2O + 2 H^+$ ($3.43\text{ mg } O_2/\text{mg TAN}$).
+  - Giai đoạn 2: Vi khuẩn oxy hóa nitrit (NOB - *Nitrobacter* / *Nitrospira*): $NO_2^- + 0.5 O_2 \to NO_3^-$ ($1.14\text{ mg } O_2/\text{mg } NO_2^-$).
+  - Phương trình Monod động học kép giới hạn bởi cơ chất và nồng độ oxy hòa tan; định lượng suy giảm độ kiềm ($7.14\text{ mg CaCO}_3$ mất đi trên mỗi mg TAN oxy hóa).
+- [x] **Task 20.3: Hấp Thụ Nitrat Cây Trồng & Châm Hóa Chất Đệm Độ Kiềm (`backend/core/aquaponics_hydroponics.py`)**
+  - Động học hấp thụ đạm Michaelis-Menten của rau ăn lá (xà lách Butterhead / cải thìa): $V = V_{\max} \cdot \frac{[NO_3^-]}{K_m + [NO_3^-]} \cdot f(\text{PAR})$.
+  - Cơ chế tự động tính toán liều lượng châm Kali Bicarbonat ($KHCO_3$) và Vôi tôi ($Ca(OH)_2$) trung hòa độ chua nitrat hóa, ngăn ngừa tụt pH ($<6.4$) và bổ sung Kali/Canxi chống cháy mép lá.
+- [x] **Task 20.4: Điều Phối Cân Bằng Khối Toàn Hệ Tuần Hoàn Khép Kín (`backend/core/aquaponics_system.py`)**
+  - Kết nối vòng tuần hoàn thủy lực: Bể cá ($5\text{ m}^3$) $\to$ Lắng xoáy $\to$ Lọc sinh học MBBR ($1.5\text{ m}^3$) $\to$ Máng rau DWC ($12\text{ m}^3$) $\to$ Bơm hồi lưu ($3.5\text{ m}^3/\text{h}$).
+  - Cân bằng khối đa chất liên tục (TAN, NO2, NO3, DO, Alkalinity, pH), tính chu kỳ luân chuyển nước toàn hệ ($\tau \approx 5.3\text{ giờ}$).
+- [x] **Task 20.5: Tác Tử Nông Học & Kinh Tế Quản Trị Aquaponics (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Giám sát an toàn amoniac/oxy cá, tự động đề xuất châm đệm độ kiềm; phủ quyết ngắt sục khí bể cá khi DO < 5.0 mg/L và phủ quyết dùng thuốc gốc đồng (Cu) gây độc cho cá.
+  - `MarketAgent`: Đánh giá kinh tế thu hoạch kép (*dual-harvest*): doanh thu thịt cá rô phi (75,000 đ/kg) + rau sạch hữu cơ (12,000 đ/bắp), tính toán tỷ suất sinh lời vượt trội trên chi phí thức ăn/điện năng.
+- [x] **Task 20.6: Điểm Cuối RESTful Aquaponics & HUD Trực Quan Hóa (`backend/api/v1/endpoints/aquaponics.py`, `backend/static/index.html`)**
+  - `GET /api/v1/aquaponics/telemetry`, `POST /api/v1/aquaponics/feed-batch`, `POST /api/v1/aquaponics/buffer-alkalinity`, `POST /api/v1/aquaponics/simulate-cycle`.
+  - Tích hợp 2 thẻ HUD mới trên Bảng điều khiển: Thẻ Quản Lý Dịch Hại Sinh Học & Thiên Địch Phóng Thích và Thẻ Tuần Hoàn Thủy Canh Aquaponics & Vi Sinh MBBR.
+- [x] **Task 20.7: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 387/387 Unit & Integration tests vượt qua thành công 100% (`tests/test_biocontrol_kinetics.py`, `tests/test_biocontrol_parasitoid.py`, `tests/test_biocontrol_safety.py`, `tests/test_biocontrol_dispersion.py`, `tests/test_biocontrol_api.py`, `tests/test_scenario_biocontrol_outbreak.py`, `tests/test_aquaponics_fish.py`, `tests/test_aquaponics_biofilter.py`, `tests/test_aquaponics_hydroponics.py`, `tests/test_aquaponics_system.py`, `tests/test_aquaponics_api.py`).
