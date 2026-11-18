@@ -4,6 +4,7 @@ API v1 Router Definition
 from fastapi import APIRouter
 
 from backend.api.v1.endpoints.audit import router as audit_router
+from backend.api.v1.endpoints.biocontrol import router as biocontrol_router
 from backend.api.v1.endpoints.carbon import router as carbon_router
 from backend.api.v1.endpoints.cold_chain import router as cold_chain_router
 from backend.api.v1.endpoints.council import router as council_router
@@ -43,6 +44,7 @@ api_v1_router.include_router(rovers_router)
 api_v1_router.include_router(greenhouse_router)
 api_v1_router.include_router(pollination_router)
 api_v1_router.include_router(water_resilience_router)
+api_v1_router.include_router(biocontrol_router)
 
 __all__ = ["api_v1_router"]
 
