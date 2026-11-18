@@ -566,6 +566,70 @@
                 </div>
             </div>
 
+            <!-- Biological Pest Management & Macro-Biologics Dispatch HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-virus text-rose-400"></i> Quản Lý Dịch Hại Sinh Học & Thiên Địch Phóng Thích (Biocontrol & Macro-Biologics)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20 font-bold" id="biocontrol-status-badge">BIO-SUPPRESSION ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Mật Độ Nhện Đỏ (Prey):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="biocontrol-prey-val">3.2 / lá</span>
+                        <span class="text-[9px] text-slate-500 block" id="biocontrol-prey-sub">Dưới ngưỡng ET (5.0 / lá)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Mite Ăn Thịt (Phytoseiulus):</span>
+                        <span class="text-base font-bold text-rose-400 font-mono" id="biocontrol-predator-val">1.8 / lá</span>
+                        <span class="text-[9px] text-slate-500 block">Holling Type II saturation</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Tồn Dư Hóa Học Foliage:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="biocontrol-safety-val">0.0 ppm</span>
+                        <span class="text-[9px] text-slate-500 block" id="biocontrol-safety-sub">IOBC Class 1: An toàn tuyệt đối</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bảo Toàn Giá Xuất Khẩu:</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="biocontrol-premium-val">+25% Organic</span>
+                        <span class="text-[9px] text-slate-500 block">AAA Export Price Multiplier</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recirculating Aquaponics & RAS Biofilter Nitrification HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-fish-fins text-cyan-400"></i> Tuần Hoàn Thủy Canh Aquaponics & Vi Sinh MBBR (RAS & Nitrification)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-bold" id="aquaponics-status-badge">SYMBIOTIC EQUILIBRIUM</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bể Cá Tilapia (Biomass/DO):</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="aquaponics-fish-val">225.0 kg | 6.2 mg/L</span>
+                        <span class="text-[9px] text-slate-500 block" id="aquaponics-fish-sub">500 finfish (Temp: 26.5°C)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Độc Tính Amoniac (NH3):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="aquaponics-nh3-val">0.012 mg/L</span>
+                        <span class="text-[9px] text-slate-500 block">Ngưỡng độc: &lt;0.05 mg/L (Emerson)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bộ Lọc MBBR (Nitrification):</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="aquaponics-biofilter-val">Hiệu Suất 88.5%</span>
+                        <span class="text-[9px] text-slate-500 block" id="aquaponics-biofilter-sub">K1 Carrier (600 m² biofilm)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Rau DWC (NO3 / Kiềm):</span>
+                        <span class="text-base font-bold text-lime-400 font-mono" id="aquaponics-crop-val">75.0 mg/L | 85 mg/L</span>
+                        <span class="text-[9px] text-slate-500 block" id="aquaponics-crop-sub">1,000 xà lách Butterhead</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1188,6 +1252,30 @@
                         const gw = wr.solar_desalination.groundwater_assessment;
                         document.getElementById('resilience-tds-val').innerText = `${gw.raw_tds_ppm} ppm`;
                         document.getElementById('resilience-tds-sub').innerText = gw.salinity_exceeded ? `Vượt ngưỡng (${gw.crop_type}: ${gw.crop_tds_threshold} ppm)` : `An toàn cho ${gw.crop_type}`;
+                    }
+                }
+
+                // Biological Pest Management Telemetry
+                const bioRes = await fetch('/api/v1/biocontrol/telemetry');
+                if (bioRes.ok) {
+                    const bio = await bioRes.json();
+                    document.getElementById('biocontrol-status-badge').innerText = bio.status === 'active' ? 'BIO-SUPPRESSION ACTIVE' : 'MONITORING';
+                }
+
+                // Recirculating Aquaponics Telemetry
+                const aquaRes = await fetch('/api/v1/aquaponics/telemetry');
+                if (aquaRes.ok) {
+                    const aqua = await aquaRes.json();
+                    document.getElementById('aquaponics-status-badge').innerText = (aqua.ecosystem_status || 'OPTIMAL').replace(/_/g, ' ').toUpperCase();
+                    if (aqua.fish_tank) {
+                        document.getElementById('aquaponics-fish-val').innerText = `${aqua.fish_tank.total_biomass_kg.toFixed(1)} kg | ${aqua.fish_tank.dissolved_oxygen_mg_l.toFixed(1)} mg/L`;
+                        document.getElementById('aquaponics-nh3-val').innerText = `${aqua.fish_tank.toxic_nh3_mg_l.toFixed(3)} mg/L`;
+                    }
+                    if (aqua.biofilter) {
+                        document.getElementById('aquaponics-biofilter-val').innerText = `Hiệu Suất ${aqua.biofilter.tan_conversion_efficiency_pct.toFixed(1)}%`;
+                    }
+                    if (aqua.hydroponics) {
+                        document.getElementById('aquaponics-crop-val').innerText = `${aqua.hydroponics.inlet_no3_mg_l.toFixed(1)} mg/L | ${aqua.hydroponics.alkalinity_mg_l_caco3.toFixed(0)} mg/L`;
                     }
                 }
             } catch (err) {
