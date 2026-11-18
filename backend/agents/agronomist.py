@@ -7,6 +7,7 @@ import time
 from typing import Any
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
+from backend.core.aquaponics_system import AquaponicEcosystemCoordinator
 from backend.core.biocontrol import PredatorSpecies, PreySpecies
 from backend.core.biocontrol_dispersion import MacroBiologicDispersionEngine
 from backend.core.biocontrol_safety import BiocontrolSafetyEngine, SprayApplication
@@ -32,6 +33,7 @@ class AgronomistAgent(BaseFarmAgent):
         rover_coordinator: RoverFleetCoordinator | None = None,
         pollination_engine: BioAcousticPollinationEngine | None = None,
         greenhouse_engine: GreenhouseCEAEngine | None = None,
+        aquaponics_coordinator: AquaponicEcosystemCoordinator | None = None,
     ) -> None:
         super().__init__(
             agent_id="agent_agronomist",
@@ -42,6 +44,27 @@ class AgronomistAgent(BaseFarmAgent):
         self.rover_coordinator = rover_coordinator or RoverFleetCoordinator()
         self.pollination_engine = pollination_engine or BioAcousticPollinationEngine()
         self.greenhouse_engine = greenhouse_engine or GreenhouseCEAEngine()
+        self.aquaponics_coordinator = aquaponics_coordinator or AquaponicEcosystemCoordinator()
+
+    def audit_aquaponic_water_chemistry(self, farm: FarmDigitalTwin | None = None) -> dict[str, Any]:
+        """
+        Monitors fish tank ammonia/DO toxicity, MBBR nitrification efficiency,
+        and DWC plant bed alkalinity buffering.
+        """
+        telemetry = self.aquaponics_coordinator.step_simulation_cycle(feed_input_kg=0.0, dt_hours=1.0)
+        alkalinity_dosing = None
+
+        if telemetry.hydroponics.alkalinity_mg_l_caco3 < 60.0:
+            rec = self.aquaponics_coordinator.dose_alkalinity_buffer(target_alkalinity_mg_l=100.0)
+            alkalinity_dosing = rec.model_dump()
+
+        return {
+            "telemetry": telemetry.model_dump(),
+            "ecosystem_status": telemetry.ecosystem_status.value,
+            "system_health_score": telemetry.system_health_score,
+            "alkalinity_dosing_action": alkalinity_dosing,
+            "requires_emergency_aeration": telemetry.fish_tank.dissolved_oxygen_mg_l < 4.5,
+        }
 
     def audit_weed_infestation_and_dispatch(self, farm: FarmDigitalTwin) -> dict[str, Any]:
         """
@@ -425,6 +448,30 @@ class AgronomistAgent(BaseFarmAgent):
                 weight=weight,
                 confidence=0.95,
                 rationale="Agronomist endorses macro-biologic release to suppress pest infestation below economic injury level without synthetic chemical residues.",
+            )
+
+        # Aquaponics fish tank aeration curtailment veto
+        if any(k in action_type for k in ("stop_aeration", "curtail_aerator", "disable_air_pump")):
+            fish_do = context.get("fish_tank_do_mg_l", 4.8)
+            if fish_do < 5.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="aquaponics_fish_welfare",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.99,
+                    rationale=f"AQUAPONICS HYPOXIA VETO: Fish tank DO is low ({fish_do:.1f} mg/L < 5.0 mg/L). Aeration shutdown will cause mass fish asphyxiation.",
+                )
+
+        # Systemic copper spray veto in aquaponics greenhouses
+        if any(k in action_type for k in ("copper_spray", "systemic_fungicide")) and context.get("is_aquaponics", False):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="aquaponics_toxicity",
+                vote_choice="REJECT",
+                weight=max(weight, 4.0),
+                confidence=0.99,
+                rationale="AQUAPONICS TOXICITY VETO: Copper sprays recirculate into aquaculture rearing tanks and are acutely lethal to fish and nitrifying bacteria.",
             )
 
         return DebateVote(

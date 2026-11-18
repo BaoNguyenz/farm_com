@@ -362,6 +362,56 @@ class MarketAgent(BaseFarmAgent):
             "recommendation": rec,
         }
 
+    def evaluate_aquaponics_dual_harvest_economics(
+        self,
+        fish_biomass_kg: float,
+        crop_heads: int,
+        crop_type: str = "Butterhead Lettuce",
+    ) -> dict[str, Any]:
+        """
+        Assesses combined dual revenue from aquaculture finfish biomass (Tilapia)
+        and hydroponic clean leafy greens.
+        Tilapia wholesale: 75,000 VND/kg
+        Butterhead lettuce: 12,000 VND/head (~48,000 VND/kg)
+        Feed cost: ~22,000 VND/kg feed
+        """
+        fish_price_vnd_kg = 75000.0
+        fish_revenue_vnd = round(fish_biomass_kg * fish_price_vnd_kg, 0)
+
+        crop_price_vnd_head = 12000.0 if "lettuce" in crop_type.lower() else 10000.0
+        crop_revenue_vnd = round(crop_heads * crop_price_vnd_head, 0)
+
+        total_gross_revenue_vnd = fish_revenue_vnd + crop_revenue_vnd
+
+        # Approximate feed & power OPEX
+        feed_used_kg = fish_biomass_kg * 1.4  # FCR = 1.4
+        feed_cost_vnd = round(feed_used_kg * 22000.0, 0)
+        pumping_power_cost_vnd = 1800000.0  # ~30 days recirc pumping
+        total_opex_vnd = feed_cost_vnd + pumping_power_cost_vnd
+
+        net_margin_vnd = round(total_gross_revenue_vnd - total_opex_vnd, 0)
+        roi_ratio = round(total_gross_revenue_vnd / max(1.0, total_opex_vnd), 2)
+
+        rec = (
+            f"Aquaponic dual-harvest highly profitable (Net margin: +{net_margin_vnd:,.0f} VND, ROI: {roi_ratio}x). "
+            f"Fish revenue: {fish_revenue_vnd:,.0f} VND ({fish_biomass_kg:.1f} kg) + Crop revenue: {crop_revenue_vnd:,.0f} VND ({crop_heads} heads)."
+        )
+
+        return {
+            "fish_biomass_kg": fish_biomass_kg,
+            "crop_heads": crop_heads,
+            "crop_type": crop_type,
+            "fish_revenue_vnd": fish_revenue_vnd,
+            "crop_revenue_vnd": crop_revenue_vnd,
+            "total_gross_revenue_vnd": total_gross_revenue_vnd,
+            "feed_cost_vnd": feed_cost_vnd,
+            "pumping_power_cost_vnd": pumping_power_cost_vnd,
+            "total_opex_vnd": total_opex_vnd,
+            "net_margin_vnd": net_margin_vnd,
+            "roi_ratio": roi_ratio,
+            "recommendation": rec,
+        }
+
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
@@ -585,6 +635,16 @@ class MarketAgent(BaseFarmAgent):
                     f"MARKET EXPORT VETO: Chemical spraying on export-grade {crop} triggers chemical residue "
                     f"withholding and forfeits the 25% organic export premium. Deploy biological control instead."
                 ),
+            )
+
+        # Aquaponic dual harvest scheduling endorsement
+        if any(k in action_type for k in ("aquaponics_harvest", "dual_harvest", "fish_harvest")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="aquaponics_economics",
+                vote_choice="APPROVE",
+                confidence=0.95,
+                rationale="Market agent strongly endorses aquaponic dual-harvest: simultaneous monetization of fish protein and premium zero-residue leafy greens.",
             )
 
         return DebateVote(
