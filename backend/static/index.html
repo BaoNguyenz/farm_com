@@ -630,6 +630,38 @@
                 </div>
             </div>
 
+            <!-- Agrivoltaic Dual-Axis Sun-Tracking & Canopy Shading HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-solar-panel text-amber-400"></i> Nông Điện Agrivoltaics Bám Nhật & Che Bóng Tán Cây (Dynamic Shading)
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold" id="agrivoltaic-status-badge">ASTRONOMICAL TRACKING</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Góc Nghiêng / Hướng Bảng:</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="agrivoltaic-tilt-val">Tilt: 0.0°</span>
+                        <span class="text-[9px] text-slate-500 block" id="agrivoltaic-azimuth-sub">Azimuth: 180.0° (Zenith 22°)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Công Suất Phát Điện PV:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="agrivoltaic-power-val">18.5 kW</span>
+                        <span class="text-[9px] text-slate-500 block" id="agrivoltaic-power-sub">30 kWp (POA: 820 W/m²)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bức Xạ Dưới Tán (PAR):</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="agrivoltaic-par-val">780 µmol/m²·s</span>
+                        <span class="text-[9px] text-slate-500 block" id="agrivoltaic-par-sub">Che phủ 35% (Chống photoinhibition)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hạ Nhiệt Lá / Tiết Giảm Nước:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="agrivoltaic-temp-val">-4.2°C</span>
+                        <span class="text-[9px] text-slate-500 block" id="agrivoltaic-temp-sub">Giảm 32% bốc thoát hơi ETc</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1276,6 +1308,24 @@
                     }
                     if (aqua.hydroponics) {
                         document.getElementById('aquaponics-crop-val').innerText = `${aqua.hydroponics.inlet_no3_mg_l.toFixed(1)} mg/L | ${aqua.hydroponics.alkalinity_mg_l_caco3.toFixed(0)} mg/L`;
+                    }
+                }
+
+                // Agrivoltaic Dual-Axis Sun-Tracking & Canopy Shading Telemetry
+                const agriRes = await fetch('/api/v1/agrivoltaics/telemetry');
+                if (agriRes.ok) {
+                    const agri = await agriRes.json();
+                    document.getElementById('agrivoltaic-status-badge').innerText = (agri.active_mode || 'TRACKING').replace(/_/g, ' ').toUpperCase();
+                    if (agri.tracker_state) {
+                        document.getElementById('agrivoltaic-tilt-val').innerText = `Tilt: ${agri.tracker_state.panel_tilt_deg}°`;
+                        document.getElementById('agrivoltaic-azimuth-sub').innerText = `Azimuth: ${agri.tracker_state.panel_azimuth_deg}° (POA: ${agri.tracker_state.effective_irradiance_w_m2} W/m²)`;
+                        document.getElementById('agrivoltaic-power-val').innerText = `${agri.tracker_state.generated_power_kw} kW`;
+                    }
+                    if (agri.canopy_microclimate) {
+                        document.getElementById('agrivoltaic-par-val').innerText = `${agri.canopy_microclimate.canopy_par_umol_m2_s} µmol/m²·s`;
+                        document.getElementById('agrivoltaic-par-sub').innerText = `Che phủ ${agri.canopy_microclimate.shading_fraction_pct}% (${agri.canopy_microclimate.photoinhibition_risk})`;
+                        document.getElementById('agrivoltaic-temp-val').innerText = `-${agri.canopy_microclimate.leaf_temp_reduction_c}°C`;
+                        document.getElementById('agrivoltaic-temp-sub').innerText = `Giảm ${agri.canopy_microclimate.transpiration_reduction_pct}% bốc thoát hơi ETc`;
                     }
                 }
             } catch (err) {

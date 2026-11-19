@@ -415,3 +415,29 @@ flowchart LR
   - Tích hợp 2 thẻ HUD mới trên Bảng điều khiển: Thẻ Quản Lý Dịch Hại Sinh Học & Thiên Địch Phóng Thích và Thẻ Tuần Hoàn Thủy Canh Aquaponics & Vi Sinh MBBR.
 - [x] **Task 20.7: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 387/387 Unit & Integration tests vượt qua thành công 100% (`tests/test_biocontrol_kinetics.py`, `tests/test_biocontrol_parasitoid.py`, `tests/test_biocontrol_safety.py`, `tests/test_biocontrol_dispersion.py`, `tests/test_biocontrol_api.py`, `tests/test_scenario_biocontrol_outbreak.py`, `tests/test_aquaponics_fish.py`, `tests/test_aquaponics_biofilter.py`, `tests/test_aquaponics_hydroponics.py`, `tests/test_aquaponics_system.py`, `tests/test_aquaponics_api.py`).
+
+---
+
+## 📌 Phase 21: Nông Điện Agrivoltaics Bám Nhật Động, Che Bóng Tán Cây & Tối Ưu Bức Xạ PAR (Agrivoltaic Sun-Tracking & Dynamic Crop Shading)
+- [x] **Task 21.1: Động Học Định Vị Mặt Trời Thiên Văn (SPA) & Cơ Cấu Bám Nhật Hai Trục (`backend/core/agrivoltaic_tracking.py`)**
+  - Thuật toán vị trí mặt trời thiên văn (Solar Position Algorithm): Độ xích vĩ $\delta$, phương trình thời gian EoT, giờ mặt trời địa phương LST, góc cao độ $\alpha$ và góc phương vị $\gamma_s$.
+  - Cơ cấu bám nhật một trục/hai trục trên giàn pergola nông điện cao $3.5\text{ m}$ (cho phép máy móc cơ giới canh tác dưới tán).
+  - Thuật toán chống bóng che hàng chéo (Backtracking kinematics): tự động giảm góc nghiêng khi mặt trời thấp ($<35^\circ$), ngăn chặn hàng trước che bóng hàng sau.
+  - Mô hình phát điện quang điện: $P_{\text{PV}} = \eta \cdot A_{\text{PV}} \cdot G_{\text{eff}} \cdot \cos(\theta)$ tích hợp suy giảm công suất theo nhiệt độ cell pin.
+- [x] **Task 21.2: Động Học Che Bóng Tán Cây, Chống Photoinhibition & Đệm Nhiệt Độ Lá (`backend/core/agrivoltaic_shading.py`)**
+  - Tính toán độ xuyên thấu bức xạ PAR dưới tán: $I_{\text{canopy}} = I_{\text{ambient}} \cdot (1 - f_{\text{shade}}(\beta, \theta_z))$.
+  - Ngăn ngừa hiện tượng ức chế quang hợp (photoinhibition) và cháy nám quả dâu tây khi $\text{PAR} > 1500\ \mu\text{mol/m}^2\text{s}$.
+  - Cơ chế hạ nhiệt độ lá (đệm mát $3.0 - 5.2^\circ\text{C}$) và giảm bốc thoát hơi nước chuyển vị ($25\% - 38\%\ ET_c$) khi chuyển sang góc che bóng phòng vệ (tilt $0^\circ$).
+  - Bộ chuyển chế độ đa mục tiêu: `max_electricity`, `crop_shading`, `sunlight_priority`, và `balanced`.
+- [x] **Task 21.3: Tác Tử Nông Học & Kinh Tế Điều Phối Đa Mục Tiêu Nông - Điện (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Giám sát nguy cơ cháy nắng tán lá; tự động phát lệnh che bóng khi nhiệt độ tán $>30.5^\circ\text{C}$; phủ quyết ép phát điện tối đa khi cây trồng đang bị sốc nhiệt.
+  - `MarketAgent`: Đánh giá kinh tế đánh đổi: giá trị điện mặt trời hao hụt (~30,000 đ) thấp hơn hàng chục lần so với giá trị nông sản dâu tây xuất khẩu được bảo vệ khỏi bỏng nhiệt (>19 triệu đồng/ha).
+- [x] **Task 21.4: Điểm Cuối RESTful Nông Điện Agrivoltaics (`backend/api/v1/endpoints/agrivoltaics.py`)**
+  - `GET /api/v1/agrivoltaics/telemetry`: Giám sát góc nghiêng tilt, phương vị, công suất phát điện kW, PAR dưới tán và chế độ vận hành.
+  - `POST /api/v1/agrivoltaics/adjust-mode`: Ghi đè chế độ vận hành bám nhật / che bóng tán.
+  - `POST /api/v1/agrivoltaics/dispatch`: Giải quyết điều phối động theo thời tiết thực tế và trạng thái sinh lý cây.
+  - `GET /api/v1/agrivoltaics/diurnal-profile`: Mô phỏng quỹ đạo bám nhật cả ngày từ 06:00 đến 18:00.
+- [x] **Task 21.5: Tích Hợp Thẻ HUD Nông Điện Agrivoltaics Trên Bảng Điều Khiển (`backend/static/index.html`)**
+  - Hiển thị HUD Nông Điện Agrivoltaics: Góc nghiêng/phương vị tracker, công suất phát điện PV (18.5 kW / 30 kWp), bức xạ PAR dưới tán, độ hạ nhiệt lá (-4.2°C) và tỷ lệ tiết giảm nước tưới (-32% ETc).
+- [x] **Task 21.6: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 405/405 Unit & Integration tests vượt qua thành công 100% (`tests/test_agrivoltaic_tracking.py`, `tests/test_agrivoltaic_shading.py`, `tests/test_agrivoltaics_api.py`).
