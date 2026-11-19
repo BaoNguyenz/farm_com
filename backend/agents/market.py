@@ -412,6 +412,50 @@ class MarketAgent(BaseFarmAgent):
             "recommendation": rec,
         }
 
+    def evaluate_agrivoltaic_shading_tradeoff(
+        self,
+        curtailed_pv_kwh: float,
+        crop_area_m2: float = 600.0,
+        crop_type: str = "Strawberries",
+    ) -> dict[str, Any]:
+        """
+        Calculates financial trade-off between curtailed solar generation revenue
+        vs preserved high-value crop revenue protected from solar sunburn damage.
+        """
+        crop_meta = self.SPOT_PRICES.get(crop_type, {"price_vnd": 50000, "yield_kg_m2": 1.0, "unit": "kg"})
+        peak_rate_vnd = self.TARIFF_RATES["peak"]
+
+        # Electricity opportunity cost
+        power_loss_vnd = round(curtailed_pv_kwh * peak_rate_vnd, 0)
+
+        # Crop value preserved (avoiding 12% sunburn loss on AAA export crops)
+        total_crop_yield_kg = crop_area_m2 * crop_meta.get("yield_kg_m2", 1.0)
+        crop_sunburn_loss_prevented_kg = total_crop_yield_kg * 0.12
+        crop_value_preserved_vnd = round(crop_sunburn_loss_prevented_kg * crop_meta["price_vnd"], 0)
+
+        net_economic_benefit_vnd = round(crop_value_preserved_vnd - power_loss_vnd, 0)
+        roi_ratio = round(crop_value_preserved_vnd / max(1.0, power_loss_vnd), 2)
+        recommend_shading = net_economic_benefit_vnd > 0
+
+        rec = (
+            f"Agrivoltaic defensive shading highly advantageous (Net: +{net_economic_benefit_vnd:,.0f} VND, Benefit-Cost: {roi_ratio}x). "
+            f"Preserves {crop_value_preserved_vnd:,.0f} VND in export {crop_type} at cost of only {power_loss_vnd:,.0f} VND in curtailed PV power."
+            if recommend_shading
+            else f"Power loss ({power_loss_vnd:,.0f} VND) exceeds crop protection benefits. Maintain max power tracking."
+        )
+
+        return {
+            "crop_type": crop_type,
+            "crop_area_m2": crop_area_m2,
+            "curtailed_pv_kwh": curtailed_pv_kwh,
+            "power_loss_vnd": power_loss_vnd,
+            "crop_value_preserved_vnd": crop_value_preserved_vnd,
+            "net_economic_benefit_vnd": net_economic_benefit_vnd,
+            "roi_ratio": roi_ratio,
+            "recommend_shading": recommend_shading,
+            "recommendation": rec,
+        }
+
     async def evaluate(self, farm: FarmDigitalTwin) -> AgentOpinion:
         tariff_info = self.get_electricity_tariff()
         is_peak = tariff_info["is_peak"]
@@ -645,6 +689,16 @@ class MarketAgent(BaseFarmAgent):
                 vote_choice="APPROVE",
                 confidence=0.95,
                 rationale="Market agent strongly endorses aquaponic dual-harvest: simultaneous monetization of fish protein and premium zero-residue leafy greens.",
+            )
+
+        # Agrivoltaic shading economic endorsement
+        if any(k in action_type for k in ("agrivoltaic_shade", "crop_shading")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="agrivoltaic_economics",
+                vote_choice="APPROVE",
+                confidence=0.96,
+                rationale="Market agent approves agrivoltaic defensive shading: preserved crop harvest value exceeds curtailed electricity revenue by over 50x.",
             )
 
         return DebateVote(

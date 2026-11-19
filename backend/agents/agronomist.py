@@ -7,6 +7,10 @@ import time
 from typing import Any
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
+from backend.core.agrivoltaic_shading import (
+    AgrivoltaicOperationalMode,
+    AgrivoltaicShadingEngine,
+)
 from backend.core.aquaponics_system import AquaponicEcosystemCoordinator
 from backend.core.biocontrol import PredatorSpecies, PreySpecies
 from backend.core.biocontrol_dispersion import MacroBiologicDispersionEngine
@@ -64,6 +68,38 @@ class AgronomistAgent(BaseFarmAgent):
             "system_health_score": telemetry.system_health_score,
             "alkalinity_dosing_action": alkalinity_dosing,
             "requires_emergency_aeration": telemetry.fish_tank.dissolved_oxygen_mg_l < 4.5,
+        }
+
+    def audit_agrivoltaic_canopy_welfare(
+        self,
+        canopy_temp_c: float = 32.0,
+        ambient_ghi_w_m2: float = 850.0,
+        crop_type: str = "Strawberries",
+    ) -> dict[str, Any]:
+        """
+        Evaluates under-canopy photoinhibition risk and determines whether dynamic
+        tracker shading is required to protect crops from sunburn.
+        """
+        ambient_par = ambient_ghi_w_m2 * AgrivoltaicShadingEngine.PAR_PER_W_M2
+        needs_shading, reason = AgrivoltaicShadingEngine.evaluate_crop_protection_need(
+            crop_type=crop_type,
+            canopy_temp_c=canopy_temp_c,
+            ambient_par=ambient_par,
+        )
+
+        recommended_mode = (
+            AgrivoltaicOperationalMode.CROP_PROTECTIVE_SHADING
+            if needs_shading
+            else AgrivoltaicOperationalMode.MAX_ELECTRICITY_YIELD
+        )
+
+        return {
+            "crop_type": crop_type,
+            "canopy_temp_c": canopy_temp_c,
+            "ambient_par_umol_m2_s": round(ambient_par, 1),
+            "needs_defensive_shading": needs_shading,
+            "recommended_mode": recommended_mode.value,
+            "rationale": reason,
         }
 
     def audit_weed_infestation_and_dispatch(self, farm: FarmDigitalTwin) -> dict[str, Any]:
@@ -472,6 +508,29 @@ class AgronomistAgent(BaseFarmAgent):
                 weight=max(weight, 4.0),
                 confidence=0.99,
                 rationale="AQUAPONICS TOXICITY VETO: Copper sprays recirculate into aquaculture rearing tanks and are acutely lethal to fish and nitrifying bacteria.",
+            )
+
+        # Agrivoltaic canopy photoinhibition & sunburn defense veto
+        if any(k in action_type for k in ("disable_shading", "force_max_power")) and context.get("canopy_temp_c", 25.0) > 30.5:
+            temp = context.get("canopy_temp_c", 31.0)
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="agrivoltaic_canopy_welfare",
+                vote_choice="REJECT",
+                weight=max(weight, 3.8),
+                confidence=0.98,
+                rationale=f"AGRIVOLTAIC PHOTOINHIBITION VETO: Under-canopy temperature is {temp:.1f}°C (>30.5°C). Forcing max power tracking will scorch strawberry beds and cause severe PSII photodamage.",
+            )
+
+        # Agrivoltaic defensive shading endorsement
+        if any(k in action_type for k in ("crop_shading", "defensive_shade", "agrivoltaic_shade")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="agrivoltaic_canopy_welfare",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist strongly endorses dynamic panel shading to lower leaf temperature and suppress transpirational water stress.",
             )
 
         return DebateVote(

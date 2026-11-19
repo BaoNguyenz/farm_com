@@ -3,6 +3,7 @@ API v1 Router Definition
 """
 from fastapi import APIRouter
 
+from backend.api.v1.endpoints.agrivoltaics import router as agrivoltaics_router
 from backend.api.v1.endpoints.aquaponics import router as aquaponics_router
 from backend.api.v1.endpoints.audit import router as audit_router
 from backend.api.v1.endpoints.biocontrol import router as biocontrol_router
@@ -47,6 +48,7 @@ api_v1_router.include_router(pollination_router)
 api_v1_router.include_router(water_resilience_router)
 api_v1_router.include_router(biocontrol_router)
 api_v1_router.include_router(aquaponics_router)
+api_v1_router.include_router(agrivoltaics_router)
 
 __all__ = ["api_v1_router"]
 
