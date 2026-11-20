@@ -486,3 +486,26 @@ flowchart LR
   - Tích hợp thẻ HUD Hầm Biogas Sinh Học & Đồng Phát Điện - Nhiệt Micro-CHP lên giao diện Dashboard.
 - [x] **Task 23.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 441/441 Unit & Integration tests vượt qua thành công 100% (`tests/test_biogas_digestion.py`, `tests/test_biogas_chp.py`, `tests/test_biogas_api.py`).
+
+---
+
+## 📌 Phase 24: Bảo Quản Sau Thu Hoạch & Chuỗi Lạnh Khí Quyển Biến Đổi MAP (Post-Harvest Respiration & MAP Packaging)
+- [x] **Task 24.1: Động Học Hô Hấp Trái Cây Michaelis-Menten & Bay Hơi Transpiration (`backend/core/postharvest_respiration.py`)**
+  - Động học enzyme hô hấp tiêu thụ oxy phụ thuộc nhiệt độ Arrhenius/$Q_{10}$ ($Q_{10} \approx 2.45$ cho dâu tây Đà Lạt).
+  - Phương trình ức chế khí $CO_2$ không cạnh tranh (non-competitive inhibition): $R_{O_2} = \frac{V_{m,O_2}(T) [O_2]}{K_{m,O_2} + [O_2](1 + [CO_2]/K_{i,CO_2})}$.
+  - Xác định ngưỡng lên men yếm khí (hypoxia threshold $[O_2] < 1.5\%$) và đột biến thương số hô hấp ($RQ > 2.0$) gây thối hỏng và sinh mùi lạ (ethanol/acetaldehyde).
+  - Tốc độ mất nước bốc thoát hơi qua biểu bì vỏ quả theo áp suất hơi bão hòa Tetens và độ ẩm tương đối RH.
+  - Mô hình suy giảm hạn sử dụng thương phẩm (marketable shelf-life decay) khi bị sốc nhiệt độ trong kho mát.
+- [x] **Task 24.2: Cân Bằng Khí Quyển Biến Đổi MAP & Kiểm Soát Nấm Mốc Botrytis (`backend/core/postharvest_map.py`)**
+  - Giải cân bằng động học truyền khối khí qua màng polyme đục lỗ vi điểm (Micro-perforated Polypropylene PP / LDPE).
+  - Tỷ số chọn lọc tính thấm $\beta = P_{CO_2} / P_{O_2}$ tự động duy trì dải bảo quản tối ưu ($3.0 - 5.5\%\ O_2$, $10.0 - 15.0\%\ CO_2$).
+  - Chỉ số ức chế nấm mốc xám *Botrytis cinerea* trên quả dâu tây ($>80\%$ khi $CO_2 \ge 10\%$).
+  - Kiểm toán nhiệt độ hành trình vận chuyển theo độ-giờ tích lũy (Degree-Hours $DH = \sum (T - T_{\text{base}}) \Delta t$), phân loại chất lượng Grade AAA / Grade AA / Phạt hạ cấp Grade B.
+- [x] **Task 24.3: Tác Tử Nông Học & Kinh Tế Quản Trị Sau Thu Hoạch (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm toán nhật ký chuỗi lạnh vận chuyển reefer; phủ quyết thông quan xuất khẩu đối với các lô dâu tây bị đứt gãy chuỗi lạnh ($DH > 45^\circ\text{C}\cdot\text{h}$), buộc chuyển hướng sang chế biến mứt nội địa.
+  - `MarketAgent`: Đánh giá chênh lệch thặng dư xuất khẩu: giá trị bán xuất khẩu dâu tây chuẩn Grade AAA (240.000 đ/kg) cao vượt bậc so với tiêu thụ nội địa (75.000 đ/kg) sau khi trừ chi phí bao bì khí biến đổi MAP.
+- [x] **Task 24.4: Điểm Cuối RESTful Sau Thu Hoạch & HUD Trực Quan Hóa (`backend/api/v1/endpoints/postharvest.py`, `backend/static/index.html`)**
+  - `GET /api/v1/postharvest/telemetry`, `POST /api/v1/postharvest/evaluate-respiration`, `POST /api/v1/postharvest/design-map-package`, `POST /api/v1/postharvest/audit-cold-chain`.
+  - Tích hợp thẻ HUD Bảo Quản Sau Thu Hoạch & Bao Gói Khí Quyển Biến Đổi MAP lên giao diện Dashboard.
+- [x] **Task 24.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 459/459 Unit & Integration tests vượt qua thành công 100% (`tests/test_postharvest_respiration.py`, `tests/test_postharvest_map.py`, `tests/test_postharvest_api.py`).

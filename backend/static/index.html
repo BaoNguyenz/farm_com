@@ -726,6 +726,38 @@
                 </div>
             </div>
 
+            <!-- Post-Harvest Fruit Respiration & MAP Packaging HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-box-open text-purple-400"></i> Bảo Quản Sau Thu Hoạch & Bao Gói Khí Quyển Biến Đổi MAP
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-bold" id="postharvest-status-badge">MAP EQUILIBRIUM ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Khí Quyển Trong Gói (O2/CO2):</span>
+                        <span class="text-base font-bold text-purple-300 font-mono" id="postharvest-gas-val">4.5% O2 | 12.5% CO2</span>
+                        <span class="text-[9px] text-slate-500 block" id="postharvest-gas-sub">Màng Micro-PP (Beta: 1.38)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Ức Chế Nấm Mốc Botrytis:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="postharvest-mold-val">85.0%</span>
+                        <span class="text-[9px] text-slate-500 block" id="postharvest-mold-sub">Chống thối hỏng cuống trái</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hô Hấp Quả / Thất Thoát Khối:</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="postharvest-resp-val">8.2 mL/kg·h</span>
+                        <span class="text-[9px] text-slate-500 block" id="postharvest-resp-sub">Bay hơi 0.008%/h (Kho lạnh 2°C)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hạn Sử Dụng & Chuỗi Lạnh:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="postharvest-shelf-val">12.5 Ngày</span>
+                        <span class="text-[9px] text-slate-500 block" id="postharvest-shelf-sub">Chuẩn xuất khẩu Grade AAA</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1430,6 +1462,24 @@
                     if (bg.digestate_valorization) {
                         document.getElementById('biogas-digestate-val').innerText = `${bg.digestate_valorization.solid_fraction_kg}kg Rắn | ${bg.digestate_valorization.liquid_fraction_liters.toFixed(0)}L Lỏng`;
                         document.getElementById('biogas-digestate-sub').innerText = bg.digestate_valorization.pasteurization_compliant ? 'Tiệt trùng an toàn (Vi sinh hữu cơ)' : 'Chưa tiệt trùng vi sinh';
+                    }
+                }
+
+                // Post-Harvest Fruit Respiration & MAP Packaging Telemetry
+                const postRes = await fetch('/api/v1/postharvest/telemetry');
+                if (postRes.ok) {
+                    const ph = await postRes.json();
+                    if (ph.map_packaging) {
+                        document.getElementById('postharvest-status-badge').innerText = (ph.map_packaging.package_status || 'OPTIMAL').replace(/_/g, ' ').toUpperCase();
+                        document.getElementById('postharvest-gas-val').innerText = `${ph.map_packaging.equilibrium_o2_pct}% O2 | ${ph.map_packaging.equilibrium_co2_pct}% CO2`;
+                        document.getElementById('postharvest-gas-sub').innerText = `Màng ${(ph.map_packaging.film_type || 'Micro-PP').replace(/_/g, ' ')}`;
+                        document.getElementById('postharvest-mold-val').innerText = `${ph.map_packaging.botrytis_inhibition_pct}%`;
+                    }
+                    if (ph.cold_room) {
+                        document.getElementById('postharvest-resp-val').innerText = `${ph.cold_room.r_o2_ml_kg_h} mL/kg·h`;
+                        document.getElementById('postharvest-resp-sub').innerText = `Bay hơi ${ph.cold_room.hourly_weight_loss_pct}%/h (${ph.cold_room.storage_temp_c}°C, ${ph.cold_room.ambient_rh_pct}% RH)`;
+                        document.getElementById('postharvest-shelf-val').innerText = `${ph.cold_room.remaining_shelf_life_days} Ngày`;
+                        document.getElementById('postharvest-shelf-sub').innerText = `Độ tươi: ${ph.cold_room.freshness_index_score}/100`;
                     }
                 }
             } catch (err) {
