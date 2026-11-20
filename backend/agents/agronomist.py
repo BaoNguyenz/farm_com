@@ -564,6 +564,28 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist endorses pasteurized anaerobic digestate: supplies organic bio-available ammonium N and humic organic matter.",
             )
 
+        # Post-harvest cold chain & export quality check
+        if any(k in action_type for k in ("ship_export", "release_cold_chain")):
+            grade = context.get("quality_grade", "GRADE_AAA_PREMIUM")
+            dh = context.get("cumulative_degree_hours", 10.0)
+            if "DOWNGRADE" in grade or dh > 45.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="export_quality",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.98,
+                    rationale=f"COLD-CHAIN BREACH VETO: Lot suffered {dh:.1f} degree-hours thermal abuse (Grade: {grade}). High risk of Botrytis gray mold fungal rot. Reject export clearance.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="export_quality",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale=f"Agronomist approves export shipment: cold-chain intact (Grade: {grade}) with effective MAP atmospheric mold suppression.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -572,6 +594,24 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_postharvest_cold_chain(
+        self,
+        lot_id: str,
+        quality_grade: str,
+        cumulative_degree_hours: float,
+        botrytis_inhibition_pct: float,
+    ) -> dict[str, Any]:
+        """Audits post-harvest cold-chain log and MAP preservation efficacy."""
+        is_export_approved = "GRADE_B" not in quality_grade and cumulative_degree_hours <= 45.0
+        return {
+            "lot_id": lot_id,
+            "quality_grade": quality_grade,
+            "cumulative_degree_hours": cumulative_degree_hours,
+            "botrytis_inhibition_pct": botrytis_inhibition_pct,
+            "is_export_cleared": is_export_approved,
+            "disposition": "CLEAR_FOR_AIR_FREIGHT" if is_export_approved else "DIVERT_TO_DOMESTIC_JAM_PROCESSING",
+        }
 
     def audit_digestate_organic_safety(
         self,

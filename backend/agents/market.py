@@ -721,6 +721,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly endorses biogas CHP cogeneration: delivers simultaneous electricity, free greenhouse heating, organic compost, and scrubbed CO2 value.",
             )
 
+        # Post-harvest MAP packaging export monetization endorsement
+        if any(k in action_type for k in ("map_packaging", "export_packaging")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="postharvest_economics",
+                vote_choice="APPROVE",
+                confidence=0.97,
+                rationale="Market agent strongly approves Modified Atmosphere Packaging (MAP): preserves Grade AAA freshness premium and prevents transit mold claims.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -780,4 +790,32 @@ class MarketAgent(BaseFarmAgent):
             "scrubbed_co2_value_vnd": round(co2_value, 0),
             "total_circular_revenue_vnd": round(total_value, 0),
             "is_profitable": total_value > 0,
+        }
+
+    def evaluate_map_export_premium(
+        self,
+        batch_mass_kg: float,
+        quality_grade: str = "GRADE_AAA_PREMIUM",
+        package_unit_grams: float = 500.0,
+    ) -> dict[str, Any]:
+        """Calculates commercial return on Modified Atmosphere Packaging (MAP) export berries."""
+        # Export price: 240,000 VND / kg for AAA, vs 75,000 VND / kg for degraded Grade B
+        unit_price = 240000.0 if "AAA" in quality_grade else (160000.0 if "AA" in quality_grade else 75000.0)
+        gross_revenue = batch_mass_kg * unit_price
+
+        # Packaging film + micro-perforated tray: 1,800 VND per 500g punnet
+        num_packages = (batch_mass_kg * 1000.0) / max(1.0, package_unit_grams)
+        packaging_cost = num_packages * 1800.0
+
+        net_margin = gross_revenue - packaging_cost
+        premium_vs_domestic = net_margin - (batch_mass_kg * 75000.0)
+
+        return {
+            "batch_mass_kg": batch_mass_kg,
+            "quality_grade": quality_grade,
+            "gross_revenue_vnd": round(gross_revenue, 0),
+            "packaging_cost_vnd": round(packaging_cost, 0),
+            "net_revenue_vnd": round(net_margin, 0),
+            "export_premium_margin_vnd": round(premium_vs_domestic, 0),
+            "is_export_viable": "GRADE_B" not in quality_grade and premium_vs_domestic > 0,
         }
