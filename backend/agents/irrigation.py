@@ -9,6 +9,10 @@ from typing import Any
 
 from backend.agents.base_agent import AgentOpinion, AgentRole, BaseFarmAgent, DebateVote
 from backend.core.agronomy_models import calculate_fao56_et0, calculate_water_deficit
+from backend.core.irrigation_hydraulics import (
+    SoilTextureClass,
+    UnsaturatedHydraulicsEngine,
+)
 from backend.core.rainwater_harvesting import RainwaterHarvestingEngine
 from backend.core.soil_microbiome import SoilMicrobiomeEngine
 from backend.core.solar_desalination import SolarDesalinationEngine
@@ -257,6 +261,27 @@ class IrrigationAgent(BaseFarmAgent):
                 rationale="Irrigation engineer strongly endorses rainwater harvesting and solar RO membrane desalination for sustainable zero-salinity irrigation.",
             )
 
+        # Subsurface drip irrigation & precision fertigation validation
+        if any(k in action_type for k in ("subsurface_drip", "sdi_fertigation", "drip_emitter")):
+            measured_ec = context.get("measured_ec", 1.8)
+            if measured_ec > 2.8:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="fertigation_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.5),
+                    confidence=0.96,
+                    rationale=f"FERTIGATION SALINITY VETO: Injected EC ({measured_ec:.2f} mS/cm) exceeds 2.8 mS/cm threshold. High risk of osmotic root tip scorch.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="subsurface_hydraulics",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.94,
+                rationale="Irrigation engineer approves subsurface drip fertigation: zero canopy wetting, 35% lower evaporation, and targeted root-zone wetting.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -265,3 +290,40 @@ class IrrigationAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_subsurface_matric_tension(
+        self,
+        zone_id: str,
+        volumetric_moisture: float,
+        soil_type: SoilTextureClass = SoilTextureClass.LOAM,
+    ) -> dict[str, Any]:
+        """Audits vadose zone matric suction pressure and wetted bulb retention."""
+        engine = UnsaturatedHydraulicsEngine(soil_type)
+        suction_kpa = engine.matric_suction_from_water_content(volumetric_moisture)
+        se = engine.compute_effective_saturation(volumetric_moisture)
+        k_unsat = engine.unsaturated_hydraulic_conductivity(volumetric_moisture)
+
+        # Stress categorization based on matric suction:
+        # < 10 kPa: near saturation / hypoxia risk
+        # 10 - 35 kPa: optimal comfort zone (field capacity)
+        # 35 - 70 kPa: mild moisture depletion (prompt pulse drip)
+        # > 70 kPa: critical water stress
+        if suction_kpa < 8.0:
+            status = "hypoxic_saturated"
+        elif suction_kpa <= 35.0:
+            status = "optimal_moisture"
+        elif suction_kpa <= 70.0:
+            status = "mild_depletion"
+        else:
+            status = "critical_suction_stress"
+
+        return {
+            "zone_id": zone_id,
+            "soil_type": soil_type.value,
+            "volumetric_moisture": round(volumetric_moisture, 3),
+            "effective_saturation": round(se, 3),
+            "matric_suction_kpa": suction_kpa,
+            "unsaturated_conductivity_cm_h": k_unsat,
+            "status": status,
+            "recommended_pulse_minutes": 25 if status == "mild_depletion" else (45 if status == "critical_suction_stress" else 0),
+        }

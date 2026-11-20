@@ -22,6 +22,9 @@ from backend.api.v1.endpoints.rovers import router as rovers_router
 from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.simulation import router as simulation_router
 from backend.api.v1.endpoints.soil_microbiome import router as soil_microbiome_router
+from backend.api.v1.endpoints.subsurface_fertigation import (
+    router as subsurface_fertigation_router,
+)
 from backend.api.v1.endpoints.traceability import router as traceability_router
 from backend.api.v1.endpoints.water_resilience import router as water_resilience_router
 from backend.api.v1.endpoints.yield_forecast import router as yield_router
@@ -49,6 +52,7 @@ api_v1_router.include_router(water_resilience_router)
 api_v1_router.include_router(biocontrol_router)
 api_v1_router.include_router(aquaponics_router)
 api_v1_router.include_router(agrivoltaics_router)
+api_v1_router.include_router(subsurface_fertigation_router)
 
 __all__ = ["api_v1_router"]
 

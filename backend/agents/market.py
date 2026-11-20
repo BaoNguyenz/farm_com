@@ -701,6 +701,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent approves agrivoltaic defensive shading: preserved crop harvest value exceeds curtailed electricity revenue by over 50x.",
             )
 
+        # Subsurface fertigation economic endorsement
+        if any(k in action_type for k in ("subsurface_drip", "sdi_fertigation")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="resource_conservation",
+                vote_choice="APPROVE",
+                confidence=0.95,
+                rationale="Market agent strongly approves subsurface fertigation: cuts water evaporation by 35% and reduces mineral fertilizer leaching losses.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -708,3 +718,28 @@ class MarketAgent(BaseFarmAgent):
             confidence=0.85,
             rationale="Proposed action aligns with farm economic viability and energy budget constraints."
         )
+
+    def evaluate_subsurface_fertigation_roi(
+        self,
+        water_saved_m3: float,
+        fertilizer_saved_kg: float,
+        pumping_hours_avoided: float = 2.0,
+    ) -> dict[str, Any]:
+        """Calculates financial savings of subsurface drip fertigation versus surface flooding/sprinkling."""
+        # Water cost: 15,000 VND / m3
+        water_val_vnd = water_saved_m3 * 15000.0
+        # Average soluble NPK compound fertilizer: 28,000 VND / kg
+        fert_val_vnd = fertilizer_saved_kg * 28000.0
+        # Electricity saved: 3.5 kW pump * hours * normal rate (2,100 VND/kWh)
+        elec_val_vnd = pumping_hours_avoided * 3.5 * self.TARIFF_RATES["normal"]
+
+        total_savings_vnd = water_val_vnd + fert_val_vnd + elec_val_vnd
+        return {
+            "water_saved_m3": round(water_saved_m3, 2),
+            "water_savings_vnd": round(water_val_vnd, 0),
+            "fertilizer_saved_kg": round(fertilizer_saved_kg, 2),
+            "fertilizer_savings_vnd": round(fert_val_vnd, 0),
+            "electricity_savings_vnd": round(elec_val_vnd, 0),
+            "total_daily_savings_vnd": round(total_savings_vnd, 0),
+            "is_cost_effective": total_savings_vnd > 0,
+        }
