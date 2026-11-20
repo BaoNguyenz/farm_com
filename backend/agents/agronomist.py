@@ -533,6 +533,37 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist strongly endorses dynamic panel shading to lower leaf temperature and suppress transpirational water stress.",
             )
 
+        # Anaerobic digestate bio-fertilizer safety check
+        if any(k in action_type for k in ("apply_digestate", "liquid_digestate_feed")):
+            is_pasteurized = context.get("pasteurization_compliant", True)
+            vfa_tic = context.get("vfa_tic_ratio", 0.25)
+            if not is_pasteurized:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="digestate_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.8),
+                    confidence=0.97,
+                    rationale="PATHOGEN BIOSECURITY VETO: Digestate is not pasteurized compliant. Risk of enteric Salmonella/E. coli contamination on export produce.",
+                )
+            if vfa_tic > 0.40:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="digestate_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.2),
+                    confidence=0.94,
+                    rationale=f"SOUR DIGESTATE VETO: High VFA/TIC ratio ({vfa_tic:.2f} > 0.40) indicates phytotoxic volatile acid accumulation. Defer soil application.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="organic_nutrition",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.95,
+                rationale="Agronomist endorses pasteurized anaerobic digestate: supplies organic bio-available ammonium N and humic organic matter.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -541,3 +572,29 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_digestate_organic_safety(
+        self,
+        vfa_tic_ratio: float,
+        pasteurization_compliant: bool,
+        liquid_ec_ms_cm: float,
+    ) -> dict[str, Any]:
+        """Audits anaerobic digestate bio-fertilizer safety for organic food crops."""
+        is_safe = pasteurization_compliant and vfa_tic_ratio <= 0.35 and liquid_ec_ms_cm <= 8.0
+        recommendations: list[str] = []
+
+        if not pasteurization_compliant:
+            recommendations.append("Require batch thermal hold at 55°C for 4 hours to eliminate coliforms.")
+        if vfa_tic_ratio > 0.35:
+            recommendations.append("Volatile organic acid toxicity: aerate liquid digestate before root application.")
+        if liquid_ec_ms_cm > 6.0:
+            recommendations.append(f"High concentrate EC ({liquid_ec_ms_cm} mS/cm): dilute 1:10 with rainwater before fertigation.")
+
+        return {
+            "vfa_tic_ratio": vfa_tic_ratio,
+            "pasteurization_compliant": pasteurization_compliant,
+            "liquid_ec_ms_cm": liquid_ec_ms_cm,
+            "is_safe_for_application": is_safe,
+            "prescribed_dilution_ratio": "1:10" if liquid_ec_ms_cm > 5.0 else "1:5",
+            "recommendations": recommendations,
+        }

@@ -7,6 +7,7 @@ from backend.api.v1.endpoints.agrivoltaics import router as agrivoltaics_router
 from backend.api.v1.endpoints.aquaponics import router as aquaponics_router
 from backend.api.v1.endpoints.audit import router as audit_router
 from backend.api.v1.endpoints.biocontrol import router as biocontrol_router
+from backend.api.v1.endpoints.biogas_cogen import router as biogas_cogen_router
 from backend.api.v1.endpoints.carbon import router as carbon_router
 from backend.api.v1.endpoints.cold_chain import router as cold_chain_router
 from backend.api.v1.endpoints.council import router as council_router
@@ -53,6 +54,7 @@ api_v1_router.include_router(biocontrol_router)
 api_v1_router.include_router(aquaponics_router)
 api_v1_router.include_router(agrivoltaics_router)
 api_v1_router.include_router(subsurface_fertigation_router)
+api_v1_router.include_router(biogas_cogen_router)
 
 __all__ = ["api_v1_router"]
 

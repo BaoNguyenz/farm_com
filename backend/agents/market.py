@@ -711,6 +711,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly approves subsurface fertigation: cuts water evaporation by 35% and reduces mineral fertilizer leaching losses.",
             )
 
+        # Biogas CHP & digestate circular valorization endorsement
+        if any(k in action_type for k in ("biogas_cogen", "run_chp", "feed_digester")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="circular_energy_economics",
+                vote_choice="APPROVE",
+                confidence=0.96,
+                rationale="Market agent strongly endorses biogas CHP cogeneration: delivers simultaneous electricity, free greenhouse heating, organic compost, and scrubbed CO2 value.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -742,4 +752,32 @@ class MarketAgent(BaseFarmAgent):
             "electricity_savings_vnd": round(elec_val_vnd, 0),
             "total_daily_savings_vnd": round(total_savings_vnd, 0),
             "is_cost_effective": total_savings_vnd > 0,
+        }
+
+    def evaluate_circular_biogas_savings(
+        self,
+        elec_kwh: float,
+        heat_kwh: float,
+        solid_compost_kg: float,
+        scrubbed_co2_kg: float,
+    ) -> dict[str, Any]:
+        """Calculates total multi-revenue monetization of biogas CHP & digestate circular loops."""
+        # 1. Displaced electricity @ normal grid tariff (2,100 VND/kWh)
+        elec_value = elec_kwh * self.TARIFF_RATES["normal"]
+        # 2. Avoided LPG greenhouse heating @ 18,000 VND / kg LPG (~12.8 kWh/kg)
+        heat_value = (heat_kwh / 12.8) * 18000.0
+        # 3. Organic bio-compost @ 3,500 VND / kg
+        compost_value = solid_compost_kg * 3500.0
+        # 4. Photosynthetic CO2 procurement avoided @ 6,000 VND / kg
+        co2_value = scrubbed_co2_kg * 6000.0
+
+        total_value = elec_value + heat_value + compost_value + co2_value
+
+        return {
+            "electricity_value_vnd": round(elec_value, 0),
+            "heating_fuel_saved_vnd": round(heat_value, 0),
+            "compost_organic_value_vnd": round(compost_value, 0),
+            "scrubbed_co2_value_vnd": round(co2_value, 0),
+            "total_circular_revenue_vnd": round(total_value, 0),
+            "is_profitable": total_value > 0,
         }
