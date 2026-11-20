@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-405%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-423%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
@@ -31,6 +31,7 @@ flowchart TB
         Biocontrol["Biological Pest Control & Parasitoids\n(Holling Type II, IOBC Safety, Drone Dispenser 28/m²)"]
         Aquaponics["Circular Aquaponics & RAS MBBR\n(Tilapia Bioenergetics, 2-Stage Nitrification, DWC Lettuce)"]
         Agrivoltaics["Agrivoltaics Sun-Tracking & Shading\n(SPA Algorithm, Backtracking, Photoinhibition Defense)"]
+        SDIFertigation["Subsurface Drip & Fertigation\n(Van Genuchten 1980, Mualem K, 3-Channel Venturi PID)"]
         Grid <--> BioModel
         Grid <--> SpectralEngine
         Grid <--> CEA
@@ -39,6 +40,7 @@ flowchart TB
         Grid <--> Biocontrol
         Grid <--> Aquaponics
         Grid <--> Agrivoltaics
+        Grid <--> SDIFertigation
     end
 
     subgraph AgentSwarm ["3. MULTI-AGENT COUNCIL (HỘI ĐỒNG TÁC TỬ)"]
@@ -56,7 +58,7 @@ flowchart TB
     end
 
     subgraph DeliveryLayer ["4. API & USER INTERFACE"]
-        FastAPI_App["FastAPI v1 RESTful Endpoints\n(/api/v1/farm, /api/v1/biocontrol, /api/v1/aquaponics, /api/v1/water-resilience, /api/v1/agrivoltaics)"]
+        FastAPI_App["FastAPI v1 RESTful Endpoints\n(/api/v1/farm, /api/v1/biocontrol, /api/v1/aquaponics, /api/v1/water-resilience, /api/v1/agrivoltaics, /api/v1/subsurface-fertigation)"]
         WebSockets["Multi-Channel WebSocket Hub\n(/ws/telemetry & /ws/council)"]
         UI["Interactive 2.5D Digital Twin Dashboard\n(Isometric Matrix, Debate Timeline, Scenario Control Bar)"]
     end
@@ -256,11 +258,11 @@ python main.py
 
 ## 🧪 6. Kiểm Thử & Chẩn Đoán CLI (Testing & Diagnostics)
 
-### Chạy toàn bộ 405 Unit Tests:
+### Chạy toàn bộ 423 Unit Tests:
 ```bash
 python -m pytest -v
 ```
-*(Kết quả mong đợi: `405 passed in ~2.2s`)*
+*(Kết quả mong đợi: `423 passed in ~2.3s`)*
 
 ### Chạy các công cụ dòng lệnh (CLI Tools):
 ```bash
@@ -283,7 +285,7 @@ ruff check .
 
 > [!IMPORTANT]
 > **Quy tắc bất biến cho AI Agents:**
-> 1. **Bảo tồn tính toàn vẹn của Tests:** Tuyệt đối không làm hỏng 405 unit tests hiện tại. Mọi thay đổi logic phải chạy lại `python -m pytest -q` trước khi hoàn tất.
+> 1. **Bảo tồn tính toàn vẹn của Tests:** Tuyệt đối không làm hỏng 423 unit tests hiện tại. Mọi thay đổi logic phải chạy lại `python -m pytest -q` trước khi hoàn tất.
 > 2. **Cấu trúc Import:** Mọi package trong `backend/` đều có file `__init__.py` export tường minh. Ưu tiên import từ package level:
 >    * `from backend.core import ExtendedSpectralEngine, PhenologyEngine...`
 >    * `from backend.ingestion import WeatherClient, SatelliteClient, SensorSimulator...`

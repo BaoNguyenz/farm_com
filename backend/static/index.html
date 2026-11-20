@@ -662,6 +662,38 @@
                 </div>
             </div>
 
+            <!-- Subsurface Drip & Precision Fertigation HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-faucet-drip text-emerald-400"></i> Tưới Nhỏ Giọt Ngầm SDI & Điều Phối Dinh Dưỡng Fertigation
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold" id="sdi-status-badge">VAN GENUCHTEN ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bầu Ẩm Tầng Rễ (Wetted Bulb):</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="sdi-bulb-val">42cm W x 38cm H</span>
+                        <span class="text-[9px] text-slate-500 block" id="sdi-bulb-sub">Độ sâu 20cm (Se: 0.65)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Áp Lực Giữ Nước (Suction):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="sdi-suction-val">18.5 kPa</span>
+                        <span class="text-[9px] text-slate-500 block" id="sdi-suction-sub">Thấm sâu thất thoát: 0.0%</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Dinh Dưỡng EC / pH Châm:</span>
+                        <span class="text-base font-bold text-amber-400 font-mono" id="sdi-ec-val">2.38 mS/cm | pH 6.0</span>
+                        <span class="text-[9px] text-slate-500 block" id="sdi-ec-sub">Công thức: FRUITING (3-Kênh)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Tỷ Lệ Rửa Mặn (Leaching):</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="sdi-leach-val">12.5%</span>
+                        <span class="text-[9px] text-slate-500 block" id="sdi-leach-sub">An toàn độ mặn rễ</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1326,6 +1358,25 @@
                         document.getElementById('agrivoltaic-par-sub').innerText = `Che phủ ${agri.canopy_microclimate.shading_fraction_pct}% (${agri.canopy_microclimate.photoinhibition_risk})`;
                         document.getElementById('agrivoltaic-temp-val').innerText = `-${agri.canopy_microclimate.leaf_temp_reduction_c}°C`;
                         document.getElementById('agrivoltaic-temp-sub').innerText = `Giảm ${agri.canopy_microclimate.transpiration_reduction_pct}% bốc thoát hơi ETc`;
+                    }
+                }
+
+                // Subsurface Drip & Precision Fertigation Telemetry
+                const sdiRes = await fetch('/api/v1/subsurface-fertigation/telemetry');
+                if (sdiRes.ok) {
+                    const sdi = await sdiRes.json();
+                    document.getElementById('sdi-status-badge').innerText = (sdi.soil_type || 'LOAM').toUpperCase() + ' ACTIVE';
+                    if (sdi.wetted_bulb) {
+                        document.getElementById('sdi-bulb-val').innerText = `${sdi.wetted_bulb.radial_width_cm}cm W x ${sdi.wetted_bulb.vertical_height_cm}cm H`;
+                        document.getElementById('sdi-bulb-sub').innerText = `Độ sâu ${sdi.wetted_bulb.depth_cm}cm (Se: ${sdi.wetted_bulb.effective_saturation})`;
+                        document.getElementById('sdi-suction-val').innerText = `${sdi.wetted_bulb.matric_suction_kpa} kPa`;
+                        document.getElementById('sdi-suction-sub').innerText = `Thấm sâu thất thoát: ${sdi.wetted_bulb.deep_percolation_loss_pct}%`;
+                    }
+                    if (sdi.fertigation_station) {
+                        document.getElementById('sdi-ec-val').innerText = `${sdi.fertigation_station.measured_ec_ms_cm} mS/cm | pH ${sdi.fertigation_station.measured_ph}`;
+                        document.getElementById('sdi-ec-sub').innerText = `Công thức: ${(sdi.default_recipe || 'FRUITING').toUpperCase()} (3-Kênh)`;
+                        document.getElementById('sdi-leach-val').innerText = `${sdi.fertigation_station.leaching_fraction_pct}%`;
+                        document.getElementById('sdi-leach-sub').innerText = sdi.fertigation_station.salinity_hazard_warning ? 'Cảnh báo tích tụ muối!' : 'An toàn độ mặn rễ';
                     }
                 }
             } catch (err) {

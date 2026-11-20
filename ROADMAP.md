@@ -441,3 +441,26 @@ flowchart LR
   - Hiển thị HUD Nông Điện Agrivoltaics: Góc nghiêng/phương vị tracker, công suất phát điện PV (18.5 kW / 30 kWp), bức xạ PAR dưới tán, độ hạ nhiệt lá (-4.2°C) và tỷ lệ tiết giảm nước tưới (-32% ETc).
 - [x] **Task 21.6: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 405/405 Unit & Integration tests vượt qua thành công 100% (`tests/test_agrivoltaic_tracking.py`, `tests/test_agrivoltaic_shading.py`, `tests/test_agrivoltaics_api.py`).
+
+---
+
+## 📌 Phase 22: Thủy Lực Đất Chưa Bão Hòa & Tưới Nhỏ Giọt Ngầm Phun Dinh Dưỡng (Subsurface Drip Irrigation & Vadose Zone Fertigation)
+- [x] **Task 22.1: Động Học Giữ Nước Đất Van Genuchten & Độ Dẫn Mualem (`backend/core/irrigation_hydraulics.py`)**
+  - Đường cong giữ nước đất Van Genuchten (1980): $\theta(h) = \theta_r + \frac{\theta_s - \theta_r}{[1 + (\alpha |h|)^n]^m}$ ($m = 1 - 1/n$).
+  - Hàm độ dẫn thủy lực chưa bão hòa Mualem (1976): $K(\theta) = K_s S_e^l [1 - (1 - S_e^{1/m})^m]^2$.
+  - Danh mục thông số thủy lực đất chuẩn hóa vùng cao nguyên Đà Lạt (đất đỏ Bazan, đất thịt pha cát Sandy Loam, đất thịt Loam).
+  - Mô phỏng bán giải tích hình học bầu ẩm ngầm (wetted bulb) quanh đầu nhỏ giọt chôn sâu 20cm (bán kính ngang $r_{\text{wet}}$, chiều sâu $z_{\text{wet}}$, tỷ số mao dẫn/trọng lực).
+  - Ước lượng tổn thất thấm sâu (deep percolation) khi tưới vượt dung tích đồng ruộng (Field Capacity).
+- [x] **Task 22.2: Trạm Hòa Trộn Dinh Dưỡng Fertigation 3-Kênh & Vận Chuyển Khối 1D (`backend/core/fertigation_solute.py`)**
+  - Cơ cấu định lượng Venturi 3 kênh: Kênh A ($Ca(NO_3)_2$), Kênh B ($KH_2PO_4, K_2SO_4, MgSO_4$), Kênh C (axit chuẩn độ $HNO_3$).
+  - Bộ điều khiển hồi tiếp kín PID tự động duy trì độ dẫn điện EC ($1.8 - 2.5\text{ mS/cm}$) và pH tối ưu ($5.8 - 6.2$).
+  - Tính toán tỷ lệ rửa mặn an toàn Leaching Fraction (Rhoades 1974): $LF = EC_w / (5 EC_e - EC_w)$ ngăn chặn tích tụ muối độc hại tầng rễ.
+  - Mô hình vận chuyển chất tan 1D bình lưu - khuếch tán dọc tầng đất bằng nghiệm hàm bù lỗi Gauss (erfc).
+- [x] **Task 22.3: Tác Tử Thủy Nông & Kinh Tế Quản Trị Tưới Ngầm (`backend/agents/irrigation.py`, `backend/agents/market.py`)**
+  - `IrrigationAgent`: Kiểm toán áp suất giữ nước mao dẫn đất (Matric Suction); cảnh báo ngập úng thiếu khí ($<8\text{ kPa}$) hoặc hạn hán ($>70\text{ kPa}$); phủ quyết lệnh tưới có nồng độ EC vượt ngưỡng ($>2.8\text{ mS/cm}$).
+  - `MarketAgent`: Đánh giá ROI tưới nhỏ giọt ngầm SDI so với tưới mặt: tiết kiệm 35% bốc thoát hơi nước bề mặt, giảm thất thoát phân bón rỉ trôi, mang lại hiệu quả kinh tế vượt trội (>100.000 đ/ngày).
+- [x] **Task 22.4: Điểm Cuối RESTful Tưới Ngầm & HUD Trực Quan Hóa (`backend/api/v1/endpoints/subsurface_fertigation.py`, `backend/static/index.html`)**
+  - `GET /api/v1/subsurface-fertigation/telemetry`, `POST /api/v1/subsurface-fertigation/simulate-bulb`, `POST /api/v1/subsurface-fertigation/mix-dosing`, `POST /api/v1/subsurface-fertigation/solute-profile`.
+  - Tích hợp thẻ HUD Tưới Nhỏ Giọt Ngầm SDI & Điều Phối Dinh Dưỡng Fertigation lên bảng điều khiển với cập nhật thời gian thực.
+- [x] **Task 22.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 423/423 Unit & Integration tests vượt qua thành công 100% (`tests/test_irrigation_hydraulics.py`, `tests/test_fertigation_solute.py`, `tests/test_subsurface_fertigation_api.py`).
