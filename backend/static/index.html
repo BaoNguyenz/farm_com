@@ -694,6 +694,38 @@
                 </div>
             </div>
 
+            <!-- Anaerobic Digestion & Biogas Micro-CHP HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-fire-burner text-orange-400"></i> Hầm Biogas Sinh Học & Đồng Phát Điện - Nhiệt Micro-CHP
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-300 border border-orange-500/20 font-bold" id="biogas-status-badge">STABLE MESOPHILIC</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Sản Lượng Khí Biogas/Ngày:</span>
+                        <span class="text-base font-bold text-orange-400 font-mono" id="biogas-yield-val">14.8 m³</span>
+                        <span class="text-[9px] text-slate-500 block" id="biogas-yield-sub">62.5% CH4 (180kg phế phẩm)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Đồng Phát Điện CHP:</span>
+                        <span class="text-base font-bold text-amber-300 font-mono" id="biogas-elec-val">29.8 kWh</span>
+                        <span class="text-[9px] text-slate-500 block" id="biogas-elec-sub">Hiệu suất cogen: 85.0%</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Nhiệt Thu Hồi & CO2 Lọc:</span>
+                        <span class="text-base font-bold text-rose-400 font-mono" id="biogas-heat-val">46.9 kWh</span>
+                        <span class="text-[9px] text-slate-500 block" id="biogas-heat-sub">Lọc 26.9 kg CO2 quang hợp</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Phân Hữu Cơ & Dịch Dinh Dưỡng:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="biogas-digestate-val">21kg Rắn | 129L Lỏng</span>
+                        <span class="text-[9px] text-slate-500 block" id="biogas-digestate-sub">VFA/TIC: 0.23 (Tiệt trùng an toàn)</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1377,6 +1409,27 @@
                         document.getElementById('sdi-ec-sub').innerText = `Công thức: ${(sdi.default_recipe || 'FRUITING').toUpperCase()} (3-Kênh)`;
                         document.getElementById('sdi-leach-val').innerText = `${sdi.fertigation_station.leaching_fraction_pct}%`;
                         document.getElementById('sdi-leach-sub').innerText = sdi.fertigation_station.salinity_hazard_warning ? 'Cảnh báo tích tụ muối!' : 'An toàn độ mặn rễ';
+                    }
+                }
+
+                // Anaerobic Digester & Biogas Micro-CHP Telemetry
+                const bioRes = await fetch('/api/v1/biogas-cogen/telemetry');
+                if (bioRes.ok) {
+                    const bg = await bioRes.json();
+                    document.getElementById('biogas-status-badge').innerText = (bg.digester ? bg.digester.health_status : 'STABLE').replace(/_/g, ' ').toUpperCase();
+                    if (bg.digester) {
+                        document.getElementById('biogas-yield-val').innerText = `${bg.digester.daily_biogas_m3} m³`;
+                        document.getElementById('biogas-yield-sub').innerText = `${bg.digester.methane_content_pct}% CH4 (${bg.digester.feed_mass_kg_day}kg/ngày)`;
+                    }
+                    if (bg.chp_cogeneration) {
+                        document.getElementById('biogas-elec-val').innerText = `${bg.chp_cogeneration.electricity_generated_kwh} kWh`;
+                        document.getElementById('biogas-elec-sub').innerText = `Hiệu suất cogen: ${bg.chp_cogeneration.total_cogen_efficiency_pct}%`;
+                        document.getElementById('biogas-heat-val').innerText = `${bg.chp_cogeneration.heat_recovered_kwh} kWh`;
+                        document.getElementById('biogas-heat-sub').innerText = `Lọc ${bg.chp_cogeneration.scrubbed_co2_kg} kg CO2 quang hợp`;
+                    }
+                    if (bg.digestate_valorization) {
+                        document.getElementById('biogas-digestate-val').innerText = `${bg.digestate_valorization.solid_fraction_kg}kg Rắn | ${bg.digestate_valorization.liquid_fraction_liters.toFixed(0)}L Lỏng`;
+                        document.getElementById('biogas-digestate-sub').innerText = bg.digestate_valorization.pasteurization_compliant ? 'Tiệt trùng an toàn (Vi sinh hữu cơ)' : 'Chưa tiệt trùng vi sinh';
                     }
                 }
             } catch (err) {

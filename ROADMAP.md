@@ -464,3 +464,25 @@ flowchart LR
   - Tích hợp thẻ HUD Tưới Nhỏ Giọt Ngầm SDI & Điều Phối Dinh Dưỡng Fertigation lên bảng điều khiển với cập nhật thời gian thực.
 - [x] **Task 22.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 423/423 Unit & Integration tests vượt qua thành công 100% (`tests/test_irrigation_hydraulics.py`, `tests/test_fertigation_solute.py`, `tests/test_subsurface_fertigation_api.py`).
+
+---
+
+## 📌 Phase 23: Hầm Biogas Sinh Học & Đồng Phát Điện - Nhiệt Micro-CHP (Anaerobic Digestion & Biogas Micro-CHP Cogeneration)
+- [x] **Task 23.1: Động Học Phân Hủy Kỵ Khí & Khí Sinh Học Biogas (`backend/core/biogas_digestion.py`)**
+  - Động học phân hủy kỵ khí đa giai đoạn (Thủy phân, Axit hóa, Axetat hóa, Metan hóa) dựa trên mô hình Hill/ADM1.
+  - Danh mục cơ chất nông nghiệp trang trại: phế phẩm tỉa lá dâu tây/cà chua, phân bò từ trang trại lân cận, bùn thải lắng từ hệ aquaponics và hỗn hợp đồng tiêu hóa (Co-digestion mix).
+  - Tỷ lệ phá hủy chất rắn bay hơi (Volatile Solids VS destruction 60-75%), sản lượng sinh khí $0.45 - 0.65\text{ m}^3/\text{kg VS}$ và tỷ lệ $CH_4$ ($55\% - 68\%$).
+  - Chỉ số giám sát axit hóa hầm ủ VFA/TIC ($<0.3$ tối ưu, $>0.4$ cảnh báo hầm chua nguy hiểm).
+- [x] **Task 23.2: Đồng Phát Điện - Nhiệt Micro-CHP & Thu Hồi Dinh Dưỡng Phân Ủ (`backend/core/biogas_chp.py`)**
+  - Micro-turbine đồng phát nhiệt điện (CHP): hiệu suất phát điện 33%, hiệu suất nhiệt thu hồi 52% (tổng cogen 85%).
+  - Vòng tuần hoàn nhiệt thừa: cấp nhiệt giữ ấm hầm biogas ($37^\circ\text{C}$ mesophilic) và sưởi ấm ban đêm cho nhà màng/bể cá rô phi aquaponics.
+  - Tách lọc $CO_2$ khí thải sạch phục vụ bổ sung quang hợp nhà kính ($~1.82\text{ kg } CO_2/\text{m}^3\text{ biogas}$).
+  - Máy ép trục vít phân đoạn digestate: bã rắn ($25-30\%\ TS$) làm phân compost mùn hữu cơ và dịch lỏng giàu đạm amoni ($NH_4^+$) & Kali cho tưới nhỏ giọt.
+- [x] **Task 23.3: Tác Tử Nông Học & Kinh Tế Quản Trị Khí Sinh Học (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm toán an toàn vi sinh phân digestate; phủ quyết bón phân lỏng chưa qua tiệt trùng ($<37^\circ\text{C}$) nhằm ngăn ngừa rủi ro vi khuẩn đường ruột (Salmonella/E. coli) trên nông sản ăn sống.
+  - `MarketAgent`: Đánh giá doanh thu kinh tế tuần hoàn: tổng hòa giá trị điện mặt trời/lưới thay thế, tiết kiệm gas LPG sưởi ấm, giá trị phân bón hữu cơ compost và khí CO2 tinh khiết (>400.000 đ/ngày).
+- [x] **Task 23.4: Điểm Cuối RESTful Biogas & HUD Trực Quan Hóa (`backend/api/v1/endpoints/biogas_cogen.py`, `backend/static/index.html`)**
+  - `GET /api/v1/biogas-cogen/telemetry`, `POST /api/v1/biogas-cogen/feed-digester`, `POST /api/v1/biogas-cogen/simulate-chp`, `POST /api/v1/biogas-cogen/fractionate-digestate`.
+  - Tích hợp thẻ HUD Hầm Biogas Sinh Học & Đồng Phát Điện - Nhiệt Micro-CHP lên giao diện Dashboard.
+- [x] **Task 23.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 441/441 Unit & Integration tests vượt qua thành công 100% (`tests/test_biogas_digestion.py`, `tests/test_biogas_chp.py`, `tests/test_biogas_api.py`).
