@@ -36,19 +36,19 @@ class FilmPermeabilityParams:
 
 FILM_CATALOG: dict[PackagingFilmType, FilmPermeabilityParams] = {
     PackagingFilmType.MICRO_PERFORATED_PP: FilmPermeabilityParams(
-        o2_permeance_ml_m2_day_atm=2800.0,
-        co2_permeance_ml_m2_day_atm=11200.0,
-        water_vapor_transmission_g_m2_day=22.0,
+        o2_permeance_ml_m2_day_atm=16000.0,
+        co2_permeance_ml_m2_day_atm=22000.0,
+        water_vapor_transmission_g_m2_day=30.0,
     ),
     PackagingFilmType.LDPE_50_MICRON: FilmPermeabilityParams(
-        o2_permeance_ml_m2_day_atm=1800.0,
-        co2_permeance_ml_m2_day_atm=7200.0,
-        water_vapor_transmission_g_m2_day=14.0,
+        o2_permeance_ml_m2_day_atm=4500.0,
+        co2_permeance_ml_m2_day_atm=18000.0,
+        water_vapor_transmission_g_m2_day=18.0,
     ),
     PackagingFilmType.HIGH_GAS_PERM_BIO: FilmPermeabilityParams(
-        o2_permeance_ml_m2_day_atm=3400.0,
-        co2_permeance_ml_m2_day_atm=14500.0,
-        water_vapor_transmission_g_m2_day=35.0,
+        o2_permeance_ml_m2_day_atm=20000.0,
+        co2_permeance_ml_m2_day_atm=35000.0,
+        water_vapor_transmission_g_m2_day=45.0,
     ),
 }
 
