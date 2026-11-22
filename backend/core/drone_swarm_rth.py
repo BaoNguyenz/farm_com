@@ -228,8 +228,8 @@ class SwarmSafetyEngine:
         required_wh = (power_w * return_time_s / 3600.0) * self.RTH_SAFETY_MARGIN
         min_safe_soc = round((required_wh / drone.battery_capacity_wh) * 100.0, 1)
 
-        # Alert if current SoC is within 4% of minimum safe RTH SoC
-        rth_needed = drone.battery_soc_pct <= (min_safe_soc + 4.0)
+        # Alert if current SoC is within 8% of minimum safe RTH SoC
+        rth_needed = drone.battery_soc_pct <= (min_safe_soc + 8.0)
 
         reason = "nominal_reserve"
         if drone.battery_soc_pct <= min_safe_soc:
