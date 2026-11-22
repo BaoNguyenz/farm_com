@@ -509,3 +509,25 @@ flowchart LR
   - Tích hợp thẻ HUD Bảo Quản Sau Thu Hoạch & Bao Gói Khí Quyển Biến Đổi MAP lên giao diện Dashboard.
 - [x] **Task 24.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 459/459 Unit & Integration tests vượt qua thành công 100% (`tests/test_postharvest_respiration.py`, `tests/test_postharvest_map.py`, `tests/test_postharvest_api.py`).
+
+---
+
+## 📌 Phase 25: Bầy Drone Tự Hành, Lập Lộ Trình Phân Vùng Voronoi & Hạ Cánh An Toàn RTH (Autonomous UAV Swarm Cooperative Scouting & Boustrophedon Fleet Operations)
+- [x] **Task 25.1: Phân Rã Boustrophedon, Tính Khoảng Cách Luống & Phân Vùng Đa Drone Voronoi (`backend/core/drone_path_planning.py`)**
+  - Thuật toán phân rã tế bào Boustrophedon (Boustrophedon Cellular Decomposition) quét phủ hoàn toàn đa giác nông trại.
+  - Tính toán độ phân giải mặt đất GSD ($0.96\text{ cm/pixel}$ ở cao độ 35m) và khoảng cách luống bay (strip spacing) theo góc mở camera FOV và độ chồng lấn ảnh ($70\%$ side-overlap, $75\%$ forward-overlap).
+  - Tối ưu hóa góc quét theo hướng gió thổi nhằm triệt tiêu độ trôi bạt khí động học và tránh góc chói lóa ánh sáng mặt trời.
+  - Phân vùng đa drone Voronoi đồng đều phân bổ khối lượng khảo sát cho toàn đội bay.
+- [x] **Task 25.2: Phòng Ngừa Va Chạm Không Gian RVO & Ngưỡng Pin Hạ Cánh Khẩn Cấp RTH (`backend/core/drone_swarm_rth.py`)**
+  - Động học tránh va chạm tương hỗ RVO (Reciprocal Velocity Obstacles) và phân tầng độ cao an toàn $\pm 6\text{ m}$.
+  - Mô hình tiêu hao điện năng khí động học: công suất nâng hovering, lực cản parasitic drag phụ thuộc bậc 3 tốc độ gió ngược ($P_{\text{drag}} \propto v_{\text{air}}^3$), và phụ tải điện tử quang học.
+  - Ngưỡng pin khẩn cấp tự động quay về trạm sạc Return-To-Home (RTH) có bù trừ gió ngược trên vector đường về.
+  - Giao thức chuyển giao nhiệm vụ động (hot-swap mission handoff): drone kế cận tự động tiếp quản các waypoint dở dang của drone cạn năng lượng.
+- [x] **Task 25.3: Tác Tử Nông Học & Kinh Tế Điều Phối Đội Bay Drone (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm toán phong vũ biểu vi khí hậu; phủ quyết bay trong điều kiện gió giật cấp 6 ($>12\text{ m/s}$) hoặc mưa ($>5\text{ mm/h}$); phê duyệt trinh sát bầy định vị sớm các điểm nghẽn thiếu đạm chlorosis.
+  - `MarketAgent`: Đánh giá ROI khảo sát tự động bằng drone: tiết kiệm 85% nhân công tuần tra thủ công, bảo vệ năng suất xuất khẩu với tỷ suất lợi nhuận vượt trội (>500.000 đ/ngày).
+- [x] **Task 25.4: Điểm Cuối RESTful Bầy Drone & HUD Trực Quan Hóa (`backend/api/v1/endpoints/drone_swarm.py`, `backend/static/index.html`)**
+  - `GET /api/v1/drone-swarm/telemetry`, `POST /api/v1/drone-swarm/plan-mission`, `POST /api/v1/drone-swarm/check-collision`, `POST /api/v1/drone-swarm/evaluate-rth`, `POST /api/v1/drone-swarm/handoff-mission`.
+  - Tích hợp thẻ HUD Bầy Drone Tự Hành & Lập Lộ Trình Khảo Sát Boustrophedon lên bảng điều khiển Dashboard.
+- [x] **Task 25.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 480/480 Unit & Integration tests vượt qua thành công 100% (`tests/test_drone_path_planning.py`, `tests/test_drone_swarm_rth.py`, `tests/test_drone_swarm_api.py`).

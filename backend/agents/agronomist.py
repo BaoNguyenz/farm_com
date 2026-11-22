@@ -407,15 +407,35 @@ class AgronomistAgent(BaseFarmAgent):
                     rationale=f"PATHOLOGY VETO: Ambient relative humidity is {rh:.1f}%. Excess watering will provoke Phytophthora root rot."
                 )
 
-        # Drone precision spraying approval
+        # Drone precision spraying and swarm aerial survey
         if "drone" in action_type or "scout" in action_type or "spot_spray" in action_type:
+            wind_speed = context.get("wind_speed_m_s", 0.0)
+            rain_rate = context.get("rain_rate_mm_h", 0.0)
+            if wind_speed > 12.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="uav_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.98,
+                    rationale=f"HIGH WIND GUST VETO: Wind speed ({wind_speed:.1f} m/s > 12.0 m/s). Extreme aerodynamic instability and collision/crash hazard. Abort swarm mission.",
+                )
+            if rain_rate > 5.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="uav_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.8),
+                    confidence=0.96,
+                    rationale=f"RAIN INGRESS VETO: Precipitation ({rain_rate:.1f} mm/h > 5.0 mm/h) risks sensor lens fouling and avionics short-circuit. Abort drone launch.",
+                )
             return DebateVote(
                 agent_id=self.agent_id,
                 topic=domain,
                 vote_choice="APPROVE",
                 weight=weight,
                 confidence=0.96,
-                rationale="Agronomist strongly endorses autonomous UAV targeted spot spray for identified canopy anomalies."
+                rationale="Agronomist strongly endorses autonomous UAV scouting & targeted spot spray for identified canopy anomalies.",
             )
 
         # Evaporative cooling approval
@@ -562,37 +582,6 @@ class AgronomistAgent(BaseFarmAgent):
                 weight=weight,
                 confidence=0.95,
                 rationale="Agronomist endorses pasteurized anaerobic digestate: supplies organic bio-available ammonium N and humic organic matter.",
-            )
-
-        # Autonomous UAV swarm scouting safety check
-        if any(k in action_type for k in ("launch_drone_swarm", "drone_aerial_survey", "dispatch_uav")):
-            wind_speed = context.get("wind_speed_m_s", 0.0)
-            rain_rate = context.get("rain_rate_mm_h", 0.0)
-            if wind_speed > 12.0:
-                return DebateVote(
-                    agent_id=self.agent_id,
-                    topic="uav_safety",
-                    vote_choice="REJECT",
-                    weight=max(weight, 4.0),
-                    confidence=0.98,
-                    rationale=f"HIGH WIND GUST VETO: Wind speed ({wind_speed:.1f} m/s > 12.0 m/s). Extreme aerodynamic instability and collision/crash hazard. Abort swarm mission.",
-                )
-            if rain_rate > 5.0:
-                return DebateVote(
-                    agent_id=self.agent_id,
-                    topic="uav_safety",
-                    vote_choice="REJECT",
-                    weight=max(weight, 3.8),
-                    confidence=0.96,
-                    rationale=f"RAIN INGRESS VETO: Precipitation ({rain_rate:.1f} mm/h > 5.0 mm/h) risks sensor lens fouling and avionics short-circuit. Abort drone launch.",
-                )
-            return DebateVote(
-                agent_id=self.agent_id,
-                topic="uav_scouting",
-                vote_choice="APPROVE",
-                weight=weight,
-                confidence=0.96,
-                rationale="Agronomist strongly endorses autonomous UAV swarm scouting: high-resolution GSD delivers early detection of foliar chlorosis, emergence gaps, and canopy disease hotspots.",
             )
 
         # Post-harvest cold chain & export quality check
