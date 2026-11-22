@@ -564,6 +564,37 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist endorses pasteurized anaerobic digestate: supplies organic bio-available ammonium N and humic organic matter.",
             )
 
+        # Autonomous UAV swarm scouting safety check
+        if any(k in action_type for k in ("launch_drone_swarm", "drone_aerial_survey", "dispatch_uav")):
+            wind_speed = context.get("wind_speed_m_s", 0.0)
+            rain_rate = context.get("rain_rate_mm_h", 0.0)
+            if wind_speed > 12.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="uav_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.98,
+                    rationale=f"HIGH WIND GUST VETO: Wind speed ({wind_speed:.1f} m/s > 12.0 m/s). Extreme aerodynamic instability and collision/crash hazard. Abort swarm mission.",
+                )
+            if rain_rate > 5.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="uav_safety",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.8),
+                    confidence=0.96,
+                    rationale=f"RAIN INGRESS VETO: Precipitation ({rain_rate:.1f} mm/h > 5.0 mm/h) risks sensor lens fouling and avionics short-circuit. Abort drone launch.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="uav_scouting",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist strongly endorses autonomous UAV swarm scouting: high-resolution GSD delivers early detection of foliar chlorosis, emergence gaps, and canopy disease hotspots.",
+            )
+
         # Post-harvest cold chain & export quality check
         if any(k in action_type for k in ("ship_export", "release_cold_chain")):
             grade = context.get("quality_grade", "GRADE_AAA_PREMIUM")
@@ -594,6 +625,31 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_drone_swarm_mission(
+        self,
+        swarm_size: int,
+        total_area_ha: float,
+        wind_speed_m_s: float,
+        rain_rate_mm_h: float = 0.0,
+    ) -> dict[str, Any]:
+        """Audits autonomous UAV swarm weather envelope and flight safety."""
+        is_safe = wind_speed_m_s <= 12.0 and rain_rate_mm_h <= 5.0
+        reasons: list[str] = []
+        if wind_speed_m_s > 12.0:
+            reasons.append(f"Wind speed {wind_speed_m_s:.1f} m/s exceeds max airframe limit (12 m/s).")
+        if rain_rate_mm_h > 5.0:
+            reasons.append(f"Precipitation {rain_rate_mm_h:.1f} mm/h exceeds optical rating.")
+
+        return {
+            "swarm_size": swarm_size,
+            "total_area_ha": total_area_ha,
+            "wind_speed_m_s": wind_speed_m_s,
+            "rain_rate_mm_h": rain_rate_mm_h,
+            "is_flight_permitted": is_safe,
+            "flight_readiness": "CLEAR_FOR_TAKEOFF" if is_safe else "FLIGHT_ABORT_WEATHER",
+            "safety_reasons": reasons,
+        }
 
     def audit_postharvest_cold_chain(
         self,

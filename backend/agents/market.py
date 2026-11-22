@@ -731,6 +731,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly approves Modified Atmosphere Packaging (MAP): preserves Grade AAA freshness premium and prevents transit mold claims.",
             )
 
+        # Autonomous UAV swarm scouting economic endorsement
+        if any(k in action_type for k in ("launch_drone_swarm", "drone_aerial_survey", "dispatch_uav")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="uav_scouting_economics",
+                vote_choice="APPROVE",
+                confidence=0.96,
+                rationale="Market agent strongly endorses autonomous UAV swarm scouting: cuts scouting labor expenses by ~85% with high positive ROI and early crop protection yield upside.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -790,6 +800,38 @@ class MarketAgent(BaseFarmAgent):
             "scrubbed_co2_value_vnd": round(co2_value, 0),
             "total_circular_revenue_vnd": round(total_value, 0),
             "is_profitable": total_value > 0,
+        }
+
+    def evaluate_drone_swarm_scouting_roi(
+        self,
+        total_area_ha: float,
+        swarm_size: int = 2,
+    ) -> dict[str, Any]:
+        """Calculates commercial ROI of autonomous multi-drone scouting versus manual agronomist foot patrol."""
+        # Manual scouting: 150,000 VND / ha labor cost
+        manual_cost = total_area_ha * 150000.0
+
+        # Drone fleet electrical recharge: ~0.35 kWh total @ normal EVN tariff (~2,100 VND/kWh)
+        charging_cost = swarm_size * 0.35 * self.TARIFF_RATES["normal"]
+
+        labor_savings = max(0.0, manual_cost - charging_cost)
+
+        # Early canopy disease/chlorosis mitigation surplus (protects ~3% yield on 35M VND/ha baseline)
+        yield_protection_surplus = total_area_ha * 35000000.0 * 0.03
+
+        net_benefit = labor_savings + yield_protection_surplus
+        roi_multiplier = net_benefit / max(1.0, charging_cost)
+
+        return {
+            "total_area_ha": total_area_ha,
+            "swarm_size": swarm_size,
+            "manual_scouting_cost_vnd": round(manual_cost, 0),
+            "drone_charging_cost_vnd": round(charging_cost, 0),
+            "net_labor_savings_vnd": round(labor_savings, 0),
+            "yield_protection_surplus_vnd": round(yield_protection_surplus, 0),
+            "total_net_economic_benefit_vnd": round(net_benefit, 0),
+            "roi_multiplier": round(roi_multiplier, 1),
+            "is_highly_profitable": net_benefit > 0,
         }
 
     def evaluate_map_export_premium(
