@@ -531,3 +531,26 @@ flowchart LR
   - Tích hợp thẻ HUD Bầy Drone Tự Hành & Lập Lộ Trình Khảo Sát Boustrophedon lên bảng điều khiển Dashboard.
 - [x] **Task 25.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 480/480 Unit & Integration tests vượt qua thành công 100% (`tests/test_drone_path_planning.py`, `tests/test_drone_swarm_rth.py`, `tests/test_drone_swarm_api.py`).
+
+---
+
+## 📌 Phase 26: Tích Lũy Carbon Đất RothC & Sổ Cái Đo Đạc - Báo Cáo - Thẩm Tra MRV Tín Chỉ Carbon (RothC Soil Carbon Sequestration Modeling & MRV Carbon Credit Verra/Gold-Standard Ledger)
+- [x] **Task 26.1: Động Học Chu Chuyển Carbon Đất RothC-26.3 & Bền Vững Biochar (`backend/core/carbon_rothc.py`)**
+  - Mô hình 5 bể carbon đất Rothamsted (DPM, RPM, BIO, HUM, IOM) với hằng số phân hủy động học chuẩn hóa ($k = 10.0, 0.30, 0.66, 0.02, 0.00\text{ yr}^{-1}$).
+  - Hệ số điều chỉnh môi trường: nhiệt độ sigmoid $a(T)$, thâm hụt độ ẩm đất tầng mặt $b(M)$, và độ che phủ tán cây $c$.
+  - Động học bảo vệ hạt sét (clay protection): xác định tỷ lệ hô hấp $CO_2$ so với tổng hợp sinh khối vi sinh vật $(\text{BIO} + \text{HUM})$ theo hàm mũ tỷ lệ sét bazan Đà Lạt (32% clay).
+  - Cơ chế bền vững của than sinh học biochar: phân bổ $\ge 95\%$ vào bể trơ IOM với chu kỳ bán rã hàng trăm năm, nâng cao dung tích hấp thu trao đổi cation CEC và giữ ẩm.
+- [x] **Task 26.2: Bổ Sung Tín Chỉ Bổ Sung Verra VM0042 & Cây Xác Thực Băm SHA-256 Merkle (`backend/core/carbon_mrv.py`)**
+  - Tính toán mức bổ sung Additionality theo phương pháp luận Verra VCS VM0042: chênh lệch giữa kịch bản dự án nông nghiệp tái sinh và kịch bản cơ sở thâm canh truyền thống.
+  - Khấu trừ quỹ đệm rủi ro đảo ngược không vĩnh cửu (Non-permanence Buffer Pool 15%) và chiết khấu độ không chắc chắn đo đạc (5%).
+  - Phát hành tín chỉ carbon Verified Carbon Unit ($1\text{ VCU} = 1\text{ tấn } CO_2e$).
+  - Cây xác thực băm mật mã nhị phân SHA-256 Merkle Tree xâu chuỗi bất biến biên bản thí nghiệm đốt mẫu đất khô CNS, ảnh vệ tinh Sentinel-2/UAV và cảm biến IoT áp suất mao dẫn.
+  - Vòng đời chứng chỉ VCU: Minted -> Verified -> Retired (vĩnh viễn hủy bỏ phục vụ báo cáo ESG Net-Zero doanh nghiệp).
+- [x] **Task 26.3: Tác Tử Nông Học & Kinh Tế Quản Trị Tín Chỉ Carbon (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm toán sức khỏe carbon đất ($SOM \ge 2.0\%$); phủ quyết lệnh cày lật sâu (deep inversion tillage) hoặc đốt gốc rạ làm oxy hóa cấp tính mùn HUM; phê duyệt bổ sung than sinh học biochar.
+  - `MarketAgent`: Đánh giá kinh tế thị trường carbon tự nguyện: định giá \$25/t CO2e (hơn 25 triệu VNĐ/ha/năm doanh thu thặng dư xanh) sau khi trừ chi phí đăng kiểm viên Verra ($0.20/tín chỉ).
+- [x] **Task 26.4: Điểm Cuối RESTful Carbon MRV & HUD Trực Quan Hóa (`backend/api/v1/endpoints/carbon_mrv.py`, `backend/static/index.html`)**
+  - `GET /api/v1/carbon-mrv/telemetry`, `POST /api/v1/carbon-mrv/simulate-rothc`, `POST /api/v1/carbon-mrv/evaluate-additionality`, `POST /api/v1/carbon-mrv/issue-credits`, `POST /api/v1/carbon-mrv/retire-credits`.
+  - Tích hợp thẻ HUD Tích Lũy Carbon Đất RothC & Sổ Cái MRV Tín Chỉ Carbon lên bảng điều khiển Dashboard.
+- [x] **Task 26.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 500/500 Unit & Integration tests vượt qua thành công 100% (`tests/test_carbon_rothc.py`, `tests/test_carbon_mrv.py`, `tests/test_carbon_mrv_api.py`).
