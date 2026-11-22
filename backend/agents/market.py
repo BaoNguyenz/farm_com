@@ -741,6 +741,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly endorses autonomous UAV swarm scouting: cuts scouting labor expenses by ~85% with high positive ROI and early crop protection yield upside.",
             )
 
+        # Verra VM0042 Voluntary Carbon Market credit issuance endorsement
+        if any(k in action_type for k in ("issue_carbon_credits", "mint_vcu", "carbon_offset_issuance")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="carbon_credit_economics",
+                vote_choice="APPROVE",
+                confidence=0.98,
+                rationale="Market agent strongly endorses Verra VM0042 carbon credit issuance: monetizes verified soil carbon additionality into high-margin liquid ESG assets ($25/t CO2e) with zero cannibalization of food crop revenue.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -832,6 +842,30 @@ class MarketAgent(BaseFarmAgent):
             "total_net_economic_benefit_vnd": round(net_benefit, 0),
             "roi_multiplier": round(roi_multiplier, 1),
             "is_highly_profitable": net_benefit > 0,
+        }
+
+    def evaluate_carbon_credit_monetization(
+        self,
+        net_vcu_tonnes: float,
+        price_usd_per_vcu: float = 25.0,
+    ) -> dict[str, Any]:
+        """Calculates revenue and registry issuance margins from Verra VM0042 Verified Carbon Units."""
+        gross_usd = net_vcu_tonnes * price_usd_per_vcu
+        # Verra registry issuance levy: $0.20 per issued VCU
+        registry_fee_usd = net_vcu_tonnes * 0.20
+        net_revenue_usd = max(0.0, gross_usd - registry_fee_usd)
+
+        vnd_rate = 25400.0
+        net_revenue_vnd = net_revenue_usd * vnd_rate
+
+        return {
+            "net_vcu_tonnes": round(net_vcu_tonnes, 2),
+            "price_usd_per_vcu": price_usd_per_vcu,
+            "gross_revenue_usd": round(gross_usd, 2),
+            "registry_fee_usd": round(registry_fee_usd, 2),
+            "net_revenue_usd": round(net_revenue_usd, 2),
+            "net_revenue_vnd": round(net_revenue_vnd, 0),
+            "is_lucrative": net_revenue_vnd > 0,
         }
 
     def evaluate_map_export_premium(

@@ -606,6 +606,27 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale=f"Agronomist approves export shipment: cold-chain intact (Grade: {grade}) with effective MAP atmospheric mold suppression.",
             )
 
+        # Soil Carbon Sequestration & RothC conservation tillage check
+        if any(k in action_type for k in ("deep_tillage", "stubble_burn", "burn_residue")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="soil_carbon_conservation",
+                vote_choice="REJECT",
+                weight=max(weight, 4.0),
+                confidence=0.98,
+                rationale="SOIL CARBON LOSS VETO: Deep inversion tillage or burning crop residues rapidly oxidizes humified organic matter (HUM) and microbial biomass (BIO). Violates regenerative RothC carbon accrual standards. Transition to no-till conservation agriculture.",
+            )
+
+        if any(k in action_type for k in ("apply_biochar", "soil_carbon_sequestration", "carbon_mrv_issuance")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="soil_carbon_sequestration",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.97,
+                rationale="Agronomist strongly endorses soil carbon sequestration & biochar application: stabilizes recalcitrant inert organic matter (IOM >= 95%), expands cation exchange capacity, and enhances soil water retention.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -614,6 +635,35 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_soil_carbon_health(
+        self,
+        total_soc_t_c_ha: float,
+        hum_ratio_pct: float,
+        soil_organic_matter_pct: float,
+    ) -> dict[str, Any]:
+        """Audits soil organic carbon health and regenerative soil sink status."""
+        is_healthy = soil_organic_matter_pct >= 2.0 and total_soc_t_c_ha >= 25.0
+        status = (
+            "EXCELLENT_CARBON_SINK"
+            if soil_organic_matter_pct >= 3.0
+            else ("MODERATE_CARBON_SINK" if is_healthy else "DEPLETED_CARBON_DEBT")
+        )
+
+        recommendations: list[str] = []
+        if soil_organic_matter_pct < 2.0:
+            recommendations.append("Apply 2.5 t/ha biochar to rebuild stable inert carbon pool.")
+        if hum_ratio_pct < 50.0:
+            recommendations.append("Incorporate composted anaerobic digestate to enhance humified organic matter.")
+
+        return {
+            "total_soc_t_c_ha": round(total_soc_t_c_ha, 2),
+            "hum_ratio_pct": round(hum_ratio_pct, 1),
+            "soil_organic_matter_pct": round(soil_organic_matter_pct, 2),
+            "carbon_sink_status": status,
+            "is_soil_carbon_healthy": is_healthy,
+            "recommendations": recommendations,
+        }
 
     def audit_drone_swarm_mission(
         self,
