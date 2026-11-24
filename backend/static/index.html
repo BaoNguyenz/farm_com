@@ -822,6 +822,38 @@
                 </div>
             </div>
 
+            <!-- Solar-Thermal Crop Dryer & Latent Heat PCM Storage HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-sun-plant-wilt text-amber-400"></i> Trạm Sấy Nông Sản Mặt Trời & Tích Nhiệt Pha PCM
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold" id="solar-dryer-status-badge">SOLAR PCM CHARGING</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bộ Thu Nhiệt & Khí Buồng Sấy:</span>
+                        <span class="text-base font-bold text-amber-300 font-mono" id="solar-dryer-temp-val">48.2°C | 22% RH</span>
+                        <span class="text-[9px] text-slate-500 block" id="solar-dryer-temp-sub">Thu nhiệt 5.8 kWth (12m² glazed)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Khối Tích Nhiệt Pha PCM:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="solar-dryer-pcm-val">46.5°C (62% Nóng Chảy)</span>
+                        <span class="text-[9px] text-slate-500 block" id="solar-dryer-pcm-sub">Tích trữ 7.2 kWhth (Sấy đêm 24/7)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Ẩm Độ Lô Hàng & Hoạt Độ aw:</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="solar-dryer-batch-val">11.5% | aw 0.54</span>
+                        <span class="text-[9px] text-slate-500 block" id="solar-dryer-batch-sub">An toàn nấm mốc (aw &le; 0.60)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Dư Lượng Vitamin C & Phẩm Cấp:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="solar-dryer-quality-val">76.4% (Grade AAA)</span>
+                        <span class="text-[9px] text-slate-500 block" id="solar-dryer-quality-sub">Thặng dư +579k đ/mẻ (0đ tiền điện)</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1575,6 +1607,23 @@
                     }
                     if (cb.merkle_root_hash) {
                         document.getElementById('carbon-mrv-merkle-val').innerText = `${cb.merkle_root_hash.substring(0, 8)}...${cb.merkle_root_hash.substring(56)}`;
+                    }
+                }
+
+                // Solar-Thermal Crop Dryer & PCM Telemetry
+                const dryerRes = await fetch('/api/v1/solar-dryer/telemetry');
+                if (dryerRes.ok) {
+                    const dr = await dryerRes.json();
+                    if (dr.thermal_system) {
+                        document.getElementById('solar-dryer-status-badge').innerText = (dr.thermal_system.mode || 'SOLAR_DRYING').replace(/_/g, ' ').toUpperCase();
+                        document.getElementById('solar-dryer-temp-val').innerText = `${dr.thermal_system.chamber_inlet_temp_c}°C | ${dr.thermal_system.chamber_air_rh_pct}% RH`;
+                        document.getElementById('solar-dryer-temp-sub').innerText = `Thu nhiệt ${(dr.thermal_system.collector_useful_heat_gain_w / 1000).toFixed(1)} kWth (12m² glazed)`;
+                        document.getElementById('solar-dryer-pcm-val').innerText = `${dr.thermal_system.pcm_temp_c}°C (${(dr.thermal_system.pcm_liquid_fraction * 100).toFixed(0)}% Nóng Chảy)`;
+                        document.getElementById('solar-dryer-pcm-sub').innerText = `Tích trữ ${dr.thermal_system.pcm_stored_energy_kwh} kWhth (Sấy đêm 24/7)`;
+                    }
+                    if (dr.active_batch) {
+                        document.getElementById('solar-dryer-batch-val').innerText = `${dr.active_batch.moisture_wet_basis_pct}% | aw ${dr.active_batch.water_activity_aw}`;
+                        document.getElementById('solar-dryer-quality-val').innerText = `${dr.active_batch.vitamin_c_retention_pct}% (${(dr.active_batch.quality_grade || 'Grade AAA').replace(/_/g, ' ')})`;
                     }
                 }
             } catch (err) {

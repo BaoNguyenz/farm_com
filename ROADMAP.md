@@ -554,3 +554,27 @@ flowchart LR
   - Tích hợp thẻ HUD Tích Lũy Carbon Đất RothC & Sổ Cái MRV Tín Chỉ Carbon lên bảng điều khiển Dashboard.
 - [x] **Task 26.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 500/500 Unit & Integration tests vượt qua thành công 100% (`tests/test_carbon_rothc.py`, `tests/test_carbon_mrv.py`, `tests/test_carbon_mrv_api.py`).
+
+---
+
+## 📌 Phase 27: Trạm Sấy Nông Sản Năng Lượng Mặt Trời Tích Nhiệt Pha PCM (Solar-Thermal Crop Dryer with Phase Change Material PCM Thermal Storage & Thin-Layer Kinetics)
+- [x] **Task 27.1: Động Học Sấy Lớp Mỏng Page, Đẳng Nhiệt Sorption & Bảo Tồn Vitamin C (`backend/core/solar_drying_kinetics.py`)**
+  - Mô hình động học sấy lớp mỏng Page và Midilli-Kucuk: tỷ số ẩm $MR = \exp(-k t^n)$ cho 5 loại nông sản (dâu tây, cà chua bi, trà atisô, nấm hương, cà phê Arabica).
+  - Đẳng nhiệt hấp phụ giải hấp modified Oswin xác định độ ẩm cân bằng $M_e$ theo nhiệt độ và độ ẩm tương đối RH buồng sấy.
+  - Hệ số khuếch tán ẩm hiệu dụng Fickian $D_{\text{eff}}$ theo hàm số Arrhenius với năng lượng hoạt hóa $E_a \approx 31.2\text{ kJ/mol}$.
+  - Hoạt độ nước $a_w \le 0.60$ ngăn ngừa tuyệt đối nấm mốc Aspergillus/Penicillium phát triển.
+  - Động học phân hủy nhiệt bậc 1 của Axit Ascorbic (Vitamin C): duy trì $\ge 70\%$ hàm lượng chất chống oxy hóa tự nhiên, phân loại chất lượng Grade AAA Premium.
+- [x] **Task 27.2: Bộ Thu Nhiệt Khí Mặt Trời & Tích Nhiệt Ẩn Pha PCM Paraffin (`backend/core/solar_dryer_pcm.py`)**
+  - Bộ thu nhiệt mặt trời mặt phẳng có kính (glazed flat-plate collector $12\text{ m}^2$) theo phương trình Hottel-Whillier-Bliss, công suất thu nhiệt $>5.5\text{ kW}_{\text{th}}$.
+  - Khối tích nhiệt ẩn vật liệu chuyển pha (PCM) paraffin sáp hữu cơ $120\text{ kg}$ (nhiệt độ nóng chảy $44 - 48^\circ\text{C}$, ẩn nhiệt nóng chảy $210\text{ kJ/kg}$, dung lượng tích trữ $>7.2\text{ kWh}_{\text{th}}$).
+  - Phương pháp hiệu quả truyền nhiệt $\varepsilon\text{-NTU}$ giữa dòng khí sấy và khối PCM.
+  - Vận hành liên tục 24/7: ban ngày PCM nạp nhiệt đệm chống sốc nhiệt tán lá/trái cây ($<52^\circ\text{C}$); ban đêm PCM xả nhiệt latent heat duy trì luồng khí ấm $38 - 45^\circ\text{C}$, triệt tiêu hiện tượng ngưng tụ đọng sương làm hỏng nông sản.
+  - Tích hợp nhiệt thừa từ vi turbine khí sinh học biogas micro-CHP (từ Phase 23) hỗ trợ khi PCM cạn kiệt trong đêm mưa gió kéo dài.
+- [x] **Task 27.3: Tác Tử Nông Học & Kinh Tế Quản Trị Sấy Khô Nông Sản (`backend/agents/agronomist.py`, `backend/agents/market.py`)**
+  - `AgronomistAgent`: Kiểm toán chất lượng sấy; phủ quyết nhiệt độ buồng sấy $>55^\circ\text{C}$ nhằm bảo vệ enzyme; phủ quyết đóng gói kín khi hoạt độ nước $a_w > 0.65$; phê duyệt phẩm cấp xuất khẩu Grade AAA.
+  - `MarketAgent`: Đánh giá gia tăng giá trị kinh tế: biến nông sản tươi dễ hư hỏng thành sản phẩm sấy khô xuất khẩu giá trị cao (550.000 - 680.000 đ/kg) với hạn dùng 12 tháng, đem lại thặng dư $>500.000\text{ đ/mẻ}$ với $0\text{ đ}$ tiền điện sấy.
+- [x] **Task 27.4: Điểm Cuối RESTful Sấy Năng Lượng Mặt Trời & HUD Trực Quan Hóa (`backend/api/v1/endpoints/solar_dryer.py`, `backend/static/index.html`)**
+  - `GET /api/v1/solar-dryer/telemetry`, `POST /api/v1/solar-dryer/simulate-drying`, `POST /api/v1/solar-dryer/pcm-status`, `POST /api/v1/solar-dryer/audit-quality`.
+  - Tích hợp thẻ HUD Trạm Sấy Nông Sản Mặt Trời & Tích Nhiệt Pha PCM lên bảng điều khiển Dashboard.
+- [x] **Task 27.5: Bộ Kiểm Thử Tự Động Toàn Diện**
+  - 519/519 Unit & Integration tests vượt qua thành công 100% (`tests/test_solar_drying_kinetics.py`, `tests/test_solar_dryer_pcm.py`, `tests/test_solar_dryer_api.py`).

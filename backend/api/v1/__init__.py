@@ -26,6 +26,7 @@ from backend.api.v1.endpoints.rovers import router as rovers_router
 from backend.api.v1.endpoints.scenarios import router as scenarios_router
 from backend.api.v1.endpoints.simulation import router as simulation_router
 from backend.api.v1.endpoints.soil_microbiome import router as soil_microbiome_router
+from backend.api.v1.endpoints.solar_dryer import router as solar_dryer_router
 from backend.api.v1.endpoints.subsurface_fertigation import (
     router as subsurface_fertigation_router,
 )
@@ -61,6 +62,7 @@ api_v1_router.include_router(biogas_cogen_router)
 api_v1_router.include_router(postharvest_router)
 api_v1_router.include_router(drone_swarm_router)
 api_v1_router.include_router(carbon_mrv_router)
+api_v1_router.include_router(solar_dryer_router)
 
 __all__ = ["api_v1_router"]
 

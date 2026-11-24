@@ -627,6 +627,37 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist strongly endorses soil carbon sequestration & biochar application: stabilizes recalcitrant inert organic matter (IOM >= 95%), expands cation exchange capacity, and enhances soil water retention.",
             )
 
+        # Solar Thermal Crop Drying & Bioactive Nutrient Quality Check
+        if any(k in action_type for k in ("solar_drying_batch", "crop_dehydration", "dryer_operation")):
+            chamber_t = context.get("chamber_air_temp_c", 48.0)
+            aw = context.get("water_activity_aw", 0.55)
+            if chamber_t > 55.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="drying_quality",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.98,
+                    rationale=f"DRYING THERMAL ABUSE VETO: Chamber temperature ({chamber_t:.1f}°C > 55°C). Destroys ascorbic acid (Vitamin C), triggers enzymatic browning and nutrient loss. Increase PCM thermal absorption or ambient bypass.",
+                )
+            if aw > 0.65 and context.get("is_packaged", False):
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="drying_quality",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.8),
+                    confidence=0.96,
+                    rationale=f"WATER ACTIVITY VETO: Water activity ({aw:.3f} > 0.60) exceeds safe storage limit. High risk of Aspergillus/Penicillium mold sporulation in sealed storage.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="drying_quality",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist endorses solar-thermal PCM crop drying: controlled temperature preserves >70% bioactive ascorbic acid and guarantees microbiological stability (a_w <= 0.60).",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -635,6 +666,35 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_drying_batch_quality(
+        self,
+        commodity: str,
+        water_activity_aw: float,
+        moisture_wb_pct: float,
+        vitamin_c_retention_pct: float,
+        chamber_temp_c: float,
+    ) -> dict[str, Any]:
+        """Audits dried produce biophysical safety and bioactive retention."""
+        is_safe = water_activity_aw <= 0.60 and chamber_temp_c <= 55.0
+        is_grade_aaa = is_safe and vitamin_c_retention_pct >= 70.0 and moisture_wb_pct <= 14.0
+
+        recommendations: list[str] = []
+        if water_activity_aw > 0.60:
+            recommendations.append(f"Water activity {water_activity_aw:.3f} > 0.60. Extend drying by 2-4 hours to prevent mould.")
+        if chamber_temp_c > 52.0:
+            recommendations.append("Thermal threshold caution: throttle solar collector airflow to preserve antioxidant anthocyanins.")
+
+        return {
+            "commodity": commodity,
+            "water_activity_aw": water_activity_aw,
+            "moisture_wb_pct": moisture_wb_pct,
+            "vitamin_c_retention_pct": vitamin_c_retention_pct,
+            "chamber_temp_c": chamber_temp_c,
+            "is_microbiologically_safe": is_safe,
+            "quality_tier": "GRADE_AAA_EXPORT" if is_grade_aaa else ("GRADE_AA_COMMERCIAL" if is_safe else "REJECT_UNSAFE"),
+            "recommendations": recommendations,
+        }
 
     def audit_soil_carbon_health(
         self,

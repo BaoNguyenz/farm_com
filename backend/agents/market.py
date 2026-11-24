@@ -751,6 +751,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly endorses Verra VM0042 carbon credit issuance: monetizes verified soil carbon additionality into high-margin liquid ESG assets ($25/t CO2e) with zero cannibalization of food crop revenue.",
             )
 
+        # Solar Thermal PCM Crop Dehydration Economic Endorsement
+        if any(k in action_type for k in ("solar_drying_batch", "crop_dehydration", "dryer_operation")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="solar_drying_economics",
+                vote_choice="APPROVE",
+                confidence=0.97,
+                rationale="Market agent strongly endorses solar-thermal PCM dehydration: converts perishable harvest surplus into premium dried produce (550,000 VND/kg) with 12-month shelf life and zero grid fuel expenses.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -866,6 +876,34 @@ class MarketAgent(BaseFarmAgent):
             "net_revenue_usd": round(net_revenue_usd, 2),
             "net_revenue_vnd": round(net_revenue_vnd, 0),
             "is_lucrative": net_revenue_vnd > 0,
+        }
+
+    def evaluate_solar_drying_economic_margin(
+        self,
+        fresh_mass_kg: float,
+        fresh_price_vnd_kg: float = 75000.0,
+        dried_price_vnd_kg: float = 680000.0,
+        yield_ratio: float = 0.13,
+    ) -> dict[str, Any]:
+        """Calculates value-add economic margin of converting perishable fresh crop to dried product."""
+        raw_opportunity_cost = fresh_mass_kg * fresh_price_vnd_kg
+        dried_output_kg = fresh_mass_kg * yield_ratio
+        gross_dried_revenue = dried_output_kg * dried_price_vnd_kg
+
+        # Packaging + vacuum sealing: 3,500 VND per 250g pack
+        num_packs = (dried_output_kg * 1000.0) / 250.0
+        packaging_cost = num_packs * 3500.0
+
+        net_margin_vnd = gross_dried_revenue - packaging_cost - raw_opportunity_cost
+
+        return {
+            "fresh_input_kg": fresh_mass_kg,
+            "dried_output_kg": round(dried_output_kg, 2),
+            "raw_opportunity_cost_vnd": round(raw_opportunity_cost, 0),
+            "gross_dried_revenue_vnd": round(gross_dried_revenue, 0),
+            "packaging_cost_vnd": round(packaging_cost, 0),
+            "net_margin_uplift_vnd": round(net_margin_vnd, 0),
+            "is_profitable": net_margin_vnd > 0,
         }
 
     def evaluate_map_export_premium(
