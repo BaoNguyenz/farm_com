@@ -55,8 +55,8 @@ COMMODITY_CATALOG: dict[CropDryingCommodity, CommodityDryingProperties] = {
         initial_moisture_wb_pct=90.0,
         target_moisture_wb_pct=12.0,
         max_safe_temperature_c=52.0,
-        page_k=0.065,
-        page_n=1.18,
+        page_k=0.135,
+        page_n=1.05,
         oswin_c1=0.115,
         oswin_c2=0.365,
         activation_energy_kj_mol=31.2,
@@ -246,7 +246,7 @@ class SolarDryingKineticsEngine:
         is_done = current_wb <= props.target_moisture_wb_pct
 
         # Quality Grade determination
-        if is_done and aw <= 0.60 and vit_c_retention >= 75.0 and chamber_air_temp_c <= props.max_safe_temperature_c:
+        if is_done and aw <= 0.60 and vit_c_retention >= 70.0 and chamber_air_temp_c <= props.max_safe_temperature_c:
             grade = DryingQualityGrade.GRADE_AAA_PREMIUM
         elif is_done and aw <= 0.65:
             grade = DryingQualityGrade.GRADE_AA_STANDARD
