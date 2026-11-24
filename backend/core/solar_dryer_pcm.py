@@ -156,31 +156,36 @@ class SolarDryerPCMEngine:
 
         heat_capacity_rate = self.collector.air_mass_flow_rate_kg_s * self.AIR_SPECIFIC_HEAT_CP_J_KG_K
 
-        # Heat exchange between air leaving collector and PCM bed
-        q_pcm_w = self.pcm.heat_transfer_ua_w_k * (t_col_out - current_pcm_temp_c)
+        # Heat exchanger effectiveness (epsilon-NTU method) for air-PCM bed
+        ntu = self.pcm.heat_transfer_ua_w_k / heat_capacity_rate if heat_capacity_rate > 0 else 1.0
+        effectiveness = 1.0 - math.exp(-ntu)
 
-        # Operational mode & temperature regulation
         aux_used_w = 0.0
 
         if solar_irradiance_w_m2 >= 200.0:
-            # Daytime solar mode
-            if q_pcm_w > 0:
+            # Daytime solar mode: hot air from collector transfers heat to PCM
+            delta_t_available = t_col_out - current_pcm_temp_c
+            if delta_t_available > 0:
                 mode = DryerOperatingMode.PCM_CHARGING_SOLAR
-                # PCM absorbs excess heat, buffering air before entering chamber
+                q_pcm_w = effectiveness * heat_capacity_rate * delta_t_available
+                # Air temperature leaving PCM into drying chamber
                 t_chamber_in = t_col_out - (q_pcm_w / heat_capacity_rate)
             else:
                 mode = DryerOperatingMode.DIRECT_SOLAR_DRYING
+                q_pcm_w = 0.0
                 t_chamber_in = t_col_out
         else:
-            # Night or overcast
-            if current_pcm_temp_c >= (ambient_temp_c + 5.0):
+            # Night or overcast: PCM discharges into cooler incoming air
+            delta_t_night = current_pcm_temp_c - ambient_temp_c
+            if delta_t_night >= 3.0:
                 mode = DryerOperatingMode.PCM_DISCHARGING_NIGHT
-                # PCM discharges stored heat into cold night air
-                discharge_heat_w = abs(q_pcm_w)
-                t_chamber_in = ambient_temp_c + (discharge_heat_w / heat_capacity_rate)
+                discharge_w = effectiveness * heat_capacity_rate * delta_t_night
+                q_pcm_w = -discharge_w  # negative indicates discharge
+                t_chamber_in = ambient_temp_c + (discharge_w / heat_capacity_rate)
             else:
-                # PCM exhausted: trigger auxiliary biogas CHP waste heat if available
+                # PCM exhausted: trigger auxiliary biogas CHP waste heat
                 mode = DryerOperatingMode.AUXILIARY_BIOMASS_BOOST
+                q_pcm_w = 0.0
                 aux_used_w = auxiliary_heat_available_w if auxiliary_heat_available_w > 0 else 1800.0
                 t_chamber_in = ambient_temp_c + (aux_used_w / heat_capacity_rate)
 
