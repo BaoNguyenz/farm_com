@@ -3,6 +3,7 @@ API v1 Router Definition
 """
 from fastapi import APIRouter
 
+from backend.api.v1.endpoints.aeroponics import router as aeroponics_router
 from backend.api.v1.endpoints.agrivoltaics import router as agrivoltaics_router
 from backend.api.v1.endpoints.aquaponics import router as aquaponics_router
 from backend.api.v1.endpoints.audit import router as audit_router
@@ -65,6 +66,7 @@ api_v1_router.include_router(drone_swarm_router)
 api_v1_router.include_router(carbon_mrv_router)
 api_v1_router.include_router(solar_dryer_router)
 api_v1_router.include_router(pest_traps_router)
+api_v1_router.include_router(aeroponics_router)
 
 __all__ = ["api_v1_router"]
 

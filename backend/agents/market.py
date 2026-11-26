@@ -771,6 +771,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent endorses pheromone mating disruption: avoids export MRL pesticide residue rejection and cuts chemical spray costs.",
             )
 
+        # Vertical Aeroponics & Off-Peak DLI LED Economic Endorsement
+        if any(k in action_type for k in ("aeroponics_mist", "led_spectrum", "tune_dli")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="vertical_farm_economics",
+                vote_choice="APPROVE",
+                confidence=0.96,
+                rationale="Market agent endorses vertical aeroponics & off-peak LED DLI shifting: achieves 95% water savings and high vertical yield density.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -886,6 +896,26 @@ class MarketAgent(BaseFarmAgent):
             "net_revenue_usd": round(net_revenue_usd, 2),
             "net_revenue_vnd": round(net_revenue_vnd, 0),
             "is_lucrative": net_revenue_vnd > 0,
+        }
+
+    def evaluate_aeroponics_led_roi(
+        self,
+        canopy_area_m2: float,
+        energy_kwh_per_m2_day: float,
+        water_saved_m3_day: float = 1.2,
+    ) -> dict[str, Any]:
+        """Calculates daily economic ROI of vertical aeroponics & off-peak LED DLI lighting."""
+        led_cost_vnd = canopy_area_m2 * energy_kwh_per_m2_day * self.TARIFF_RATES["off_peak"]
+        water_savings_vnd = water_saved_m3_day * 15000.0
+        vertical_yield_premium_vnd = canopy_area_m2 * 18500.0
+        net_daily_profit = vertical_yield_premium_vnd + water_savings_vnd - led_cost_vnd
+        return {
+            "canopy_area_m2": canopy_area_m2,
+            "led_off_peak_cost_vnd": round(led_cost_vnd, 0),
+            "water_savings_vnd": round(water_savings_vnd, 0),
+            "vertical_yield_premium_vnd": round(vertical_yield_premium_vnd, 0),
+            "net_daily_profit_vnd": round(net_daily_profit, 0),
+            "is_profitable": net_daily_profit > 0,
         }
 
     def evaluate_pheromone_mating_disruption_roi(

@@ -680,6 +680,37 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist endorses pheromone mating disruption & optical pest trap monitoring: zero chemical residue and targeted lepidopteran suppression.",
             )
 
+        # Vertical Aeroponics & LED Photobiology check
+        if any(k in action_type for k in ("aeroponics_mist", "led_spectrum", "tune_dli")):
+            root_t = context.get("root_chamber_temp_c", 21.0)
+            shade_risk = context.get("shade_avoidance_risk", False)
+            if root_t > 26.0:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="aeroponics_health",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.97,
+                    rationale=f"ROOT HYPOXIA VETO: Aeroponic root chamber temperature ({root_t:.1f}°C > 26°C) depletes mist dissolved oxygen and provokes Pythium root rot.",
+                )
+            if shade_risk:
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="photobiology",
+                    vote_choice="REJECT",
+                    weight=max(weight, 3.5),
+                    confidence=0.95,
+                    rationale="PHOTOMORPHOGENESIS VETO: Low R:FR ratio triggers shade-avoidance stem stretching and weak fruit trusses. Increase Red/Blue ratio.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="aeroponics_photobiology",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist endorses ultrasonic aeroponics & DLI LED recipe: maximizes root oxygenation and berry anthocyanin accumulation.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -688,6 +719,24 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_aeroponics_photobiology(
+        self,
+        root_chamber_temp_c: float,
+        dissolved_oxygen_mg_l: float,
+        phytochrome_pss: float,
+        shade_avoidance_risk: bool,
+    ) -> dict[str, Any]:
+        """Audits aeroponic root-zone oxygenation and LED phytochrome photomorphogenesis."""
+        is_optimal = root_chamber_temp_c <= 26.0 and dissolved_oxygen_mg_l >= 7.5 and not shade_avoidance_risk
+        return {
+            "root_chamber_temp_c": root_chamber_temp_c,
+            "dissolved_oxygen_mg_l": dissolved_oxygen_mg_l,
+            "phytochrome_pss": phytochrome_pss,
+            "shade_avoidance_risk": shade_avoidance_risk,
+            "is_chamber_optimal": is_optimal,
+            "chamber_verdict": "OPTIMAL_VERTICAL_GROWTH" if is_optimal else "INTERVENTION_REQUIRED",
+        }
 
     def audit_pest_trap_threshold(
         self,
