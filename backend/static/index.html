@@ -854,6 +854,38 @@
                 </div>
             </div>
 
+            <!-- Smart Optical-Pheromone Pest Traps & Plume Dispersion HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-bug-slash text-lime-400"></i> Bẫy Sâu Bọ Quang - Pheromone & Phát Tán Khí Quyển
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-lime-500/10 text-lime-300 border border-lime-500/20 font-bold" id="pest-traps-status-badge">OPTICAL IPM ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Mật Độ Bẫy Đêm / Ngưỡng ET:</span>
+                        <span class="text-base font-bold text-lime-300 font-mono" id="pest-traps-catch-val">3.5 / 5.0 con</span>
+                        <span class="text-[9px] text-slate-500 block" id="pest-traps-catch-sub">Spodoptera litura (Adult Peak)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Bán Kính Gây Nhiễu Pheromone:</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="pest-traps-plume-val">24.0 m (Class F)</span>
+                        <span class="text-[9px] text-slate-500 block" id="pest-traps-plume-sub">Phát tán ổn định ban đêm</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Tích Lũy Độ-Ngày Sâu Hại (PDD):</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="pest-traps-pdd-val">358.0 °C·ngày</span>
+                        <span class="text-[9px] text-slate-500 block" id="pest-traps-pdd-sub">Theo dõi quang học (0 phun hóa học)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hiệu Quả Kinh Tế Xuất Khẩu MRL:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="pest-traps-roi-val">+8.6 Triệu VNĐ</span>
+                        <span class="text-[9px] text-slate-500 block" id="pest-traps-roi-sub">Không dư lượng thuốc BVTV</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1624,6 +1656,22 @@
                     if (dr.active_batch) {
                         document.getElementById('solar-dryer-batch-val').innerText = `${dr.active_batch.moisture_wet_basis_pct}% | aw ${dr.active_batch.water_activity_aw}`;
                         document.getElementById('solar-dryer-quality-val').innerText = `${dr.active_batch.vitamin_c_retention_pct}% (${(dr.active_batch.quality_grade || 'Grade AAA').replace(/_/g, ' ')})`;
+                    }
+                }
+
+                // Smart Optical-Pheromone Pest Traps Telemetry
+                const trapRes = await fetch('/api/v1/pest-traps/telemetry');
+                if (trapRes.ok) {
+                    const tp = await trapRes.json();
+                    if (tp.population_audit) {
+                        document.getElementById('pest-traps-catch-val').innerText = `${tp.population_audit.mean_moths_per_trap_night} / ${tp.population_audit.economic_threshold} con`;
+                        document.getElementById('pest-traps-pdd-val').innerText = `${tp.population_audit.cumulative_pdd} °C·ngày`;
+                    }
+                    if (tp.plume_dispersion) {
+                        document.getElementById('pest-traps-plume-val').innerText = `${tp.plume_dispersion.mating_disruption_radius_m} m (Class ${tp.plume_dispersion.stability_class})`;
+                    }
+                    if (tp.economics) {
+                        document.getElementById('pest-traps-roi-val').innerText = `+${(tp.economics.net_economic_benefit_vnd / 1000000).toFixed(1)} Triệu VNĐ`;
                     }
                 }
             } catch (err) {

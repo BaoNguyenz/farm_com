@@ -578,3 +578,17 @@ flowchart LR
   - Tích hợp thẻ HUD Trạm Sấy Nông Sản Mặt Trời & Tích Nhiệt Pha PCM lên bảng điều khiển Dashboard.
 - [x] **Task 27.5: Bộ Kiểm Thử Tự Động Toàn Diện**
   - 519/519 Unit & Integration tests vượt qua thành công 100% (`tests/test_solar_drying_kinetics.py`, `tests/test_solar_dryer_pcm.py`, `tests/test_solar_dryer_api.py`).
+
+---
+
+## 📌 Phase 28: Bẫy Sâu Bọ Quang - Pheromone Thông Minh & Phát Tán Khí Quyển (Smart Optical-Pheromone Pest Trapping & Atmospheric Plume Dispersion)
+- [x] **Task 28.1: Mô Hình Phát Tán Khí Quyển Gaussian Plume & Gây Nhiễu Giao Phối (`backend/core/pheromone_dispersion.py`)**
+  - Phân loại độ ổn định khí quyển Pasquill-Gifford (A-F) theo tốc độ gió và bức xạ mặt trời, hệ số khuếch tán Briggs nông thôn ($\sigma_y, \sigma_z$).
+  - Phương trình Gaussian Plume phản xạ mặt đất xác định nồng độ pheromone ($\text{ng/m}^3$) theo khoảng cách xuôi gió và tốc độ bay hơi Arrhenius theo nhiệt độ.
+  - Tính toán bán kính thu hút bẫy, bán kính gây nhiễu giao phối (Mating Disruption) và mật độ bộ phát pheromone/ha.
+- [x] **Task 28.2: Đếm Sâu Quang Học Edge AI & Ngưỡng Kinh Tế PDD (`backend/core/smart_pest_trap.py`)**
+  - Tích lũy Độ-Ngày Sâu Hại (Pest Degree-Days PDD) phân pha vòng đời Trứng -> Sâu non -> Nhộng -> Bướm trưởng thành.
+  - Tổng hợp số lượng bướm bắt được từ camera bẫy dính có trọng số độ tin cậy AI và cảnh báo ngưỡng kinh tế (ET / EIL).
+- [x] **Task 28.3: Tác Tử IPM, API RESTful & HUD Bẫy Thông Minh (`backend/agents/`, `backend/api/v1/endpoints/pest_traps.py`, `backend/static/index.html`)**
+  - `AgronomistAgent` phủ quyết phun thuốc hóa học khi mật độ dưới ngưỡng ET; `MarketAgent` định giá thặng dư xuất khẩu không dư lượng MRL.
+  - 535/535 Unit & Integration tests vượt qua thành công 100% (`tests/test_pheromone_dispersion.py`, `tests/test_smart_pest_trap.py`, `tests/test_pest_traps_api.py`).
