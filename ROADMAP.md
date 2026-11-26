@@ -592,3 +592,16 @@ flowchart LR
 - [x] **Task 28.3: Tác Tử IPM, API RESTful & HUD Bẫy Thông Minh (`backend/agents/`, `backend/api/v1/endpoints/pest_traps.py`, `backend/static/index.html`)**
   - `AgronomistAgent` phủ quyết phun thuốc hóa học khi mật độ dưới ngưỡng ET; `MarketAgent` định giá thặng dư xuất khẩu không dư lượng MRL.
   - 535/535 Unit & Integration tests vượt qua thành công 100% (`tests/test_pheromone_dispersion.py`, `tests/test_smart_pest_trap.py`, `tests/test_pest_traps_api.py`).
+
+---
+
+## 📌 Phase 29: Canh Tác Thẳng Đứng Khí Canh & Đèn Quang Phổ LED Điều Biến DLI (Vertical Aeroponics Ultrasonic Mist & Dynamic LED Photobiology)
+- [x] **Task 29.1: Nhiệt Động Học Phun Sương Siêu Âm & Hấp Thu Dinh Dưỡng Michaelis-Menten (`backend/core/aeroponics_mist.py`)**
+  - Phân bố kích thước hạt sương Sauter Mean Diameter ($D_{32} \approx 15\ \mu\text{m}$ ở tần số siêu âm $1.7\text{ MHz}$) và độ bão hòa Oxy hòa tan ($DO > 8.5\text{ mg/L}$).
+  - Động học hấp thu chủ động $NO_3^-$ và $K^+$ qua rễ khí canh, tự động điều chỉnh chu kỳ phun ON/OFF theo VPD buồng rễ, tiết kiệm 95% nước tưới.
+- [x] **Task 29.2: Điều Biến Quang Phổ LED R:B:FR, Tích Lũy DLI & Phytochrome PSS (`backend/core/led_photobiology.py`)**
+  - Tính toán bù bức xạ PPFD đạt mục tiêu DLI ($18.0\text{ mol/m}^2\text{ngày}$) với hiệu suất LED $2.85\ \mu\text{mol/J}$.
+  - Kiểm soát trạng thái quang tĩnh Phytochrome (PSS) và tỷ lệ Red:Far-Red nhằm triệt tiêu hiện tượng vóng thân tránh bóng (shade avoidance).
+- [x] **Task 29.3: Tác Tử, Điểm Cuối RESTful & HUD Khí Canh (`backend/agents/`, `backend/api/v1/endpoints/aeroponics.py`, `backend/static/index.html`)**
+  - `AgronomistAgent` phủ quyết khi buồng rễ $>26^\circ\text{C}$ (thiếu oxy rễ) hoặc tỷ lệ R:FR quá thấp; `MarketAgent` tối ưu chi phí bù sáng giờ thấp điểm EVN.
+  - 548/548 Unit & Integration tests vượt qua thành công 100% (`tests/test_aeroponics_mist.py`, `tests/test_led_photobiology.py`, `tests/test_aeroponics_api.py`).

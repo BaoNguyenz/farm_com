@@ -6,7 +6,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-2.14+-E92063.svg)](https://docs.pydantic.dev/)
-[![Tests Passing](https://img.shields.io/badge/tests-535%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/tests-548%20passed-brightgreen.svg)](tests/)
 [![Ruff Linter](https://img.shields.io/badge/linter-ruff%20clean-black.svg)](https://github.com/astral-sh/ruff)
 
 ---
@@ -262,11 +262,11 @@ python main.py
 
 ## 🧪 6. Kiểm Thử & Chẩn Đoán CLI (Testing & Diagnostics)
 
-### Chạy toàn bộ 535 Unit Tests:
+### Chạy toàn bộ 548 Unit Tests:
 ```bash
 python -m pytest -v
 ```
-*(Kết quả mong đợi: `535 passed in ~2.5s`)*
+*(Kết quả mong đợi: `548 passed in ~2.8s`)*
 
 ### Chạy các công cụ dòng lệnh (CLI Tools):
 ```bash

@@ -886,6 +886,38 @@
                 </div>
             </div>
 
+            <!-- Vertical Aeroponics Ultrasonic Mist & LED Photobiology HUD -->
+            <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-spray-can-sparkles text-fuchsia-400"></i> Khí Canh Siêu Âm & Đèn Quang Phổ LED DLI
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20 font-bold" id="aeroponics-status-badge">VERTICAL AEROPONICS OPTIMAL</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Sương Siêu Âm & Oxy Hòa Tan:</span>
+                        <span class="text-base font-bold text-fuchsia-300 font-mono" id="aeroponics-mist-val">15.0 µm | 8.9 mg/L</span>
+                        <span class="text-[9px] text-slate-500 block" id="aeroponics-mist-sub">Tiết kiệm 95% nước (10s ON / 150s OFF)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Hấp Thu Rễ (NO3- / K+):</span>
+                        <span class="text-base font-bold text-emerald-400 font-mono" id="aeroponics-uptake-val">14.8 / 17.8 mg/h</span>
+                        <span class="text-[9px] text-slate-500 block" id="aeroponics-uptake-sub">Nhiệt độ buồng rễ 21.0°C</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Phổ LED & Tích Lũy DLI:</span>
+                        <span class="text-base font-bold text-cyan-400 font-mono" id="aeroponics-led-val">18.0 mol/m²·d</span>
+                        <span class="text-[9px] text-slate-500 block" id="aeroponics-led-sub">R:FR 9.0 (PSS 0.804 | Anthocyanin)</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                        <span class="text-[10px] text-slate-400 block">Lợi Nhuận Tháp Khí Canh:</span>
+                        <span class="text-base font-bold text-teal-400 font-mono" id="aeroponics-roi-val">+2.1 Triệu VNĐ/ngày</span>
+                        <span class="text-[9px] text-slate-500 block" id="aeroponics-roi-sub">Bù sáng LED giờ thấp điểm EVN</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- Right: Multi-Agent Swarm Deliberation Console (5 cols) -->
@@ -1672,6 +1704,23 @@
                     }
                     if (tp.economics) {
                         document.getElementById('pest-traps-roi-val').innerText = `+${(tp.economics.net_economic_benefit_vnd / 1000000).toFixed(1)} Triệu VNĐ`;
+                    }
+                }
+
+                // Vertical Aeroponics & LED Photobiology Telemetry
+                const aeroRes = await fetch('/api/v1/aeroponics/telemetry');
+                if (aeroRes.ok) {
+                    const ae = await aeroRes.json();
+                    if (ae.chamber) {
+                        document.getElementById('aeroponics-mist-val').innerText = `${ae.chamber.droplet_sauter_diameter_um} µm | ${ae.chamber.dissolved_oxygen_mg_l} mg/L`;
+                        document.getElementById('aeroponics-uptake-val').innerText = `${ae.chamber.nitrate_uptake_mg_h_per_plant} / ${ae.chamber.potassium_uptake_mg_h_per_plant} mg/h`;
+                    }
+                    if (ae.led_spectrum) {
+                        document.getElementById('aeroponics-led-val').innerText = `${ae.led_spectrum.target_dli_mol_m2_day} mol/m²·d`;
+                        document.getElementById('aeroponics-led-sub').innerText = `R:FR ${ae.led_spectrum.r_fr_ratio} (PSS ${ae.led_spectrum.phytochrome_pss})`;
+                    }
+                    if (ae.economics) {
+                        document.getElementById('aeroponics-roi-val').innerText = `+${(ae.economics.net_daily_profit_vnd / 1000000).toFixed(1)} Triệu VNĐ/ngày`;
                     }
                 }
             } catch (err) {
