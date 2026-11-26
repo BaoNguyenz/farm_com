@@ -761,6 +761,16 @@ class MarketAgent(BaseFarmAgent):
                 rationale="Market agent strongly endorses solar-thermal PCM dehydration: converts perishable harvest surplus into premium dried produce (550,000 VND/kg) with 12-month shelf life and zero grid fuel expenses.",
             )
 
+        # Smart Pheromone Trap & Mating Disruption Economic Endorsement
+        if any(k in action_type for k in ("pheromone_disruption", "pest_trap_intervention")):
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="ipm_economics",
+                vote_choice="APPROVE",
+                confidence=0.96,
+                rationale="Market agent endorses pheromone mating disruption: avoids export MRL pesticide residue rejection and cuts chemical spray costs.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic="farm_operation",
@@ -876,6 +886,26 @@ class MarketAgent(BaseFarmAgent):
             "net_revenue_usd": round(net_revenue_usd, 2),
             "net_revenue_vnd": round(net_revenue_vnd, 0),
             "is_lucrative": net_revenue_vnd > 0,
+        }
+
+    def evaluate_pheromone_mating_disruption_roi(
+        self,
+        farm_area_ha: float,
+        dispensers_per_ha: int,
+    ) -> dict[str, Any]:
+        """Calculates ROI of pheromone mating disruption vs chemical pesticide sprays."""
+        dispenser_cost_vnd = farm_area_ha * dispensers_per_ha * 12000.0
+        avoided_chemical_spray_vnd = farm_area_ha * 850000.0
+        export_mrl_premium_vnd = farm_area_ha * 2400000.0
+        net_benefit = (avoided_chemical_spray_vnd + export_mrl_premium_vnd) - dispenser_cost_vnd
+        return {
+            "farm_area_ha": farm_area_ha,
+            "dispensers_per_ha": dispensers_per_ha,
+            "dispenser_cost_vnd": round(dispenser_cost_vnd, 0),
+            "avoided_spray_cost_vnd": round(avoided_chemical_spray_vnd, 0),
+            "export_mrl_premium_vnd": round(export_mrl_premium_vnd, 0),
+            "net_economic_benefit_vnd": round(net_benefit, 0),
+            "is_profitable": net_benefit > 0,
         }
 
     def evaluate_solar_drying_economic_margin(

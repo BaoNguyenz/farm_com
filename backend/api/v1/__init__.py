@@ -20,6 +20,7 @@ from backend.api.v1.endpoints.fertigation import router as fertigation_router
 from backend.api.v1.endpoints.greenhouse import router as greenhouse_router
 from backend.api.v1.endpoints.iot import router as iot_router
 from backend.api.v1.endpoints.microgrid import router as microgrid_router
+from backend.api.v1.endpoints.pest_traps import router as pest_traps_router
 from backend.api.v1.endpoints.pollination import router as pollination_router
 from backend.api.v1.endpoints.postharvest import router as postharvest_router
 from backend.api.v1.endpoints.rovers import router as rovers_router
@@ -63,6 +64,7 @@ api_v1_router.include_router(postharvest_router)
 api_v1_router.include_router(drone_swarm_router)
 api_v1_router.include_router(carbon_mrv_router)
 api_v1_router.include_router(solar_dryer_router)
+api_v1_router.include_router(pest_traps_router)
 
 __all__ = ["api_v1_router"]
 

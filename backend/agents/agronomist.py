@@ -658,6 +658,28 @@ class AgronomistAgent(BaseFarmAgent):
                 rationale="Agronomist endorses solar-thermal PCM crop drying: controlled temperature preserves >70% bioactive ascorbic acid and guarantees microbiological stability (a_w <= 0.60).",
             )
 
+        # Smart Pheromone Trap & Mating Disruption IPM check
+        if any(k in action_type for k in ("pheromone_disruption", "pest_trap_intervention")):
+            mean_catch = context.get("mean_moths_per_trap_night", 0.0)
+            et = context.get("economic_threshold", 5.0)
+            if mean_catch < et and context.get("action_subtype") == "chemical_spray":
+                return DebateVote(
+                    agent_id=self.agent_id,
+                    topic="ipm_pest_control",
+                    vote_choice="REJECT",
+                    weight=max(weight, 4.0),
+                    confidence=0.97,
+                    rationale=f"IPM THRESHOLD VETO: Optical trap catch ({mean_catch:.1f}/trap) is below Economic Threshold ({et:.1f}). Chemical spraying is unnecessary and harms beneficial pollinators.",
+                )
+            return DebateVote(
+                agent_id=self.agent_id,
+                topic="ipm_pest_control",
+                vote_choice="APPROVE",
+                weight=weight,
+                confidence=0.96,
+                rationale="Agronomist endorses pheromone mating disruption & optical pest trap monitoring: zero chemical residue and targeted lepidopteran suppression.",
+            )
+
         return DebateVote(
             agent_id=self.agent_id,
             topic=domain,
@@ -666,6 +688,24 @@ class AgronomistAgent(BaseFarmAgent):
             confidence=0.9 if weight >= 2.0 else 0.8,
             rationale=f"{self.role} approves proposal in domain '{domain}' (urgency: {urgency})."
         )
+
+    def audit_pest_trap_threshold(
+        self,
+        species: str,
+        mean_moths_per_trap_night: float,
+        economic_threshold: float,
+        disruption_radius_m: float,
+    ) -> dict[str, Any]:
+        """Audits optical pheromone trap population density against IPM Economic Threshold."""
+        threshold_exceeded = mean_moths_per_trap_night >= economic_threshold
+        return {
+            "species": species,
+            "mean_moths_per_trap_night": mean_moths_per_trap_night,
+            "economic_threshold": economic_threshold,
+            "threshold_exceeded": threshold_exceeded,
+            "disruption_radius_m": disruption_radius_m,
+            "ipm_action": "DEPLOY_PHEROMONE_DISRUPTION" if threshold_exceeded else "MONITOR_ONLY",
+        }
 
     def audit_drying_batch_quality(
         self,
